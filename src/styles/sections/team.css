@@ -1,0 +1,257 @@
+/* ═════════════ TEAM: «— А у вас как дела?» The people answer. Quiet, cream. ═════════════ */
+
+/* ── Intro: the question, then the founding line in large roman ── */
+.team {
+  --lead-size: clamp(1.75rem, 1rem + 3.3vw, 4rem);
+  --q-size: clamp(1.125rem, 0.9rem + 1.2vw, 2rem); /* = .dlg-q */
+  /* First-baseline offsets inside each line box (measured: Cormorant @1.1, Sofia Sans EC @1). */
+  --lead-base: 0.8685;
+  --q-base: 0.8;
+}
+.team__intro { display: grid; gap: clamp(28px, 3.6vw, 56px); }
+
+.team__quote { margin: 0; display: grid; gap: clamp(18px, 2.2vw, 28px); }
+.team__lead { margin: 0; }
+.team__lead-text {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--lead-size);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  max-width: 26ch;
+  color: var(--fg);
+  hyphens: manual;
+  text-wrap: pretty;
+}
+.team__bind { white-space: nowrap; }
+.team__phrase {
+  color: var(--accent);
+  font-size: 0.92em;
+  letter-spacing: 0;
+}
+/* SplitText line masks: a little room so Cormorant's ascenders and descenders never clip.
+   While split the paragraph is a flex column, so the masks' negative margins cancel their
+   padding exactly (no collapsing) and the line pitch never changes. */
+.team__lead-text:has(> .team-ln-mask) { display: flex; flex-direction: column; }
+.team__lead-text .team-ln-mask { padding-block: 0.08em; margin-block: -0.08em; }
+
+.team__source {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--fg-soft);
+}
+.team__source::before {
+  content: "";
+  flex: none;
+  width: 28px;
+  height: var(--rule);
+  background: var(--accent);
+}
+
+/* Desktop: a dialogue across the spread. The question sits in the margin on the first line's
+   baseline; the answer runs to the right; the source closes the margin on the last line. */
+@media (min-width: 1024px) {
+  .team__intro {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .team__title {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    align-self: start;
+    padding-top: calc(var(--lead-base) * var(--lead-size) - var(--q-base) * var(--q-size));
+  }
+  /* Where the margin is too narrow for one line (≈1024–1090), the dash hangs and the second
+     line aligns under «А», not under the dash (dash + space = 0.9475em in the question voice). */
+  .team__title .dlg-q { padding-left: 0.9475em; text-indent: -0.9475em; }
+  .team__quote {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-template-columns: subgrid;
+    align-items: last baseline;
+  }
+  .team__lead { grid-column: 4 / -1; grid-row: 1; }
+  .team__source { grid-column: 1 / 4; grid-row: 1; }
+}
+
+/* ── People ── */
+.team__people { margin-top: clamp(56px, 8.5vw, 136px); }
+
+.team__rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.team-card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  container: team-card / inline-size;
+}
+
+.team-card__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-ink);
+  isolation: isolate;
+}
+.team-card__photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: var(--rule) solid var(--fg);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.team-card__img {
+  object-fit: cover;
+  /* Stock stand-ins run cold; a light warm grade seats them on cream (drop with real portraits). */
+  filter: sepia(0.14) saturate(0.86) contrast(1.03);
+  transform-origin: 50% 60%;
+  transition: transform 1.1s var(--ease-kd-out);
+}
+/* Same badge as the octagon frames and café cards (brand.css / locations.css). */
+.team-card__photo[data-placeholder]::after {
+  content: "фото временное";
+  content: "фото временное" / ""; /* the alt text already says so */
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  background: rgb(20 18 16 / 0.72);
+  color: var(--color-milk);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.team-card__who {
+  margin-top: 16px;
+  color: var(--fg-soft);
+}
+.team-card__name,
+.team-card__role { white-space: nowrap; }
+/* Narrow cards: name over role, no dangling separator. */
+@container team-card (max-width: 289.98px) {
+  .team-card__who { display: grid; }
+  .team-card__sep { display: none; }
+  .team-card__name,
+  .team-card__role { white-space: normal; }
+}
+.team-card__answer {
+  margin-top: 10px;
+  /* Relative to the card, so the answer keeps its proportion on the rail, 2×2 and 4-up alike
+     (≈ 3.4vw on the desktop row). */
+  font-size: clamp(2rem, 15cqi, 3.25rem);
+  line-height: 0.9;
+  padding-bottom: 0.04em;
+  text-wrap: balance;
+}
+.team-card__answer .dash { display: inline-block; margin-right: 0.12em; font-weight: 700; }
+.team-card__word { font-weight: 930; }
+.team-card__line {
+  margin-top: 12px;
+  font-size: clamp(1.1875rem, 1rem + 0.42vw, 1.4375rem);
+  line-height: 1.2;
+  max-width: 27ch;
+}
+
+.team__progress { display: none; }
+
+.team__note {
+  margin-top: clamp(40px, 5vw, 72px);
+  color: var(--fg-soft);
+}
+
+/* Phones: a native swipe rail that bleeds to the screen edges, next card peeking. */
+@media (max-width: 639.98px) {
+  .team__rail {
+    grid-auto-flow: column;
+    grid-auto-columns: min(78vw, 340px);
+    overflow-x: auto;
+    /* Never a vertical scroller, not even while the cards rise 40px into place: a vertical
+       swipe over the rail always scrolls the page. */
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .team__rail::-webkit-scrollbar { display: none; }
+  .team__rail:focus-visible { outline-offset: -3px; }
+  .team-card { scroll-snap-align: start; }
+  .team-card:nth-child(even) { margin-top: 28px; }
+
+  /* Where you are in the rail: a hairline that follows the swipe (scroll-driven, no JS). */
+  @supports (animation-timeline: scroll()) {
+    .team__people { timeline-scope: --team-rail; }
+    .team__rail { scroll-timeline: --team-rail x; }
+    .team__progress {
+      display: block;
+      position: relative;
+      height: var(--rule);
+      margin-top: 22px;
+      background: rgb(20 18 16 / 0.14);
+      overflow: hidden;
+    }
+    .team__progress::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 25%;
+      background: var(--fg);
+      animation: team-rail-progress linear both;
+      animation-timeline: --team-rail;
+    }
+  }
+}
+@keyframes team-rail-progress { to { transform: translateX(300%); } }
+
+/* Tablet: two by two, the right column set a step lower. */
+@media (min-width: 640px) {
+  .team__rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: clamp(48px, 7vw, 72px);
+  }
+  .team-card:nth-child(even) { margin-top: 48px; }
+}
+/* …with square portraits, so the 2×2 isn't a wall of tall stock photos. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .team-card__photo { aspect-ratio: 1; }
+}
+
+/* Desktop: four in a row with an editorial stagger. */
+@media (min-width: 1024px) {
+  .team__rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .team-card:nth-child(even) { margin-top: 56px; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .team-card__word { transition: font-weight 420ms var(--ease-kd-out); }
+  .team-card:hover .team-card__img { transform: scale(1.03); }
+  .team-card:hover .team-card__word { font-weight: 1000; }
+  /* Reduced motion: the answer may still darken, but the photo never zooms. */
+  html[data-motion="reduced"] .team-card:hover .team-card__img { transform: none; }
+}
+
+/* The Breakfasts section opens with a menu-card rule right after this one (same cream field):
+   a shorter tail here keeps that seam at the rhythm of the other section breaks. */
+.team.section-pad { padding-bottom: calc(var(--section-pad) * 0.6); }

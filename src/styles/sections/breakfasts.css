@@ -1,0 +1,392 @@
+/* ═════════════ BREAKFASTS «— Что на завтрак?»: a printed menu board ═════════════
+   The thin question asks; six heavy answers reply, each one a breakfast you can order.
+   Mobile: 2-up cards (3-up from 640px). Desktop: a ruled board + a sticky plate on lace. */
+.bf { overflow-x: clip; }
+
+/* The team above is cream too: a tighter top, and a printed ink edge across the wrap, like the
+   head of a menu card, so the two sections read as two pages, not one long blank. */
+.bf.section-pad { padding-top: calc(var(--section-pad) * 0.55); }
+.bf > .wrap::before {
+  content: "";
+  display: block;
+  border-top: var(--rule) solid currentColor;
+  margin-bottom: clamp(32px, 3.4vw, 52px);
+}
+
+/* ── Head ── */
+.bf__head {
+  display: grid;
+  gap: clamp(14px, 1.8vw, 24px);
+  margin-bottom: clamp(36px, 5vw, 80px);
+}
+.bf__title { margin: 0; }
+.bf__title .dlg-q {
+  font-size: clamp(2.875rem, 1rem + 6vw, 7rem);
+  font-weight: 140;
+  letter-spacing: 0.08em;
+  line-height: 0.95;
+}
+@media (min-width: 640px) { .bf__title .dlg-q { letter-spacing: 0.1em; } }
+.bf__kicker { margin: 0; max-width: 24ch; }
+@media (min-width: 1200px) {
+  .bf__head {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: end;
+  }
+  .bf__title { grid-column: 1 / 9; }
+  .bf__kicker { grid-column: 9 / 13; padding-bottom: 0.2em; }
+}
+
+/* ── Board header: what's on, and whose prices ── */
+.bf-board__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+.bf-board__allday { margin: 0; color: var(--accent-ink); }
+.bf-board__city { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.bf-board__note { margin: 0; color: var(--fg-soft); }
+/* No JS: the switch would be dead buttons, so it goes, and the note names the city whose prices show. */
+.bf-board__static { display: none; color: var(--fg); }
+html:not(.js) .bf-board__static { display: inline; }
+html:not(.js) .bf-board__switch { display: none; }
+@media (pointer: coarse) {
+  .bf-board__switch .city-switch__opt { min-height: 44px; }
+}
+
+/* ── The list (mobile-first: cards) ── */
+.bf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px 12px;
+}
+@media (min-width: 640px) {
+  .bf-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 24px; }
+}
+
+.bf-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0.75rem, 1fr) auto;
+  grid-template-areas:
+    "photo photo photo"
+    "no leader price"
+    "name name name"
+    "desc desc desc"
+    "kbju kbju kbju";
+  align-content: start;
+  align-items: baseline;
+  column-gap: 6px;
+  min-width: 0;
+  padding-top: 16px;
+  container-type: inline-size;
+}
+/* A border, not a 1.5px-tall box: borders snap to whole device pixels, so every rule on the board
+   has the same weight (a box at a fractional offset paints 1px here and 2px there). */
+.bf-rule {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0;
+  border-top: var(--rule) solid currentColor;
+  pointer-events: none;
+}
+
+.bf-item__photo { grid-area: photo; align-self: start; margin: 2px 5% 16px; }
+.bf-item__oct { transform: rotate(-2deg); }
+.bf-item:nth-child(even) .bf-item__oct { transform: rotate(1.5deg); }
+
+.bf-item__no {
+  grid-area: no;
+  font-size: 0.6875rem;
+  color: var(--fg-soft);
+  transition: color 320ms var(--ease-kd-ui);
+}
+.bf-item__leader { grid-area: leader; }
+.bf-item__price {
+  grid-area: price;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: right;
+  transition: color 320ms var(--ease-kd-ui);
+}
+
+.bf-item__name {
+  grid-area: name;
+  margin: 10px 0 0;
+  /* ~1.6rem, but never wider than the card: the longest answer is ~6em with its dash. */
+  font-size: clamp(1.625rem, 1.1rem + 1.9vw, 2.25rem);
+  font-size: min(clamp(1.625rem, 1.1rem + 1.9vw, 2.25rem), 16cqi);
+  transition: color 320ms var(--ease-kd-ui);
+}
+.bf-item__link { display: flex; align-items: baseline; }
+/* The whole row / card is the target; the accessible name stays the dish. */
+.bf-item__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.bf-item__link:focus-visible { outline: none; }
+.bf-item__link:focus-visible::after { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 2px; }
+.bf-item__dash { flex: none; display: inline-block; margin-right: 0.14em; }
+/* Line mask: clip-path (not overflow) so baselines stay put; tall enough for Й and Ё. */
+.bf-item__mask {
+  display: block;
+  min-width: 0;
+  clip-path: polygon(-4% -50%, 104% -50%, 104% calc(100% + 0.12em), -4% calc(100% + 0.12em));
+  transition: transform 420ms var(--ease-kd-out);
+}
+.bf-item__word { display: block; }
+
+.bf-item__desc {
+  grid-area: desc;
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--fg-soft);
+  hyphens: auto; /* html lang="ru"; short words («тёплый», «соусе») stay whole */
+  hyphenate-limit-chars: 8 4 3;
+}
+.bf-item__kbju {
+  grid-area: kbju;
+  margin: 8px 0 0;
+  font-size: 0.6875rem;
+  font-stretch: 87.5%;
+  line-height: 1.6;
+  color: var(--fg-soft);
+}
+.bf-item__kbju-group { display: block; white-space: nowrap; }
+/* «Б 37,6 · Ж 36,8 · У 34,6» runs ~172px at 11px: on narrower cards (2-up, 360–390px) it sets narrower
+   (Martian Mono's wdth axis) and a hair tighter, ~156px. */
+@container (max-width: 179.98px) {
+  .bf-item__kbju { font-stretch: 75%; letter-spacing: -0.01em; }
+}
+
+/* Under 360px two cards can't hold a line of type: one column, each breakfast a menu row with its
+   plate beside it. */
+@media (max-width: 359.98px) {
+  .bf-list { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .bf-item {
+    grid-template-columns: clamp(96px, 36%, 120px) auto minmax(0.75rem, 1fr) auto;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "photo no leader price"
+      "photo name name name"
+      "photo desc desc desc"
+      "photo kbju kbju kbju";
+  }
+  .bf-item__photo { margin: 2px 10px 0 0; }
+  /* The stock-photo flag, sized to a ~95px plate: centred, and narrower (Martian Mono's wdth axis). */
+  .bf-item__oct[data-placeholder]::after {
+    right: 50%;
+    translate: 50% 0;
+    font-size: 9px;
+    font-stretch: 75%;
+    letter-spacing: 0.04em;
+    padding-inline: 5px;
+  }
+}
+
+/* Prices: both cities are in the markup; the active one rolls up after a real switch. */
+.bf-price { display: inline-flex; clip-path: inset(0); }
+.bf-price > span { display: inline-block; white-space: nowrap; }
+.bf-price > .bf-price__ask {
+  white-space: normal;
+  text-wrap: balance;
+  font-size: 0.85em;
+  font-weight: 400;
+  font-stretch: 87.5%;
+  line-height: 1.3;
+  color: var(--fg-soft);
+}
+.bf[data-roll] .bf-price > span {
+  animation: bf-roll 560ms var(--ease-kd-out) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+@keyframes bf-roll {
+  from { transform: translateY(110%); }
+  to { transform: none; }
+}
+
+/* ── Desktop: the ruled board ── */
+@media (min-width: 1024px) {
+  .bf__body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .bf__main { grid-column: 1 / 8; min-width: 0; }
+
+  .bf-list { display: block; }
+  .bf-item {
+    container-type: normal;
+    grid-template-columns: clamp(2.25rem, 3.2vw, 3.5rem) minmax(0, max-content) minmax(2rem, 1fr) auto;
+    grid-template-areas:
+      "no name leader price"
+      ". desc desc desc";
+    column-gap: clamp(10px, 1.1vw, 18px);
+    padding: clamp(16px, 1.8vw, 26px) 0 clamp(18px, 2.1vw, 30px);
+  }
+  .bf-item__photo { display: none; }
+  .bf-item__no { font-size: 0.8125rem; }
+  .bf-item__name { margin: 0; font-size: clamp(2.25rem, 5.6vw, 6.25rem); white-space: nowrap; }
+  .bf-item__price { font-size: clamp(0.9375rem, 0.7rem + 0.4vw, 1.1875rem); }
+  .bf-item__desc { margin-top: clamp(8px, 0.9vw, 14px); font-size: 1rem; line-height: 1.5; max-width: 48ch; }
+  /* The plate shows КБЖУ on desktop; the row keeps it for screen readers. */
+  .bf-item__kbju {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .bf-item[data-active] .bf-item__no { color: var(--accent-ink); }
+  /* The ring sits between the rules, a little wider than the row. */
+  .bf-item__link::after { inset: 0 -12px; }
+  .bf-item__link:focus-visible::after { outline-offset: -4px; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bf-item:hover .bf-item__mask { transform: translateX(0.07em); }
+}
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  /* Spotlight: while the pointer reads the board, the other answers step back. */
+  .bf[data-js] .bf-list:hover .bf-item:not([data-active]) :is(.bf-item__name, .bf-item__price) {
+    color: color-mix(in srgb, var(--fg) 30%, var(--bg));
+  }
+}
+
+/* ── Desktop: the sticky plate ── */
+.bf-preview { display: none; }
+@media (min-width: 1024px) {
+  .bf-preview { display: block; grid-column: 8 / 13; position: relative; }
+}
+.bf-preview__sticky {
+  position: sticky;
+  top: calc(var(--header-h) + clamp(16px, 4vh, 44px));
+}
+.bf-preview__inner {
+  --oct: min(30vw, 480px, calc((100svh - var(--header-h) - 250px) * 0.78));
+  display: grid;
+  justify-items: center;
+  gap: clamp(12px, 2vh, 22px);
+}
+.bf-stage {
+  position: relative;
+  width: min(100%, calc(var(--oct) / 0.78));
+  aspect-ratio: 1;
+}
+.bf-stage__lace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-ink);
+  filter: drop-shadow(5px 6px 0 rgb(20 18 16 / 0.07));
+}
+.bf-stage__plates { position: absolute; inset: 11%; }
+.bf-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: rotate(-2deg);
+  transition: opacity 300ms var(--ease-kd-out) 220ms;
+}
+.bf-slide[data-active] {
+  opacity: 1;
+  z-index: 1;
+  transition: none;
+}
+/* Keyed off data-swap (set on the first real swap), so the default plate never re-plays on hydration. */
+.bf[data-swap] .bf-slide[data-active] { animation: bf-plate 500ms var(--ease-kd-out) both; }
+.bf[data-swap] .bf-slide[data-active] .oct-photo__img { animation: bf-zoom 1200ms var(--ease-kd-out) both; }
+@keyframes bf-plate {
+  from { opacity: 0; transform: rotate(-9deg) scale(0.95); }
+  to { opacity: 1; transform: rotate(-2deg) scale(1); }
+}
+@keyframes bf-zoom {
+  from { transform: scale(1.1); }
+  to { transform: scale(1); }
+}
+
+/* Captions: stacked in one cell (height of the tallest), so swapping never shifts layout. */
+.bf-caps { display: grid; width: 100%; }
+.bf-cap {
+  grid-area: 1 / 1;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+  text-align: center;
+  visibility: hidden;
+  opacity: 0;
+}
+.bf-cap[data-active] { visibility: visible; opacity: 1; }
+.bf[data-swap] .bf-cap[data-active] { animation: bf-cap 500ms var(--ease-kd-out) both; }
+@keyframes bf-cap {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.bf-cap__no { margin: 0; color: var(--fg-soft); }
+.bf-cap__name { margin: 0; font-size: clamp(1.5rem, 0.9rem + 1vw, 2.125rem); }
+.bf-cap__more { margin: 2px 0 0; color: var(--fg-soft); }
+.bf-kbju {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  margin: 4px 0 0;
+  border-block: var(--rule) solid currentColor;
+}
+.bf-kbju__cell {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2px;
+  padding: 8px clamp(10px, 1vw, 16px);
+}
+.bf-kbju__cell + .bf-kbju__cell { border-left: 1px solid rgb(20 18 16 / 0.2); }
+.bf-kbju__value { margin: 0; font-size: 0.9375rem; font-weight: 500; }
+.bf-kbju__label {
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-stretch: 87.5%;
+  color: var(--fg-soft);
+}
+
+/* ── Afterword ── */
+.bf-foot {
+  position: relative;
+  display: grid;
+  gap: clamp(16px, 1.8vw, 24px);
+  margin-top: 44px;
+  padding-top: clamp(24px, 2.8vw, 40px);
+}
+@media (min-width: 1024px) { .bf-foot { margin-top: 0; } }
+.bf-after-wrap { display: grid; gap: 10px; }
+.bf-after {
+  display: grid;
+  gap: 0.2em;
+  margin: 0;
+  font-size: clamp(1.375rem, 0.95rem + 1.3vw, 2.25rem);
+  max-width: 34ch;
+}
+/* The dash hangs: wrapped lines align under the words, not under it (dash + space = 1.064em). */
+.bf-after__line { display: block; padding-left: 1.064em; text-indent: -1.064em; }
+.bf-after__price {
+  font-style: normal;
+  font-size: 0.54em;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  vertical-align: 0.14em;
+}
+.bf-links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.bf-links .dlink { position: relative; font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem); }
+/* ≥44px targets without moving the underline away from the words. */
+.bf-links .dlink::before { content: ""; position: absolute; inset: -12px -8px; }
+.bf-note { margin: 0; font-size: 0.75rem; line-height: 1.55; color: var(--fg-soft); max-width: 58ch; }

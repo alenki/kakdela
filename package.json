@@ -1,0 +1,48 @@
+{
+  "name": "kakdela",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "assets:logo": "node scripts/trace-logo.mjs",
+    "assets:photos": "node scripts/fetch-photos.mjs",
+    "assets:icons": "node scripts/make-icons.mjs",
+    "assets:grain": "node scripts/make-grain.mjs",
+    "shot": "node scripts/shot.mjs",
+    "perf": "node scripts/perf.mjs",
+    "assets:lace": "node scripts/make-lace.mjs"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "clsx": "^2.1.1",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.26",
+    "motion": "^13.4.4",
+    "next": "16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22.20.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "playwright": "^1.63.0",
+    "potrace": "^2.1.8",
+    "sharp": "^0.35.4",
+    "svgo": "^4.1.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^5.0.2"
+  }
+}

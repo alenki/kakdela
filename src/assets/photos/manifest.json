@@ -1,0 +1,268 @@
+[
+  {
+    "slug": "luchshe-vseh",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-68b438a4b974a.JPG",
+    "alt": "Завтрак «Лучше всех»: глазунья, домашние колбаски, овощи и грибной соус",
+    "file": "src/assets/photos/luchshe-vseh.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "otlichnyj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69afebdad0b47.png",
+    "alt": "Завтрак «Отличный»: омлет с моцареллой, овощи и гранола",
+    "file": "src/assets/photos/otlichnyj.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "slug": "kapitalnyj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b00b7b69f89.png",
+    "alt": "Завтрак «Капитальный»: колбаски, яйца, гренки, хумус и черри",
+    "file": "src/assets/photos/kapitalnyj.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "slug": "syrniki",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-650d5b3ce6919.jpg",
+    "alt": "Сырники со сметаной и ягодами",
+    "file": "src/assets/photos/syrniki.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "espresso-tonik",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_6474b98f84065.jpg",
+    "alt": "Эспрессо тоник со льдом",
+    "file": "src/assets/photos/espresso-tonik.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "dalshe-slashe",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_6474b756ba8c6.jpg",
+    "alt": "Авторский напиток «Дальше слаще»",
+    "file": "src/assets/photos/dalshe-slashe.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "klever",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_6474b645a2adc.jpg",
+    "alt": "Кофе «Клевер» — альтернативное заваривание",
+    "file": "src/assets/photos/klever.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "stanciya-mir",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_6808e22e7956a.jpg",
+    "alt": "Авторский фильтр «Станция Мир» с сиропом из горных трав",
+    "file": "src/assets/photos/stanciya-mir.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "kapuchino",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_647498fc26f9f.jpg",
+    "alt": "Капучино",
+    "file": "src/assets/photos/kapuchino.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "zolotoj-kleverok",
+    "url": "https://www.kakdelacoffee.ru/images/bar/Drink_69ec6ff878e4d.jpg",
+    "alt": "Напиток «Золотой клеверок» с леденцом-клевером на кружевной салфетке",
+    "file": "src/assets/photos/zolotoj-kleverok.jpg",
+    "width": 2000,
+    "height": 1547
+  },
+  {
+    "slug": "medovik",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d88919dac.JPG",
+    "alt": "Медовик",
+    "file": "src/assets/photos/medovik.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "brauni",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d601650b9.JPG",
+    "alt": "Брауни",
+    "file": "src/assets/photos/brauni.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "san-sebastyan",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d6e012657.JPG",
+    "alt": "Чизкейк Сан-Себастьян",
+    "file": "src/assets/photos/san-sebastyan.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "vishnevyj-pirog",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_68f7400d71c40.jpg",
+    "alt": "Вишнёвый пирог с шариком мороженого",
+    "file": "src/assets/photos/vishnevyj-pirog.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "cafe-bajsultanova-1",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_64986e8514fcc.jpg",
+    "alt": "Кофейня «Как дела?» на улице Байсултанова, 1",
+    "file": "src/assets/photos/cafe-bajsultanova-1.jpg",
+    "width": 1040,
+    "height": 1560
+  },
+  {
+    "slug": "cafe-lermontova-59",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_6732fcfb4b0ae.jpg",
+    "alt": "Кофейня «Как дела?» на улице Лермонтова, 59",
+    "file": "src/assets/photos/cafe-lermontova-59.jpg",
+    "width": 1333,
+    "height": 2000
+  },
+  {
+    "slug": "cafe-lenina-32",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Shops_6496976384547.jpg",
+    "alt": "Кофейня «Как дела?» на проспекте Ленина, 32",
+    "file": "src/assets/photos/cafe-lenina-32.jpg",
+    "width": 1040,
+    "height": 1560
+  },
+  {
+    "slug": "cafe-shogencukova-14",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_687a051b679e9.jpg",
+    "alt": "Кофейня «Как дела?» на проспекте Шогенцукова, 14",
+    "file": "src/assets/photos/cafe-shogencukova-14.jpg",
+    "width": 1333,
+    "height": 2000
+  },
+  {
+    "slug": "cafe-atazhukina-10v",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_687a061208162.jpg",
+    "alt": "Кофейня «Как дела?» на улице Атажукина, 10В",
+    "file": "src/assets/photos/cafe-atazhukina-10v.jpg",
+    "width": 1333,
+    "height": 2000
+  },
+  {
+    "slug": "cafe-lermontova-4",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_694e728f9f1db.png",
+    "alt": "Кофейня «Как дела?» на улице Лермонтова, 4",
+    "file": "src/assets/photos/cafe-lermontova-4.jpg",
+    "width": 1080,
+    "height": 1924
+  },
+  {
+    "slug": "cafe-kujbysheva-3",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_687a07414e683.jpg",
+    "alt": "Кофейня «Как дела?» на улице Куйбышева, 3 во Владикавказе",
+    "file": "src/assets/photos/cafe-kujbysheva-3.jpg",
+    "width": 1333,
+    "height": 2000
+  },
+  {
+    "slug": "cafe-plieva-32",
+    "url": "https://www.kakdelacoffee.ru/images/shops/Coffee_shop_654f565f14c95.jpg",
+    "alt": "Кофейня «Как дела?» на улице Генерала Плиева, 32 во Владикавказе",
+    "file": "src/assets/photos/cafe-plieva-32.jpg",
+    "width": 1040,
+    "height": 1560
+  },
+  {
+    "slug": "10-iz-10",
+    "placeholder": true,
+    "credit": "rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY3NTI1LXdpa2ltZWRpYS1pbWFnZS1rb3diNWIzaC5qcGc.jpg",
+    "alt": "Завтрак «10 из 10» (временное фото)",
+    "file": "src/assets/photos/10-iz-10.jpg",
+    "width": 722,
+    "height": 1024
+  },
+  {
+    "slug": "kak-v-skazke",
+    "placeholder": true,
+    "credit": "rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY0MDk1LXdpa2ltZWRpYS1pbWFnZS1rb3dhenpxZi5qcGc.jpg",
+    "alt": "Завтрак «Как в сказке» (временное фото)",
+    "file": "src/assets/photos/kak-v-skazke.jpg",
+    "width": 1024,
+    "height": 683
+  },
+  {
+    "slug": "shik",
+    "placeholder": true,
+    "credit": "Jakub Kapusnak, rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvYTAxOS1qYWt1YmstMDc1My1iZWVmLWdyZWVuLWJlYW5zLXJpc290dG8uanBn.jpg",
+    "alt": "Завтрак «Шик» (временное фото)",
+    "file": "src/assets/photos/shik.jpg",
+    "width": 683,
+    "height": 1024
+  },
+  {
+    "slug": "shakshuka",
+    "placeholder": true,
+    "credit": "rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjYyNDE3LXdpa2ltZWRpYS1pbWFnZS1rb3diM295ZS5qcGc.jpg",
+    "alt": "Шакшука (временное фото)",
+    "file": "src/assets/photos/shakshuka.jpg",
+    "width": 1024,
+    "height": 680
+  },
+  {
+    "slug": "team-1",
+    "placeholder": true,
+    "credit": "Burst, StockSnap, CC0",
+    "url": "https://cdn.stocksnap.io/img-thumbs/960w/DTKOOFPC06.jpg",
+    "alt": "Бариста рисует латте-арт (временное фото)",
+    "file": "src/assets/photos/team-1.jpg",
+    "width": 960,
+    "height": 1200
+  },
+  {
+    "slug": "team-2",
+    "placeholder": true,
+    "credit": "rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbnMzNzU0LWltYWdlLWt3eXJ4dGxxLmpwZw.jpg",
+    "alt": "Бариста наливает кофе в стакан с собой (временное фото)",
+    "file": "src/assets/photos/team-2.jpg",
+    "width": 1024,
+    "height": 683
+  },
+  {
+    "slug": "team-3",
+    "placeholder": true,
+    "credit": "Malidate Van, StockSnap, CC0",
+    "url": "https://cdn.stocksnap.io/img-thumbs/960w/ZCW5B7GXFY.jpg",
+    "alt": "Руки бариста у эспрессо-машины (временное фото)",
+    "file": "src/assets/photos/team-3.jpg",
+    "width": 960,
+    "height": 640
+  },
+  {
+    "slug": "team-4",
+    "placeholder": true,
+    "credit": "Burst, StockSnap, CC0",
+    "url": "https://cdn.stocksnap.io/img-thumbs/960w/ERHOTDPNMV.jpg",
+    "alt": "Гость держит чашку с латте-артом (временное фото)",
+    "file": "src/assets/photos/team-4.jpg",
+    "width": 960,
+    "height": 1340
+  },
+  {
+    "slug": "cafe-shogencukova-19",
+    "placeholder": true,
+    "credit": "rawpixel, CC0",
+    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODIyMDY5LXdpa2ltZWRpYS1pbWFnZS1rb3dreDY3aC5qcGc.jpg",
+    "alt": "Кофейня на проспекте Шогенцукова, 19 (временное фото)",
+    "file": "src/assets/photos/cafe-shogencukova-19.jpg",
+    "width": 1024,
+    "height": 459
+  }
+]

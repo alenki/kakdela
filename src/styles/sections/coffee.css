@@ -1,0 +1,325 @@
+/* ═════════════ COFFEE «— А кофе?»: the cobalt cup on the tomato field ═════════════ */
+.coffee { overflow-x: clip; }
+/* Desktop: a poster light falls on the red wall behind the cup and deepens toward the far corner.
+   Phones keep the field flat so the sticky badge band sits on it seamlessly. */
+@media (min-width: 1024px) {
+  .coffee {
+    background-image:
+      radial-gradient(42% 60% at 20% 40%, rgb(255 138 110 / 0.16), transparent 72%),
+      radial-gradient(60% 50% at 102% 104%, rgb(98 14 10 / 0.24), transparent 74%);
+  }
+}
+
+.coffee__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1024px) {
+  .coffee__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: 24px;
+  }
+  .coffee__cupcol { grid-column: 1 / 6; grid-row: 1 / 5; }
+  .coffee__head { grid-column: 6 / 13; grid-row: 1; }
+  .coffee__lead { grid-column: 6 / 12; grid-row: 2; }
+  .coffee__menu { grid-column: 6 / 13; grid-row: 3; }
+  .coffee__links { grid-column: 6 / 13; grid-row: 4; }
+}
+
+/* ── The exchange ── */
+.coffee__head { margin: 0; }
+/* Milk hairlines on red lose more to antialiasing than ink on sky: the question voice takes the top
+   of its thin range here and a touch more size on phones. */
+.coffee__head .dlg-q { font-weight: 200; font-size: clamp(1.25rem, 0.95rem + 1.2vw, 2rem); }
+.coffee__answer { font-size: clamp(3.25rem, 0.2rem + 15.5vw, 5.5rem); }
+@media (min-width: 1024px) {
+  .coffee__answer { font-size: clamp(5.5rem, 0.4rem + 7.4vw, 9.75rem); }
+}
+.coffee__lead {
+  margin: clamp(18px, 3vh, 34px) 0 0;
+  max-width: 27ch;
+  font-size: clamp(1.375rem, 1.05rem + 1.1vw, 2.125rem);
+  color: var(--fg);
+}
+
+/* ── Desktop: the cup column (sticky; ScrollTrigger reads the rows, never this) ── */
+.coffee__cupcol { display: none; position: relative; }
+@media (min-width: 1024px) { .coffee__cupcol { display: block; } }
+.coffee__sticky {
+  --cup-h: max(60vh, 400px);
+  position: sticky;
+  top: 14vh;
+  height: 72vh;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 3vh;
+}
+/* The logo clover in crayon hatch, printed tone-on-tone on the red wall behind the cup. */
+.coffee__halo {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: min(104%, 60vh);
+  translate: -50% -50%;
+  rotate: -14deg;
+  color: #a4251a;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.coffee__clover { width: 100%; height: auto; overflow: visible; }
+.coffee__cupwrap {
+  position: relative;
+  z-index: 1;
+  height: var(--cup-h);
+  aspect-ratio: 300 / 460;
+}
+.coffee__cup {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  /* A flat poster shadow cast to the lower right. */
+  filter: drop-shadow(18px 12px 0 rgb(98 14 10 / 0.28));
+}
+/* The counter the cup stands on, at the cup's floor line (y 448 of 460), run out to the page edge. */
+.coffee__counter {
+  position: absolute;
+  left: calc(-1 * var(--gutter));
+  right: 0;
+  bottom: calc(3vh + var(--cup-h) * 12 / 460);
+  height: var(--rule);
+  background: rgb(255 248 238 / 0.5);
+}
+
+/* The note on the sleeve: Neucha, ink, drawn by the island. */
+.cup-note { color: var(--color-ink); }
+.cup-note text { font-family: var(--font-hand); fill: currentColor; }
+
+/* ── The card ── */
+/* The mat below takes the header's height in flow, so the lead→card gap is clamp(40px, 7vh, 80px). */
+.coffee__menu { position: relative; margin-top: max(0px, clamp(40px, 7vh, 80px) - var(--header-h)); }
+@media (min-width: 640px) and (max-width: 1023.98px) { .coffee__menu { max-width: 720px; } }
+
+/* The header is transparent and, over this field, milk. Where the card column passes under it, a
+   tomato mat sticks behind the header and follows it: when the header tucks away (--header-offset 0)
+   the mat slides up out of view with it. Not stuck, it is just more red field above the card. */
+.coffee__mat {
+  position: sticky;
+  top: calc(var(--header-offset) - var(--header-h));
+  z-index: 4;
+  height: var(--header-h);
+  margin-inline: calc(-1 * var(--gutter));
+  background-color: var(--color-tomato);
+  isolation: isolate;
+  pointer-events: none;
+  transition: top 350ms var(--ease-kd-out);
+}
+.coffee__mat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("/tex/grain-dark.png") 0 0 / 128px 128px;
+  opacity: 0.5;
+}
+/* Wider screens: the card's width plus its flat shadow; the red field shows either side anyway. */
+@media (min-width: 640px) { .coffee__mat { margin-inline: 0 -12px; } }
+
+.coffee__card {
+  --fg: var(--color-ink);
+  --fg-soft: var(--color-graphite);
+  --accent: var(--color-tomato);
+  --accent-ink: var(--color-tomato-ink);
+  --focus: var(--color-tomato-ink);
+  position: relative;
+  color: var(--fg);
+  background: var(--color-milk) url("/tex/grain-light.png") 0 0 / 128px 128px;
+  border: var(--rule) solid var(--color-ink);
+  border-radius: 2px;
+  box-shadow: 10px 10px 0 rgb(98 14 10 / 0.3);
+}
+.coffee__card-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 28px;
+  padding: 14px 16px 12px;
+  border-bottom: var(--rule) solid currentColor;
+}
+/* «Цены — Владикавказ» is long: on the narrowest phones it drops to its own line, still flush right. */
+.coffee__card-city { margin-left: auto; color: var(--fg-soft); }
+@media (min-width: 1024px) { .coffee__card-head { padding: 18px 32px 16px 56px; } }
+
+.coffee__list { list-style: none; margin: 0; padding: 0; }
+.drink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 16px 22px;
+}
+.drink + .drink { border-top: 1px solid rgb(20 18 16 / 0.16); }
+@media (min-width: 1024px) {
+  .drink {
+    gap: clamp(24px, 2.6vw, 44px);
+    min-height: clamp(220px, 30vh, 300px);
+    padding: 28px 32px 28px 56px;
+  }
+}
+.drink__main { min-width: 0; container-type: inline-size; }
+.drink__line { position: relative; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; }
+.drink__name {
+  margin: 0;
+  font-size: clamp(1.75rem, 0.95rem + 2.3vw, 3.25rem);
+  line-height: 0.9;
+  transition: color 320ms var(--ease-kd-ui);
+}
+.drink__line .leader { min-width: 1.25rem; }
+/* Narrow rows (phones, and the 1024–1200 desktop column): name, then price, then description —
+   never a dangling leader. */
+@container (max-width: 400px) {
+  .drink__line { flex-direction: column; align-items: flex-start; }
+  .drink__line .leader { display: none; }
+  .drink__price { margin-top: 8px; }
+}
+.drink__price {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+@media (min-width: 1024px) { .drink__price { font-size: 1rem; } }
+.drink__desc {
+  margin: 8px 0 0;
+  max-width: 38ch;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--fg-soft);
+}
+@media (min-width: 1024px) { .drink__desc { margin-top: 12px; font-size: 1rem; } }
+.drink__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2em 0.55em;
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--color-tomato-ink);
+}
+.drink__arrow { width: 1.5em; height: auto; flex: none; }
+/* With JS and full motion the note lives on the cup; without either, each row keeps its own. */
+html.js[data-motion="full"] .drink__note { display: none; }
+
+.drink__thumb {
+  width: 84px;
+  transition: transform 600ms var(--ease-kd-out);
+}
+@media (min-width: 1024px) { .drink__thumb { width: clamp(120px, 11vw, 168px); } }
+.drink__badge { width: 100%; height: auto; color: var(--color-ink); }
+.drink__badge [data-part="clover"] { color: var(--color-tomato); }
+
+/* The drink currently written on the cup: a tomato dash opens its line, like the dialogue. */
+.drink__name { position: relative; }
+.drink__name::before {
+  content: "";
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  width: 22px;
+  height: 3px;
+  margin-top: -2px;
+  background: var(--color-tomato);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 420ms var(--ease-kd-out);
+}
+.drink[data-current] .drink__name::before { transform: scaleX(1); }
+.drink[data-current] .drink__name { color: var(--color-tomato-ink); }
+.drink[data-current] .drink__thumb { transform: rotate(-6deg); }
+@media (max-width: 1023.98px) { .drink__name::before { display: none; } }
+
+/* ── Phones and tablets: the small sticky cup badge ── */
+.coffee__badge {
+  position: sticky;
+  top: var(--header-offset);
+  z-index: 3;
+  margin: 0 calc(-1 * var(--gutter)) 14px;
+  transition: top 350ms var(--ease-kd-out);
+}
+.coffee__badge-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px var(--gutter) 12px;
+  background-color: var(--color-tomato);
+  isolation: isolate;
+  transition: box-shadow 320ms var(--ease-kd-ui);
+}
+.coffee__badge-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("/tex/grain-dark.png") 0 0 / 128px 128px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* While stuck, a hairline shadow sets the band off the card sliding beneath it (progressive). */
+@supports (container-type: scroll-state) {
+  .coffee__badge { container-type: scroll-state; }
+  @container scroll-state(stuck: top) {
+    .coffee__badge-inner { box-shadow: 0 var(--rule) 0 rgb(98 14 10 / 0.35); }
+  }
+}
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .coffee__badge { margin-inline: 0; }
+  .coffee__badge-inner { padding-inline: 0; }
+}
+@media (min-width: 1024px) { .coffee__badge { display: none; } }
+/* Without JS or with reduced motion the note never changes, so the badge doesn't claim the screen:
+   it stays in place as a small illustration and every row carries its own note. */
+html:not(.js) .coffee__badge,
+html[data-motion="reduced"] .coffee__badge { position: relative; top: auto; }
+
+.coffee__badge-cup {
+  flex: none;
+  height: 110px;
+  width: auto;
+  overflow: visible;
+  filter: drop-shadow(6px 4px 0 rgb(98 14 10 / 0.28));
+}
+.coffee__badge-note {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--color-milk);
+}
+.coffee__badge-l1,
+.coffee__badge-l2 { display: block; width: fit-content; max-width: 100%; padding-block: 0.08em; }
+.coffee__badge-l2 { display: flex; align-items: center; gap: 0.3em; font-size: 0.92em; }
+.coffee__badge-l2[hidden] { display: none; }
+.coffee__badge-arrow { width: 1.05em; height: auto; flex: none; }
+
+/* ── Links ── */
+.coffee__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 28px;
+  margin: clamp(24px, 4vh, 44px) 0 0;
+  font-size: 1.0625rem;
+}
+.coffee__links .dlink { min-height: 44px; align-items: center; border-bottom: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .coffee__links .dlink:hover .coffee__link-label {
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule);
+    text-underline-offset: 0.3em;
+  }
+}

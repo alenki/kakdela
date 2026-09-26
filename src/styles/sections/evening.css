@@ -1,0 +1,398 @@
+/* ═════════════ «ВЕЧЕР»: desserts and chess on oxblood, entered through lace ═════════════ */
+.evening {
+  /* Above the cream section, so the lace can hang over the seam. */
+  z-index: 1;
+  --step: clamp(36px, 5.4vw, 92px);
+  --hair: rgb(255 248 238 / 0.2);
+}
+
+/* ── The lace seam: picots over cream, scallops over oxblood ── */
+.ev-seam {
+  position: absolute;
+  left: 0;
+  top: -17px; /* SEAM_Y in LaceSeam.tsx */
+  width: 100%;
+  height: 38px;
+  pointer-events: none;
+}
+
+.ev-kicker {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 clamp(18px, 2.4vw, 32px);
+  color: var(--fg-soft);
+}
+.ev-kicker::before {
+  content: "";
+  flex: none;
+  align-self: flex-start;
+  width: 28px;
+  height: 1.5px;
+  margin-top: calc(0.7em - 0.75px); /* middle of the first line (line-height 1.4) */
+  background: var(--accent);
+}
+
+.ev-desserts__a { font-size: clamp(3rem, 0.9rem + 6.6vw, 8rem); }
+.ev-chess__a { font-size: clamp(2.75rem, 0.8rem + 5vw, 6.25rem); }
+/* Phones: the answer leads at full voice and may break as «— Дальше — / слаще.» (the no-break
+   space keeps the dash on line 1); the chess answer steps down beneath it. */
+@media (max-width: 639.98px) {
+  .ev-desserts__a { font-size: clamp(3rem, 14.5vw, 4.25rem); }
+  .ev-chess__a { font-size: clamp(2.25rem, 11vw, 3rem); }
+}
+.ev-dlg .dlg-q { color: var(--fg-soft); }
+.ev-reply {
+  margin: clamp(14px, 1.8vw, 26px) 0 0;
+  font-size: clamp(1.4rem, 1rem + 1.15vw, 2.15rem);
+  max-width: 26ch;
+  text-wrap: balance;
+  color: var(--fg);
+}
+
+/* ═════ A · Desserts ═════ */
+.ev-desserts__head { margin-bottom: clamp(28px, 4vw, 56px); }
+
+/* Mobile: a swipe rail of 76vw cards with a counter. */
+.ev-rail-wrap { position: relative; min-width: 0; }
+.ev-rail {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 6px var(--gutter) 10px;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  -webkit-overflow-scrolling: touch;
+}
+.ev-rail:focus-visible { outline-offset: -2px; }
+.ev-dessert {
+  flex: 0 0 min(76vw, 380px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.ev-dessert__media { position: relative; }
+/* Ink hairline over the milk doily, as in the hero. */
+.evening .ev-dessert__photo { color: var(--color-ink); }
+/* Tilts and hovers are set with `transform`, never the individual rotate/scale properties: GSAP folds
+   those into its inline transform, and after a context revert (motion toggle) they applied twice. */
+.ev-dessert:nth-child(3n + 1) .ev-dessert__photo { transform: rotate(-2.5deg); }
+.ev-dessert:nth-child(3n + 2) .ev-dessert__photo { transform: rotate(1.5deg); }
+.ev-dessert:nth-child(3n + 3) .ev-dessert__photo { transform: rotate(-1deg); }
+
+.ev-chip {
+  position: absolute;
+  right: 0;
+  top: 7%;
+  transform: rotate(5deg);
+  padding: 7px 12px 6px;
+  border-radius: 999px;
+  background: var(--color-butter);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgb(20 18 16 / 0.32);
+}
+
+.ev-dessert__text { margin-top: clamp(10px, 1.4vw, 18px); }
+.ev-dessert__row { display: flex; align-items: baseline; gap: 10px; }
+.ev-dessert__name {
+  margin: 0;
+  font-size: clamp(2rem, 1.35rem + 1.5vw, 3rem);
+  line-height: 1.02;
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+.ev-dessert__price { font-size: 0.875rem; white-space: nowrap; }
+.ev-dessert__desc {
+  margin: 8px 0 0;
+  max-width: 34ch;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--fg-soft);
+}
+
+.ev-rail-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 0;
+  font-size: 0.75rem;
+  color: var(--fg-soft);
+}
+.ev-rail-meta__num { display: inline-flex; gap: 0.5em; }
+.ev-rail-meta__num > :first-child { color: var(--fg); }
+.ev-rail-meta__sep { opacity: 0.5; }
+.ev-rail-meta__track {
+  position: relative;
+  flex: 0 0 72px;
+  height: 1.5px;
+  overflow: hidden;
+  background: var(--hair);
+}
+.ev-rail-meta__bar {
+  position: absolute;
+  inset: 0;
+  background: var(--fg);
+  transform-origin: 0 50%;
+  transition: transform 320ms var(--ease-kd-out);
+}
+
+.ev-desserts__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 32px;
+  margin-top: clamp(28px, 4vw, 64px);
+  padding-top: 14px;
+  border-top: var(--rule) solid var(--hair);
+}
+.ev-pie {
+  flex: 1 1 360px;
+  max-width: 620px;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.ev-pie .leader { display: none; }
+.ev-pie__price { white-space: nowrap; }
+@media (min-width: 640px) {
+  .ev-pie { display: flex; align-items: baseline; gap: 10px; }
+  .ev-pie .leader { display: block; }
+  .ev-pie__dash { display: none; }
+}
+.ev-link { min-height: 44px; align-items: center; }
+
+@media (hover: hover) and (pointer: fine) {
+  /* The lace also takes the GSAP entrance; its clearProps hands the transform back to this rule. */
+  .ev-dessert .oct-photo__lace { transition: transform 1.4s var(--ease-kd-out); }
+  .ev-dessert:hover .oct-photo__lace { transform: rotate(18deg); }
+  .ev-dessert .oct-photo__img { transition: transform 1s var(--ease-kd-out); }
+  .ev-dessert:hover .oct-photo__img { transform: scale(1.05); }
+}
+
+/* Desktop: three up, a staircase that climbs with the price — дальше, слаще. */
+@media (min-width: 1024px) {
+  .ev-desserts {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .ev-desserts__head { grid-column: 1 / 9; margin-bottom: 0; }
+  .ev-rail-wrap { grid-column: 1 / -1; margin-top: calc(var(--step) * -1); }
+  .ev-rail {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .ev-dessert:nth-child(1) { margin-top: calc(var(--step) * 2); }
+  .ev-dessert:nth-child(2) { margin-top: var(--step); }
+  .ev-rail-meta { display: none; }
+  .ev-desserts__foot { grid-column: 1 / -1; }
+}
+
+/* ═════ B · Chess ═════ */
+.ev-chess {
+  display: grid;
+  /* One track that may shrink below its content: nothing inside can push the page wider at 320. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 40px);
+  margin-top: clamp(88px, 10vw, 168px);
+}
+.ev-chess__head { min-width: 0; }
+
+.ev-notation {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--hair);
+}
+.ev-note {
+  display: grid;
+  grid-template-columns: 6.2em minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 0 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.ev-note__move { font-size: 0.8125rem; letter-spacing: 0.02em; color: var(--fg-soft); }
+.ev-note[data-side="b"] .ev-note__move { color: var(--color-butter); }
+.ev-note__line { font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem); line-height: 1.35; }
+.ev-note__text { position: relative; display: inline-block; padding-bottom: 5px; }
+.ev-note__ul {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--color-milk);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.ev-note[data-side="b"] .ev-note__ul { background: var(--color-butter); }
+/* Static state (no JS, reduced motion, and the end of the replay): the invitation is underlined. */
+.ev-note[data-row="3"] .ev-note__ul { transform: scaleX(1); }
+
+/* The board: milk frame, milk-10% light squares, dark squares let the oxblood through. */
+.ev-board {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 8px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0;
+}
+.ev-board__ranks {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  align-items: center;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--fg-soft);
+}
+.ev-board__grid {
+  --sq: rgb(255 248 238 / 0.1);
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  aspect-ratio: 1;
+  border: var(--rule) solid var(--color-milk);
+  background: conic-gradient(transparent 0 90deg, var(--sq) 0 180deg, transparent 0 270deg, var(--sq) 0) 0 0 / 25% 25%;
+}
+.ev-board__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ev-board__files {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--fg-soft);
+}
+.ev-board__caption { grid-column: 2; grid-row: 3; margin-top: 4px; color: var(--fg-soft); }
+.ev-board__move { text-transform: none; letter-spacing: 0.02em; color: var(--fg); }
+
+.ev-knight--w .ev-knight__body { fill: var(--color-milk); }
+.ev-knight--b .ev-knight__body { fill: var(--color-ink); stroke: var(--color-milk); stroke-width: 3; stroke-linejoin: round; }
+.ev-knight__mane { fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.ev-knight--w .ev-knight__mane { stroke: var(--color-oxblood); opacity: 0.55; }
+.ev-knight--b .ev-knight__mane { stroke: var(--color-milk); opacity: 0.5; }
+.ev-knight--ghost.ev-knight--w .ev-knight__body { fill-opacity: 0.16; }
+.ev-knight--ghost.ev-knight--b .ev-knight__body { fill-opacity: 0.3; stroke-opacity: 0.3; stroke-width: 2.5; }
+
+.ev-arrow path { stroke-width: 6; }
+.ev-arrow--w path { stroke: var(--color-milk); }
+.ev-arrow--b path { stroke: var(--color-butter); }
+
+/* Hovering a line of the dialogue picks out its move on the board. */
+@media (hover: hover) and (pointer: fine) {
+  .ev-arrow { transition: opacity 320ms var(--ease-kd-ui); }
+  .ev-note { transition: color 320ms var(--ease-kd-ui); }
+  .ev-chess:has(.ev-note[data-row="0"]:hover) .ev-arrow:not([data-arrow="0"]),
+  .ev-chess:has(.ev-note[data-row="1"]:hover) .ev-arrow:not([data-arrow="1"]),
+  .ev-chess:has(.ev-note[data-row="2"]:hover) .ev-arrow:not([data-arrow="2"]),
+  .ev-chess:has(.ev-note[data-row="3"]:hover) .ev-arrow:not([data-arrow="3"]) { opacity: 0.18; }
+  /* 55% milk on oxblood ≈ 4.8:1, still AA while it steps back. */
+  .ev-notation:has(.ev-note:hover) .ev-note:not(:hover) { color: rgb(255 248 238 / 0.55); }
+}
+
+/* The event: milk paper, ink text, one hard shadow. */
+.ev-event {
+  --bg: var(--color-milk);
+  --fg: var(--color-ink);
+  --fg-soft: var(--color-graphite);
+  --accent: var(--color-tomato);
+  --focus: var(--color-tomato-ink);
+  display: grid;
+  gap: 12px;
+  padding: clamp(20px, 2.6vw, 34px);
+  border-radius: 2px;
+  background: var(--color-milk) url("/tex/grain-light.png") 0 0 / 128px 128px;
+  color: var(--color-ink);
+  box-shadow: 0 6px 0 rgb(20 18 16 / 0.25);
+  transform: rotate(-0.6deg);
+}
+.ev-event__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--color-graphite);
+}
+.ev-event__top .label { margin: 0; }
+.ev-event__mark { flex: none; width: 30px; height: auto; margin-top: -4px; color: var(--color-ink); }
+.ev-event__title { margin: 0; font-size: clamp(2.4rem, 1.5rem + 2.6vw, 4.25rem); }
+.ev-event__body { margin: 0; max-width: 42ch; font-size: 1rem; line-height: 1.5; }
+.ev-event__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: var(--rule) dashed rgb(20 18 16 / 0.22);
+}
+.ev-event__when { margin: 0; font-size: 0.8125rem; }
+@media (max-width: 399.98px) {
+  .ev-event__cta { width: 100%; justify-content: center; padding-inline: 1em; }
+}
+/* The narrowest phones: the label may take two balanced lines instead of pushing the card wider. */
+@media (max-width: 359.98px) {
+  .ev-event__cta {
+    padding-block: 12px;
+    white-space: normal;
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+}
+
+.ev-kids {
+  display: flex;
+  gap: 0.7em;
+  max-width: 56ch;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--fg-soft);
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .ev-chess__board { max-width: 600px; }
+}
+@media (min-width: 1024px) {
+  .ev-chess {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: clamp(28px, 3vw, 44px);
+    align-items: start;
+  }
+  /* The answer runs one line across; the dialogue and the board answer each other beneath it. */
+  .ev-chess__head { grid-column: 1 / -1; grid-row: 1; }
+  .ev-notation,
+  .ev-event,
+  .ev-kids { grid-column: 1 / 7; }
+  .ev-notation { grid-row: 2; }
+  .ev-event { grid-row: 3; }
+  .ev-kids { grid-row: 4; }
+  .ev-chess__board { grid-column: 7 / 13; grid-row: 2 / 5; display: flex; justify-content: flex-end; }
+}

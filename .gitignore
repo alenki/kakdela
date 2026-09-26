@@ -134,3 +134,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Playwright MCP artifacts
+.playwright-mcp/
+test-results/
+playwright-report/

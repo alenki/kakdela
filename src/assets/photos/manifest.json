@@ -230,6 +230,28 @@
     "height": 1799
   },
   {
+    "slug": "team-2",
+    "url": "https://scontent-ord5-2.cdninstagram.com/v/t51.82787-15/515923226_18046344878546950_4246136712161572279_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=103&ig_cache_key=MzY3MDAyNTMxMDI1ODcyNTE5MTE4MDQ2MzQ0ODY5NTQ2OTUw.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjM0OTIuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=iiHiRdFER8gQ7kNvwHH0-IB&_nc_oc=AdogP14qiAyz8uMshQN3-T_MMglp6atVEm_H1SxGfu4bQjhShJzLTSlBEE2gvUyFBcM&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&_nc_gid=TJZ5NkaRe5KVxj1fU4Csxw&_nc_ss=7a22e&oh=00_AQKl7X8VWU1d8aNUiftuqF6gPskfsAD3eDaygsoxZgfGyw&oe=6ABF649F",
+    "source": "https://www.instagram.com/reel/DLujJM2qgFH/",
+    "alt": "Холодный кофе наливают из бутылки в фирменный стакан «Как дела?» со льдом",
+    "file": "src/assets/photos/team-2.jpg",
+    "width": 1126,
+    "height": 2000
+  },
+  {
+    "slug": "team-3",
+    "url": "https://scontent-ord5-1.cdninstagram.com/v/t51.71878-15/502184684_1831677024044879_8807206460604938933_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=111&ig_cache_key=MzI2MjcwNjAxNTA0MzcyMTcwOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjk0NC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=HseG479Z3-IQ7kNvwFH_D3Y&_nc_oc=AdrAW69KDoji0HThLTorP1G5aLBA3uGWCg1ABsZODPH7SkQ-D_N3W6dfmI-XRU0UyLY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-ord5-1.cdninstagram.com&_nc_gid=D2ZnhWSdObieDMX8iWDXBg&_nc_ss=7a22e&oh=00_AQPc0X7R5lbUUKtD6zMFI1NsDP9AIh2tXv6k4xDCywjvZg&oe=6ABF50CE",
+    "source": "https://www.instagram.com/reel/C1HddWJNhnt/",
+    "crop": {
+      "aspect": "4/5",
+      "position": "south"
+    },
+    "alt": "Бариста в фартуке держит холдер со свежемолотым кофе у кофемолки",
+    "file": "src/assets/photos/team-3.jpg",
+    "width": 944,
+    "height": 1180
+  },
+  {
     "slug": "team-4",
     "url": "https://avatars.mds.yandex.net/get-altay/18150755/2a0000019b4a4bb9d7a424d2830c1c8aef4b/orig",
     "source": "https://yandex.ru/maps/org/kak_dela_/205101204327/gallery/?photos%5Bbusiness%5D=205101204327&photos%5Bid%5D=urn%3Ayandex%3Asprav%3Aphoto%3A2a0000019b4a4bb9d7a424d2830c1c8aef4b",
@@ -237,25 +259,5 @@
     "file": "src/assets/photos/team-4.jpg",
     "width": 1333,
     "height": 2000
-  },
-  {
-    "slug": "team-2",
-    "placeholder": true,
-    "credit": "rawpixel, CC0",
-    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbnMzNzU0LWltYWdlLWt3eXJ4dGxxLmpwZw.jpg",
-    "alt": "Бариста наливает кофе в стакан с собой (временное фото)",
-    "file": "src/assets/photos/team-2.jpg",
-    "width": 1024,
-    "height": 683
-  },
-  {
-    "slug": "team-3",
-    "placeholder": true,
-    "credit": "Malidate Van, StockSnap, CC0",
-    "url": "https://cdn.stocksnap.io/img-thumbs/960w/ZCW5B7GXFY.jpg",
-    "alt": "Руки бариста у эспрессо-машины (временное фото)",
-    "file": "src/assets/photos/team-3.jpg",
-    "width": 960,
-    "height": 640
   }
 ]

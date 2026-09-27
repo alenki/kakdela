@@ -27,7 +27,7 @@ npm run perf -- http://localhost:3100/ [--mobile]              # LCP/CLS/bytes p
 Asset pipelines, which you only need to re-run when the source assets change:
 ```bash
 npm run assets:logo    # trace assets-src/logo-index.png → src/components/brand/wordmark-data.ts
-npm run assets:photos  # client photos (kakdelacoffee.ru) + CC0 placeholders → src/assets/photos
+npm run assets:photos  # the café's own photos (old site, Instagram, Yandex Maps) → src/assets/photos
 npm run assets:icons   # favicon, apple icon, Open Graph image from the traced logo
 npm run assets:grain   # grain textures in public/tex
 ```
@@ -45,11 +45,11 @@ npm run assets:grain   # grain textures in public/tex
 | `docs/CONVENTIONS.md` | Design and motion rules for contributors |
 
 ## Before production (client sign-off)
-Some content is still a placeholder or unverified. It is flagged in code with `verify` or `placeholder`, and photos show a «Фото временное» badge.
+Some content is still a placeholder or unverified. It is flagged in code with `verify` or `placeholder`, and a stand-in photo shows a «Фото временное» badge.
 - The logo vector and the brand's poster font (the logo is currently a trace of the PNG).
 - The «Как в сказке» recipe (the 2026 photo shows the shrimp scramble; the old site's text still has the chicken version).
 - Closing times for Байсултанова 1, Лермонтова 4 and Шогенцукова 19 (23:00 or 00:00).
 - Vladikavkaz prices, and permission to quote the reviews.
-- Team portraits and their own answers.
+- Team portraits and their own answers (the cards show the café's own at-work shots, hands only, for now).
 - Delivery, loyalty, certificate and careers URLs.
 - Hosting that is reachable from Russian mobile networks.

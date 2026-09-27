@@ -27,7 +27,8 @@ export const reviews: Review[] = [
   },
 ];
 
-// PLACEHOLDER team answers and photos: to be replaced with the real team's own words.
+// PLACEHOLDER team answers: to be replaced with the real team's own words. The photos are the café's
+// own at-work shots, hands only, so no real person is tied to an invented line; portraits come later.
 export const team: TeamMember[] = [
   {
     id: "barista-1",

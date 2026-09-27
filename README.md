@@ -9,6 +9,7 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 - **Hero.** A paper notice whose headline is the real logo asks «Как дела?». The guest tears off an answer tab.
 - **The answer is the order.** The heavy answer lands, the dish with that name appears with its price, and the café replies.
 - **The page remembers.** The answer comes back in the locations reply, and the next day as «Вчера было «…». А сегодня?».
+- **The night before.** Every full load opens on the ink of the night before the café opens: the logo prints itself, the clover fills in leaf by leaf as the page really loads, and the answer line rolls to today's answer. Then the sheet tears along its perforation and the logo and the answer land exactly in the hero.
 
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase), Motion 13 (`m.*` under `LazyMotion`), Lenis.
@@ -40,6 +41,7 @@ npm run assets:grain   # grain textures in public/tex
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
+| `src/components/chrome/Loader.tsx`, `src/lib/loader-script.ts` | The loading screen: its markup, and the inline script that runs it before React |
 | `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup |
 | `src/styles/*` | Chrome, brand and hero styles, plus one CSS file per section |
 | `docs/CONVENTIONS.md` | Design and motion rules for contributors |

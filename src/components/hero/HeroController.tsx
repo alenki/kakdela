@@ -7,6 +7,7 @@ import type { AnswerId } from "@/content/types";
 import { kd } from "@/lib/store";
 import { useMotionMode } from "@/lib/motion";
 import { rubSpoken } from "@/lib/format";
+import { loaderPending, onLoaderDone } from "@/lib/loader";
 import { mulberry32, hashString } from "@/lib/seed";
 
 const TEAR_AT = 64; // px of downward pull that rips the tab
@@ -300,10 +301,14 @@ export function HeroController() {
     };
     reprint?.addEventListener("click", onReprint);
 
-    // ── First visit this session: the freshly hung tabs sway once and settle (transform only) ──
+    // ── The freshly hung tabs sway once and settle (transform only) ──
+    // Behind the loading screen, when the logo lands on the notice: the tabs sway from the impact and
+    // the dish comes in under the answer the loader set down (it kept the panel's body hidden until
+    // now). Without the loading screen: on the first visit this session.
     const html = document.documentElement;
     let intro: gsap.core.Tween | null = null;
-    if (html.classList.contains("intro") && !reduced()) {
+    let arrival: gsap.core.Tween | null = null;
+    const sway = () => {
       intro = gsap.fromTo(
         hero.querySelectorAll(".tab__paper"),
         { rotation: (i: number) => (i % 2 ? 1.6 : -1.6) },
@@ -312,6 +317,19 @@ export function HeroController() {
           onComplete: () => { try { sessionStorage.setItem("kd-intro", "1"); } catch {} },
         },
       );
+    };
+    let stopWaiting = () => {};
+    if (loaderPending()) {
+      stopWaiting = onLoaderDone(({ landed }) => {
+        if (!landed || reduced()) return;
+        sway();
+        const dish = panelOf(active)?.querySelectorAll(".panel__photo, .panel__text > *");
+        if (dish?.length) {
+          arrival = gsap.fromTo(dish, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, ease: "kd.out", clearProps: "opacity,transform" });
+        }
+      });
+    } else if (html.classList.contains("intro") && !reduced()) {
+      sway();
     }
     html.classList.remove("intro");
 
@@ -330,6 +348,8 @@ export function HeroController() {
 
     return () => {
       window.clearTimeout(announceTimer);
+      stopWaiting();
+      arrival?.progress(1).kill();
       scene?.progress(1).kill();
       // Strict-mode remount (dev) or unmount mid-sway: revert and let the next mount replay it.
       if (intro && intro.progress() < 1) {

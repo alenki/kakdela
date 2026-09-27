@@ -3,7 +3,8 @@ import { isOpen, minutesInMoscow, pickByHour, toMinutes } from "./time";
 import { haversineKm } from "./geo";
 import { groupDigits, km, plural, rub, rubSpoken } from "./format";
 import { bindLastWord, keepWhole, NBSP, typograf, WJ } from "./typograf";
-import { tornEdge } from "./tear";
+import { sheetTear, tornEdge } from "./tear";
+import { LOADER_SCRIPT } from "./loader-script";
 import { mulberry32 } from "./seed";
 import { cafes } from "@/content/cafes";
 import { answers } from "@/content/answers";
@@ -184,6 +185,24 @@ describe("determinism (server and client must agree)", () => {
   it("seeds the same sequence", () => {
     const a = mulberry32(7), b = mulberry32(7);
     expect([a(), a(), a()]).toEqual([b(), b(), b()]);
+  });
+  it("tears the loader's sheet along one line, the halves overlapping by a pixel", () => {
+    expect(sheetTear("ldr")).toEqual(sheetTear("ldr"));
+    const offsets = (poly: string) => [...poly.matchAll(/% calc\(var\(--tear-y\) \+ (-?[\d.]+)px\)/g)].map((m) => Number(m[1]));
+    const { top, bottom } = sheetTear("ldr");
+    const down = offsets(top).reverse();
+    const up = offsets(bottom);
+    expect(down).toHaveLength(up.length);
+    down.forEach((y, i) => expect(y - up[i]).toBeCloseTo(2, 5));
+  });
+});
+
+describe("loader script", () => {
+  it("parses, and stays self-contained (it is serialised with toString)", () => {
+    expect(() => new Function(LOADER_SCRIPT)).not.toThrow();
+    // Without its markup it must bow out quietly, touching nothing from outside its own body.
+    const run = new Function("document", "window", LOADER_SCRIPT);
+    expect(() => run({ documentElement: { dataset: {}, classList: { contains: () => true } }, getElementById: () => null }, {})).not.toThrow();
   });
 });
 

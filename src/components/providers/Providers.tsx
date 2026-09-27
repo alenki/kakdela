@@ -8,6 +8,7 @@ import "lenis/dist/lenis.css";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { kd } from "@/lib/store";
 import { useMotionMode } from "@/lib/motion";
+import { markHydrated } from "@/lib/loader";
 
 const loadFeatures = () => import("./motion-features").then((m) => m.default);
 
@@ -96,6 +97,8 @@ function useOsMotionSync() {
 
 export function Providers({ children }: { children: ReactNode }) {
   const mode = useMotionMode();
+  // The loading screen waits for this before it tears away (the page is interactive by then).
+  useEffect(() => markHydrated(), []);
   useClock();
   useSmoothScroll(mode);
   useScrollRefresh();

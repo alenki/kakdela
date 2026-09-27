@@ -3,6 +3,7 @@ import { fontVariables } from "./fonts";
 import { HEAD_SCRIPT } from "@/lib/head-script";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/chrome/Header";
+import { Loader } from "@/components/chrome/Loader";
 import { MobileActionBar } from "@/components/chrome/MobileActionBar";
 import { t } from "@/i18n";
 import "./globals.css";
@@ -36,6 +37,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: HEAD_SCRIPT }} />
       </head>
       <body>
+        {/* First in the body: the loading screen covers the page from the first paint. */}
+        <Loader />
         <Providers>
           <Header />
           {/* Each page renders its own <main id="main" tabIndex={-1}> (the skip link's target), so the

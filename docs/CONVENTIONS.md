@@ -99,6 +99,11 @@ Headings get `text-wrap: balance`, paragraphs `pretty`. Keep «ёлочки».
 ## Motion rules
 - Client code imports GSAP from `@/lib/gsap`: `gsap`, `ScrollTrigger` and `useGSAP`, with the eases `kd.out`, `kd.inOut`, `kd.peel` and `kd.settle` registered.
 - Allowed: one quiet entrance per block (opacity plus y 16–24px, `kd.out`, 0.6–0.8s, stagger ≤ 0.06, once), the hero's tear-off and its answer change, the breakfasts photo crossfade, and small state transitions (disclosures, the city pill, row reorder). Nothing else: no split-text reveals, no scrubbed parallax, no typing, no idle loops, no counters, no rotation.
+- **The loading screen is the one exception** (`src/components/chrome/Loader.tsx`, choreography in `src/lib/loader-script.ts`, styles in `src/styles/loader.css`). It runs on every full page load, before React, from an inline script that uses the Web Animations API only (no attributes written, so hydration is untouched):
+  - the ink sheet: the wordmark prints (the badge draws, the letters step out, the arcs swing in), the clover grows a leaf per quarter of the real load (HTML, eager images, fonts, hydration, `load`) and the answer line rolls to the hero's answer;
+  - then it tears along its perforation, the logo lands on the notice's and the answer on the panel's, pixel for pixel, and it dispatches `kd:loaded` (`onLoaderDone` in `src/lib/loader.ts`). The hero then sways the tabs and brings in the dish.
+  - It never shows without JS or with reduced motion, is capped at 8 s, plays quicker on a second load in the session, and is skipped with `sessionStorage kd-loader=off` (the screenshot helper does this unless `--loader`).
+  - Anything that should wait for it (an entrance that would otherwise play under the sheet) uses `loaderPending()` / `onLoaderDone()`. Don't add other loaders or page transitions.
 - **Text must be visible without JS and at first paint.** Entrances use `gsap.from` inside `useGSAP` after mount, with `clearProps`. Never hide content with CSS waiting for JS.
 - Respect motion mode with `useMotionMode()` from `@/lib/motion` (`"full" | "reduced"`): return early unless it is `"full"`, and pass it as a `useGSAP` dependency with `revertOnUpdate: true`. `html[data-motion="reduced"]` also cuts CSS transitions to 1ms.
 - No ScrollTrigger pins: use CSS `position: sticky` and let ScrollTrigger only read progress, with triggers on non-sticky parents.
@@ -118,5 +123,5 @@ Headings get `text-wrap: balance`, paragraphs `pretty`. Keep «ёлочки».
 - The dev server runs at http://localhost:3000; don't start another. For visual QA **don't use the Playwright MCP browser, because it is shared**. Use the headless helper instead:
   - `node scripts/shot.mjs "#yoursectionid" out-name.png 1440 900 --reduced`
   - `node scripts/shot.mjs "#yoursectionid" out-name-m.png 390 844 --reduced`
-  - also 1920 1080 and 2560 1440, and without `--reduced`; `--nojs` renders without JS; `full` instead of a selector shoots the whole page.
+  - also 1920 1080 and 2560 1440, and without `--reduced`; `--nojs` renders without JS; `full` instead of a selector shoots the whole page; `--loader` keeps the loading screen (skipped by default).
   - The helper prints `horizontalOverflow` and console `errors`. Open the PNG with the Read tool and look at it. Without `--reduced`, a tall element shot can show blocks that haven't risen in yet, and element shots taller than the viewport stitch in the fixed header; both are capture artifacts.

@@ -1,0 +1,104 @@
+/* ═════════════ LOADER: the night before the café opens ═════════════
+   A sheet of ink over the page on every full load, torn along a perforation once the page has loaded
+   (markup: components/chrome/Loader.tsx; choreography: lib/loader-script.ts). This file is only the
+   first frame, which the script animates from. Without the script's data-state it never shows: no
+   JS, reduced motion, or opted out (sessionStorage kd-loader=off).
+     the logo       over the tear line, a gap above it
+     the tear line  --tear-y: a row of holes that light up with the progress
+     the answer     under it, one line that answers roll through */
+.ldr { display: none; }
+.ldr:is([data-state="on"], [data-state="exit"]) {
+  --tear-y: 62%;
+  --ldr-gap: clamp(22px, 5svh, 4rem);
+  /* The wordmark is 3.11:1: on a short landscape phone its height is what binds. */
+  --mark-w: min(80vw, 40rem, 90svh);
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  color: var(--fg);
+  contain: strict;
+  cursor: progress;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* A classic scrollbar stays beside the sheet: dark while it is up. (Colour only, so nothing reflows.) */
+html:has(.ldr:is([data-state="on"], [data-state="exit"])) {
+  scrollbar-color: color-mix(in srgb, var(--color-milk) 24%, var(--color-ink)) var(--color-ink);
+}
+
+/* ── The sheet: two halves, cut along the same jagged line (sheetTear), overlapping by a pixel.
+   Wider than the screen, so their tilt as they tear away never bares a corner of the page. ── */
+.ldr__sheet {
+  position: absolute;
+  inset: 0 -12vw;
+  background: var(--bg);
+  /* Both hinge on the right end of the tear: the rip opens from the left, like jaws. */
+  transform-origin: 100% var(--tear-y);
+}
+.ldr__sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain) 0 0 / 128px 128px;
+  opacity: 0.3;
+}
+
+/* ── The tear line: the notice's perforation, edge to edge. The lit holes are the progress. ── */
+.ldr__perf {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--tear-y);
+  height: 10px;
+  margin-top: -5px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--fg) 20%, transparent) 1.7px, transparent 2.3px) 50% 50% / 10px 10px space no-repeat;
+  opacity: 0;
+}
+.ldr__perf-lit {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, var(--color-cream) 1.7px, transparent 2.3px) 50% 50% / 10px 10px space no-repeat;
+  clip-path: inset(0 100% 0 0);
+}
+
+/* ── The logo: milk on ink, the clover in tomato. Two wrappers, so the flight can curve (x and y
+   ease differently) and scale from the mark's top-left corner. ── */
+.ldr__fly {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - var(--tear-y) + var(--ldr-gap));
+  width: var(--mark-w);
+  margin-left: calc(var(--mark-w) / -2);
+}
+.ldr__lift { transform-origin: 0 0; }
+.ldr__mark { display: block; width: 100%; height: auto; overflow: visible; }
+.ldr__clover { color: var(--color-tomato); }
+.ldr :is([data-part], [data-part] > path, [data-leaf]) { transform-box: fill-box; }
+.ldr [data-part="oct"] { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.ldr :is([data-part="kak"], [data-part="dela"]) > path,
+.ldr :is([data-part="kofe"], [data-part="zavtraki"]) { opacity: 0; }
+.ldr [data-leaf] { transform: scale(0); }
+
+/* ── The answer: one line's slot, clipped above and below only (with room for Ё) ── */
+.ldr__say {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--tear-y) + var(--ldr-gap));
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  font-size: calc(var(--h3) * 1.15);
+  clip-path: inset(-0.25em -100vw -0.15em);
+}
+.ldr__mood {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+@media (prefers-contrast: more) {
+  .ldr__sheet::before { display: none; }
+}
+@media print {
+  .ldr { display: none !important; }
+}

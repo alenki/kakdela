@@ -1,5 +1,6 @@
 // Headless screenshot helper for visual QA (independent of the shared Playwright MCP browser).
-// Usage: node scripts/shot.mjs <selector|full|viewport> <out.png> [width=1440] [height=900] [--reduced] [--nojs] [--wait=ms] [--scroll=selector]
+// Usage: node scripts/shot.mjs <selector|full|viewport> <out.png> [width=1440] [height=900] [--reduced] [--nojs] [--wait=ms] [--scroll=selector] [--loader]
+//   --loader  keep the loading screen (skipped by default, so a shot shows the page, not the loader)
 //   selector  e.g. "#kofe" → screenshot of that element (scrolled into view, animations settled)
 // Output goes under .playwright-mcp/shots/ unless an absolute path is given.
 import { chromium } from "playwright";
@@ -29,7 +30,12 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 page.on("console", (m) => { if (m.type() === "error" && !/WebSocket|favicon/.test(m.text())) errors.push(`console: ${m.text().slice(0, 300)}`); });
-await page.addInitScript(() => { try { sessionStorage.setItem("kd-intro", "1"); } catch {} });
+await page.addInitScript((loader) => {
+  try {
+    sessionStorage.setItem("kd-intro", "1");
+    if (!loader) sessionStorage.setItem("kd-loader", "off");
+  } catch {}
+}, Boolean(flag("loader")));
 await page.goto(url, { waitUntil: "networkidle" });
 await page.waitForTimeout(400);
 

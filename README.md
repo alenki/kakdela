@@ -47,7 +47,7 @@ npm run assets:grain   # grain textures in public/tex
 ## Before production (client sign-off)
 Some content is still a placeholder or unverified. It is flagged in code with `verify` or `placeholder`, and photos show a «Фото временное» badge.
 - The logo vector and the brand's poster font (the logo is currently a trace of the PNG).
-- The «Как в сказке» recipe, plus photos of «10 из 10», «Шик» and шакшука.
+- The «Как в сказке» recipe (the 2026 photo shows the shrimp scramble; the old site's text still has the chicken version).
 - Closing times for Байсултанова 1, Лермонтова 4 and Шогенцукова 19 (23:00 or 00:00).
 - Vladikavkaz prices, and permission to quote the reviews.
 - Team portraits and their own answers.

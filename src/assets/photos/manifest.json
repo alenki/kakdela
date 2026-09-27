@@ -32,6 +32,38 @@
     "height": 512
   },
   {
+    "slug": "10-iz-10",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b008efe154b.png",
+    "alt": "Завтрак «10 из 10»: бриошь с сёмгой и авокадо под голландезом, руккола и черри",
+    "file": "src/assets/photos/10-iz-10.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "slug": "kak-v-skazke",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-6a1e7a56bfaf5.jpg",
+    "alt": "Завтрак «Как в сказке»: скрэмбл с креветками и зелёным горошком, киноа, брокколи и черри",
+    "file": "src/assets/photos/kak-v-skazke.jpg",
+    "width": 2000,
+    "height": 1333
+  },
+  {
+    "slug": "shik",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b00804a2291.png",
+    "alt": "Завтрак «Шик»: бурый и дикий рис, цыплёнок в сливочном соусе, овощи и ржаной хлеб",
+    "file": "src/assets/photos/shik.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
+    "slug": "shakshuka",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b00705b4717.png",
+    "alt": "Шакшука: яйца в томатах с перцем, креметте и тосты",
+    "file": "src/assets/photos/shakshuka.jpg",
+    "width": 1536,
+    "height": 1024
+  },
+  {
     "slug": "espresso-tonik",
     "url": "https://www.kakdelacoffee.ru/images/bar/Drink_6474b98f84065.jpg",
     "alt": "Эспрессо тоник со льдом",
@@ -174,46 +206,6 @@
     "file": "src/assets/photos/cafe-plieva-32.jpg",
     "width": 1040,
     "height": 1560
-  },
-  {
-    "slug": "10-iz-10",
-    "placeholder": true,
-    "credit": "rawpixel, CC0",
-    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY3NTI1LXdpa2ltZWRpYS1pbWFnZS1rb3diNWIzaC5qcGc.jpg",
-    "alt": "Завтрак «10 из 10» (временное фото)",
-    "file": "src/assets/photos/10-iz-10.jpg",
-    "width": 722,
-    "height": 1024
-  },
-  {
-    "slug": "kak-v-skazke",
-    "placeholder": true,
-    "credit": "rawpixel, CC0",
-    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY0MDk1LXdpa2ltZWRpYS1pbWFnZS1rb3dhenpxZi5qcGc.jpg",
-    "alt": "Завтрак «Как в сказке» (временное фото)",
-    "file": "src/assets/photos/kak-v-skazke.jpg",
-    "width": 1024,
-    "height": 683
-  },
-  {
-    "slug": "shik",
-    "placeholder": true,
-    "credit": "Jakub Kapusnak, rawpixel, CC0",
-    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvYTAxOS1qYWt1YmstMDc1My1iZWVmLWdyZWVuLWJlYW5zLXJpc290dG8uanBn.jpg",
-    "alt": "Завтрак «Шик» (временное фото)",
-    "file": "src/assets/photos/shik.jpg",
-    "width": 683,
-    "height": 1024
-  },
-  {
-    "slug": "shakshuka",
-    "placeholder": true,
-    "credit": "rawpixel, CC0",
-    "url": "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjYyNDE3LXdpa2ltZWRpYS1pbWFnZS1rb3diM295ZS5qcGc.jpg",
-    "alt": "Шакшука (временное фото)",
-    "file": "src/assets/photos/shakshuka.jpg",
-    "width": 1024,
-    "height": 680
   },
   {
     "slug": "team-1",

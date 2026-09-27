@@ -20,7 +20,7 @@ export const breakfasts: Breakfast[] = [
     desc: "Скрэмбл с креветками, тёплый тост и свежая зелень.",
     price: p(730, 770),
     photo: photos.kakVSkazke,
-    verify: { verified: false, note: "Рецепт 2026 (креветки + скрэмбл) и фото уточнить" },
+    verify: { verified: false, note: "Рецепт уточнить: на фото 2026 года скрэмбл с креветками и киноа, в тексте старого сайта прежний рецепт с цыплёнком" },
   },
   {
     id: "otlichnyj",
@@ -36,7 +36,7 @@ export const breakfasts: Breakfast[] = [
     desc: "Бурый и дикий рис, цыплёнок в сливочном соусе, авторский соус.",
     price: p(730, 750),
     photo: photos.shik,
-    verify: { verified: false, note: "Нужна фотография блюда" },
+    verify: { verified: true },
   },
   {
     id: "10-iz-10",
@@ -44,7 +44,7 @@ export const breakfasts: Breakfast[] = [
     desc: "Бриошь с сёмгой, творожным сыром и авокадо под голландезом собственного приготовления.",
     price: p(840, null),
     photo: photos.desyatIzDesyati,
-    verify: { verified: false, note: "Нужна фотография; цена во Владикавказе" },
+    verify: { verified: false, note: "Цена во Владикавказе" },
   },
   {
     id: "kapitalnyj",

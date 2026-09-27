@@ -17,6 +17,10 @@ const PHOTOS = [
   { slug: "otlichnyj", url: OLD + "food/Food-Name-69afebdad0b47.png", alt: "Завтрак «Отличный»: омлет с моцареллой, овощи и гранола" },
   { slug: "kapitalnyj", url: OLD + "food/Food-Name-69b00b7b69f89.png", alt: "Завтрак «Капитальный»: колбаски, яйца, гренки, хумус и черри" },
   { slug: "syrniki", url: OLD + "food/Food-Name-650d5b3ce6919.jpg", alt: "Сырники со сметаной и ягодами" },
+  { slug: "10-iz-10", url: OLD + "food/Food-Name-69b008efe154b.png", alt: "Завтрак «10 из 10»: бриошь с сёмгой и авокадо под голландезом, руккола и черри" },
+  { slug: "kak-v-skazke", url: OLD + "food/Food-Name-6a1e7a56bfaf5.jpg", alt: "Завтрак «Как в сказке»: скрэмбл с креветками и зелёным горошком, киноа, брокколи и черри" },
+  { slug: "shik", url: OLD + "food/Food-Name-69b00804a2291.png", alt: "Завтрак «Шик»: бурый и дикий рис, цыплёнок в сливочном соусе, овощи и ржаной хлеб" },
+  { slug: "shakshuka", url: OLD + "food/Food-Name-69b00705b4717.png", alt: "Шакшука: яйца в томатах с перцем, креметте и тосты" },
   // Drinks (client)
   { slug: "espresso-tonik", url: OLD + "bar/Drink_6474b98f84065.jpg", alt: "Эспрессо тоник со льдом" },
   { slug: "dalshe-slashe", url: OLD + "bar/Drink_6474b756ba8c6.jpg", alt: "Авторский напиток «Дальше слаще»" },
@@ -39,10 +43,6 @@ const PHOTOS = [
   { slug: "cafe-kujbysheva-3", url: OLD + "shops/Coffee_shop_687a07414e683.jpg", alt: "Кофейня «Как дела?» на улице Куйбышева, 3 во Владикавказе" },
   { slug: "cafe-plieva-32", url: OLD + "shops/Coffee_shop_654f565f14c95.jpg", alt: "Кофейня «Как дела?» на улице Генерала Плиева, 32 во Владикавказе" },
   // CC0 placeholders (Openverse → rawpixel / StockSnap), to be replaced with client photography
-  { slug: "10-iz-10", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY3NTI1LXdpa2ltZWRpYS1pbWFnZS1rb3diNWIzaC5qcGc.jpg", alt: "Завтрак «10 из 10» (временное фото)" },
-  { slug: "kak-v-skazke", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY0MDk1LXdpa2ltZWRpYS1pbWFnZS1rb3dhenpxZi5qcGc.jpg", alt: "Завтрак «Как в сказке» (временное фото)" },
-  { slug: "shik", placeholder: true, credit: "Jakub Kapusnak, rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvYTAxOS1qYWt1YmstMDc1My1iZWVmLWdyZWVuLWJlYW5zLXJpc290dG8uanBn.jpg", alt: "Завтрак «Шик» (временное фото)" },
-  { slug: "shakshuka", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjYyNDE3LXdpa2ltZWRpYS1pbWFnZS1rb3diM295ZS5qcGc.jpg", alt: "Шакшука (временное фото)" },
   { slug: "team-1", placeholder: true, credit: "Burst, StockSnap, CC0", url: "https://cdn.stocksnap.io/img-thumbs/960w/DTKOOFPC06.jpg", alt: "Бариста рисует латте-арт (временное фото)" },
   { slug: "team-2", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbnMzNzU0LWltYWdlLWt3eXJ4dGxxLmpwZw.jpg", alt: "Бариста наливает кофе в стакан с собой (временное фото)" },
   { slug: "team-3", placeholder: true, credit: "Malidate Van, StockSnap, CC0", url: "https://cdn.stocksnap.io/img-thumbs/960w/ZCW5B7GXFY.jpg", alt: "Руки бариста у эспрессо-машины (временное фото)" },

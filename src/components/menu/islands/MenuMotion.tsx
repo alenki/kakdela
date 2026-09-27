@@ -36,14 +36,20 @@ export function MenuMotion() {
         gsap.from(el, { ...rise, duration: 0.8, scrollTrigger: { trigger: el, start: "top 85%", toggleActions: ONCE } });
       });
 
-      // Many small units (the card's categories, the vitrine's rows): whatever arrives together rises together.
-      const units = Array.from(root.querySelectorAll<HTMLElement>("[data-mn-unit], .mn-vit__list > .mi")).filter(ahead);
+      // Many small units (the card's titles and rows, the vitrine's rows): whatever arrives together rises
+      // together. A jump carries the page past some of them: those are simply there, only what is on screen rises.
+      const units = Array.from(root.querySelectorAll<HTMLElement>("[data-mn-unit], .mn-card .mi, .mn-vit__list > .mi")).filter(ahead);
       if (units.length) {
         gsap.set(units, { opacity: 0, y: 20 });
         ScrollTrigger.batch(units, {
           start: "top 90%",
           once: true,
-          onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, ease: "kd.out", stagger: 0.06, clearProps: "opacity,transform" }),
+          onEnter: (batch) => {
+            const passed = batch.filter((el) => el.getBoundingClientRect().bottom < 0);
+            const here = batch.filter((el) => !passed.includes(el));
+            if (passed.length) gsap.set(passed, { opacity: 1, y: 0, clearProps: "opacity,transform" });
+            if (here.length) gsap.to(here, { opacity: 1, y: 0, duration: 0.7, ease: "kd.out", stagger: 0.06, clearProps: "opacity,transform" });
+          },
         });
       }
     },

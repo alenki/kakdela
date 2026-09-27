@@ -103,7 +103,7 @@ html[data-yesterday]:not([data-said]) [data-mn-q] { display: none; }
 .mn-toc { margin-top: var(--head-gap); }
 .mn-toc__title { margin: 0 0 0.75rem; }
 .mn-toc__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
-.mn-toc__ch { display: grid; justify-items: start; gap: 0.25rem; padding-block: 0.75rem 1rem; border-top: var(--rule) solid var(--line); }
+.mn-toc__ch { display: grid; align-content: start; justify-items: start; gap: 0.25rem; padding-block: 0.75rem 1rem; border-top: var(--rule) solid var(--line); }
 /* The dialog's service links: Onest 500 at the lead size, a 44px target. */
 .mn-toc__link {
   display: inline-flex;
@@ -167,7 +167,7 @@ html:has(.mn-run[data-stuck] :focus-visible) .mn-run[data-stuck] { transform: tr
 html:not(.js) .mn-run { top: 0; }
 
 .mn-run__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.mn-run__links { display: flex; gap: clamp(12px, 2vw, 2.5rem); margin: 0; padding: 0; list-style: none; }
+.mn-run__links { display: flex; gap: clamp(16px, 2vw, 2.5rem); margin: 0; padding: 0; list-style: none; }
 /* The header's link metrics; the chapter being read keeps its underline. */
 .mn-run__link {
   position: relative;
@@ -185,8 +185,9 @@ html:not(.js) .mn-run { top: 0; }
 .mn-run__link[aria-current="location"] { text-decoration-color: currentColor; }
 .mn-run__link:active { opacity: 0.6; }
 .mn-run__link:focus-visible { outline-offset: -2px; }
-/* «Бар» is narrower than 44px: widen the hit area without moving the word. */
-.mn-run__link::before { content: ""; position: absolute; inset: 0 -6px; }
+/* «Бар» is narrower than 44px: widen the hit area to 44px (and 6px either side of any word) without moving
+   it; with 16px between the links the areas never overlap. */
+.mn-run__link::before { content: ""; position: absolute; inset: 0 min(-6px, calc(50% - 22px)); }
 @media (hover: hover) and (pointer: fine) {
   .mn-run__link:not([aria-current]):hover { text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
 }
@@ -204,13 +205,12 @@ html:not(.js) .mn-run { top: 0; }
   }
 }
 @media (max-width: 419.98px) {
-  .mn-run__links { gap: 12px; }
   .mn-run__link { font-size: var(--fs-small); }
   /* The chapters and both cities in 358px, inside the gutters. */
   .mn-run__switch .city-switch__opt { padding-inline: 0.5rem; }
 }
-/* The narrowest phones: the chapters only (the cover's switch still sets the city). */
-@media (max-width: 379.98px) {
+/* Phones under 390: the chapters only (the cover's switch still sets the city). */
+@media (max-width: 389.98px) {
   .mn-run__prices { display: none; }
 }
 @media (min-width: 1024px) {
@@ -333,6 +333,8 @@ html:not(.js) .mn-run { top: 0; }
 /* The row itself (MenuRowLine): the name may wrap; where the city on show has no price, «уточняйте в
    кофейне» takes a line of its own under the name, with no leader (the hero's dish row). */
 .mn-row { flex-wrap: wrap; font-size: var(--fs-body); }
+/* In narrow columns a balanced name leaves its last line too long for the leader: fill the first lines. */
+.mn .menu-row__name { text-wrap: pretty; }
 .mn-row__ask { flex-basis: 100%; font-size: var(--fs-small); font-weight: 400; color: var(--fg-soft); }
 
 /* ── Tier C: the three house desserts in thirds, a photo over each (the evening) ── */
@@ -469,7 +471,11 @@ html:not(.js) .mn-run { top: 0; }
 @media (min-width: 1920px) {
   .mn-card { columns: 4; }
 }
-.mn-card__cat { break-inside: avoid; padding-bottom: var(--foot-gap); }
+/* A category may run on into the next column, as in print (whole categories left holes of up to 600px under
+   the shortest column); a row never splits and a title never ends a column. */
+.mn-card__cat { padding-bottom: var(--foot-gap); }
+.mn-card .mi { break-inside: avoid; }
+.mn-card .mn-cat__title { break-after: avoid; }
 .mn-cat__title { margin: 0 0 0.75rem; }
 .mn-cat__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
 
@@ -488,8 +494,12 @@ html:not(.js) .mn-run { top: 0; }
 @media (min-width: 640px) {
   .mn-vit__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .mn-vit__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Two columns from 640 to 1279 leave a narrow text column: a smaller thumbnail there. */
+@media (min-width: 640px) and (max-width: 1279.98px) {
+  .mn-vit { --mn-vthumb: 96px; }
 }
 .mn-foot { display: grid; gap: 1rem; margin-top: var(--foot-gap); }
 .mn-note { margin: 0; max-width: 60ch; }

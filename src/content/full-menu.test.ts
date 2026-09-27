@@ -118,7 +118,7 @@ describe("full menu: copy", () => {
   const all = strings(fullMenu);
 
   test("no em or en dashes, emoji or straight double quotes", () => {
-    expect(all.filter(([, s]) => /[–—]/.test(s))).toEqual([]);
+    expect(all.filter(([, s]) => /[\u2013\u2014]/.test(s))).toEqual([]);
     expect(all.filter(([, s]) => /\p{Extended_Pictographic}/u.test(s))).toEqual([]);
     expect(all.filter(([, s]) => s.includes('"'))).toEqual([]);
   });

@@ -79,7 +79,7 @@ export function CardRow({
           photo={photo}
           sizes={
             thumb === "vitrine"
-              ? "(min-width: 1920px) 160px, (min-width: 1280px) 128px, (min-width: 1024px) 96px, (min-width: 480px) 128px, (min-width: 356px) 27vw, 96px"
+              ? "(min-width: 1920px) 160px, (min-width: 1280px) 128px, (min-width: 640px) 96px, (min-width: 480px) 128px, (min-width: 356px) 27vw, 96px"
               : "(min-width: 1920px) 120px, (min-width: 534px) 96px, 18vw"
           }
           loading="lazy"

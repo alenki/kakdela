@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RouteLink } from "@/components/chrome/RouteLink";
 import type { City } from "@/content/types";
 import { external } from "@/content/routes";
 import { typograf } from "@/lib/typograf";
@@ -34,6 +35,11 @@ export default function NotFound() {
               {t.notFound.home}
             </Link>
             <ul className="not-found__links" role="list">
+              <li>
+                <RouteLink to="menu" className="dlink">
+                  {t.notFound.menu}
+                </RouteLink>
+              </li>
               <li>
                 <a href={external.telegram} className="dlink" target="_blank" rel="noreferrer">
                   {t.notFound.telegram}

@@ -192,15 +192,17 @@ export const ru = {
       deserty: (n: number) => `${n} ${plural(n, "десерт", "десерта", "десертов")}`,
     },
     everywhere: "во всех кофейнях",
-    // «в 3 из 7 кофеен»: after «из N» always the genitive plural.
-    kitchenShare: (n: number, total: number) => `в ${n} из ${total} кофеен`,
+    // «в 3 из 7 кофеен»: after «из N» always the genitive plural; «3 из 7» never breaks.
+    kitchenShare: (n: number, total: number) => `в ${n}${NBSP}из ${total} кофеен`,
     cityGen: { nalchik: "Нальчика", vladikavkaz: "Владикавказа" },
     chapters: {
       kuhnya: {
         q: "Кухня",
         a: "С чего начнём?",
+        // The rest: «в остальных» for several cafés, «в другой» for one, nothing when every café has the kitchen.
         lead: (n: number, total: number, cityGen: string) =>
-          `Завтраки подаём весь день. Полная кухня есть в ${n} из ${total} кофеен ${cityGen}, в остальных меню лёгкое.`,
+          `Завтраки подаём весь день. Полная кухня есть в ${n}${NBSP}из ${total} кофеен ${cityGen}` +
+          (total - n > 1 ? ", в остальных меню лёгкое." : total - n === 1 ? ", в другой меню лёгкое." : "."),
       },
       bar: {
         q: "Бар",
@@ -224,7 +226,8 @@ export const ru = {
   notFound: {
     label: "Ошибка 404",
     title: "Ещё варим. Загляните чуть позже.",
-    lead: "Такой страницы пока нет. Меню, адреса и часы работы есть на главной.",
+    lead: "Такой страницы пока нет. Всё меню есть на своей странице, адреса и часы работы на главной.",
+    menu: "Всё меню",
     home: "На главную",
     telegram: "Новости в Telegram",
     maps: "Кофейни на Яндекс Картах",

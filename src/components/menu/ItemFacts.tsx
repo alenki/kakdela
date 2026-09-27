@@ -26,6 +26,14 @@ export function ItemFacts({ item, className }: { item: MenuItem; className?: str
   const kbju = nutritionLine(item);
   if (!volume && !kbju) return null;
   const only = item.nutrition?.cities?.length === 1 ? item.nutrition.cities[0] : undefined;
+  // Nothing but one city's КБЖУ: the whole line belongs to that city (no empty paragraph for the other).
+  if (!volume && kbju && only) {
+    return (
+      <p className={className} data-city-only={only}>
+        {typograf(kbju)}
+      </p>
+    );
+  }
   const sep = volume && kbju ? `${NBSP}· ` : "";
   return (
     <p className={className}>

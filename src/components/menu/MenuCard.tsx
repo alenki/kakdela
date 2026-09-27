@@ -9,15 +9,15 @@ const cityOnly = (c: MenuCategory) => (c.cities?.length === 1 ? c.cities[0] : un
 
 /**
  * «The card»: the rest of a chapter set like the back of a printed menu, in newspaper columns (one on
- * phones, two on tablets, the thirds from 1024, the quarters from 1920). Each category stays whole in its
- * column: its title in display type, then its rows.
+ * phones, two on tablets, the thirds from 1024, the quarters from 1920). A category may run on into the
+ * next column, as in print; a row never splits, and a title never ends a column.
  */
 export function MenuCard({ categories, thumbs }: { categories: MenuCategory[]; thumbs?: boolean }) {
   return (
     <div className={cn("mn-card", thumbs && "mn-card--thumbs")}>
       {categories.map((c) => (
-        <div key={c.id} id={c.id} className="mn-card__cat mn-cat" data-mn-unit data-city-only={cityOnly(c)}>
-          <h3 id={`${c.id}-title`} className="mn-cat__title display item-title">
+        <div key={c.id} id={c.id} className="mn-card__cat mn-cat" data-city-only={cityOnly(c)}>
+          <h3 id={`${c.id}-title`} className="mn-cat__title display item-title" data-mn-unit>
             {typograf(c.title)}
           </h3>
           <ul className="mn-cat__list" role="list" aria-labelledby={`${c.id}-title`}>

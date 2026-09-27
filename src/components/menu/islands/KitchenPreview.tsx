@@ -43,7 +43,12 @@ export function KitchenPreview() {
     const onLeave = () => {
       pointerInside = false;
     };
-    const focusInside = () => list.contains(document.activeElement);
+    // Only visible (keyboard) focus owns the photo: a row focused by a landing after a click or a tap
+    // must not freeze it.
+    const focusInside = () => {
+      const a = document.activeElement;
+      return !!a && list.contains(a) && a.matches(":focus-visible");
+    };
     list.addEventListener("pointerover", fromEvent);
     list.addEventListener("focusin", fromEvent);
     list.addEventListener("pointerenter", onEnter);

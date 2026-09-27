@@ -5,6 +5,7 @@ import { answers } from "@/content/answers";
 import { menuItemById, menuItems } from "@/content/full-menu";
 import { breakfasts, cherryPie, desserts, extras, season, signatureDrinks } from "@/content/menu";
 import { ru } from "@/i18n/ru";
+import { NBSP } from "@/lib/typograf";
 import { MENU_PICK_SCRIPT, PICK_BY_ANCHOR } from "./pick-script";
 
 const css = readFileSync(fileURLToPath(new URL("../../styles/sections/menu.css", import.meta.url)), "utf8");
@@ -53,15 +54,18 @@ describe("/menu: curated dishes are the homepage's", () => {
 describe("/menu: copy", () => {
   it("has no em or en dash in the page's strings, and no em dash in its styles", () => {
     const flat = JSON.stringify(ru.menu, (_k, v) => (typeof v === "function" ? v.toString() : v));
-    expect(flat).not.toMatch(/[–—]/);
+    expect(flat).not.toMatch(/[\u2013\u2014]/);
     // Column ranges in comments («1 to 7» written with an en dash) stay, as in every stylesheet here.
-    expect(css).not.toMatch(/—/);
+    expect(css).not.toMatch(/\u2014/);
   });
   it("counts in Russian", () => {
     expect(ru.menu.count.kuhnya(26)).toBe("26 блюд");
     expect(ru.menu.count.kuhnya(21)).toBe("21 блюдо");
     expect(ru.menu.count.bar(46)).toBe("46 напитков");
     expect(ru.menu.count.deserty(21)).toBe("21 десерт");
-    expect(ru.menu.kitchenShare(3, 7)).toBe("в 3 из 7 кофеен");
+    expect(ru.menu.kitchenShare(3, 7)).toBe(`в 3${NBSP}из 7 кофеен`);
+    expect(ru.menu.chapters.kuhnya.lead(3, 7, "Нальчика")).toMatch(/кофеен Нальчика, в остальных меню лёгкое\.$/);
+    expect(ru.menu.chapters.kuhnya.lead(1, 2, "Владикавказа")).toMatch(/кофеен Владикавказа, в другой меню лёгкое\.$/);
+    expect(ru.menu.chapters.kuhnya.lead(2, 2, "Владикавказа")).toMatch(/кофеен Владикавказа\.$/);
   });
 });

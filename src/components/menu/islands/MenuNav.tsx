@@ -9,6 +9,14 @@ const lenis = () => (window as unknown as { __lenis?: LenisLike }).__lenis;
 /** 16px of air between the chrome and the dish it lands on (the --mn-scroll margin in menu.css). */
 const AIR = 16;
 
+// Back/Forward into /menu is a restore, not an arrival: the browser puts the scroll back, and focus stays.
+let lastPop = -1e9;
+if (typeof window !== "undefined") {
+  window.addEventListener("popstate", () => {
+    lastPop = performance.now();
+  });
+}
+
 /**
  * In-page travel on /menu. Every «#…» link on the page (the answers index, the contents, the running head,
  * the action bar's «Меню») glides to its target (Lenis on fine pointers in full motion, an instant jump
@@ -120,7 +128,9 @@ export function MenuNav() {
     const w = window as unknown as { __kdMenuLoad?: number };
     pickFromHash();
     let alive = true;
-    const arrived = targetOf(idOf(location.hash));
+    const arrived = performance.now() - lastPop < 1000 ? null : targetOf(idOf(location.hash));
+    // No landing to settle: the hard-load mark is spent now, so a later client arrival still moves focus.
+    if (!arrived) delete w.__kdMenuLoad;
     if (arrived) {
       const settle = () => {
         // Read here, not at mount: a development double mount must not use up the mark.

@@ -2,10 +2,14 @@ import { useId } from "react";
 
 // The one brand-owned seam on the page: a milk lace trim where cream gives way to oxblood.
 // Picots and a pierced ribbon sit over the cream; scallops with eyelets hang over the oxblood.
-// One 32×38 tile, repeated by an SVG pattern; the 2400-wide viewBox is cropped from the centre so
-// a scallop always sits mid-screen and nothing scales between breakpoints.
+// One 32×38 tile, repeated by an SVG pattern across a 4000-wide viewBox (wider than any screen at
+// the band's scale), cropped from the centre so a scallop always sits mid-screen and the seam runs
+// edge to edge at every width. The band's height is set in rem (evening.css), so past 1600px the
+// lace grows with the root size like the rest of the page instead of shrinking into a fringe.
 const W = 32;
 const H = 38;
+/** Must exceed the widest viewport ÷ the band's scale (3840px ÷ 1.25 ≈ 3072); 2000 is a tile centre. */
+const VB = 4000;
 /** y of the section's top edge inside the band. */
 export const SEAM_Y = 17;
 
@@ -37,7 +41,7 @@ export function LaceSeam({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      viewBox={`0 0 2400 ${H}`}
+      viewBox={`0 0 ${VB} ${H}`}
       preserveAspectRatio="xMidYMin slice"
       aria-hidden="true"
       focusable="false"
@@ -50,7 +54,7 @@ export function LaceSeam({ className }: { className?: string }) {
           <path d={`${PICOTS}${RIBBON}`} fill="none" stroke="var(--color-ink)" strokeOpacity={0.2} strokeWidth={0.9} />
         </pattern>
       </defs>
-      <rect width="2400" height={H} fill={`url(#seam-${id})`} />
+      <rect width={VB} height={H} fill={`url(#seam-${id})`} />
     </svg>
   );
 }

@@ -1,6 +1,11 @@
 /* ═════════════ REVIEWS «— Как вам у нас?»: quiet, cream ═════════════
-   Left: the question, a static 5,0 and the figures (sticky on desktop).
-   Right: guests verbatim, each line hanging on a tomato dash; the café signs off with its clover. */
+   Phones: the question, a static 5,0 and its figures, then the guests verbatim (each line hanging on a
+   tomato dash), then the café signs off with its clover. From 768px the figures stand beside the 5,0.
+   Desktop, gutter to gutter on the 12 columns: the 5,0 is the display moment (27vw, capped in svh on
+   ultrawides; cols 1–8) with its figures ruling off its height beside it (cols 9–12; 8–12 below 1280px
+   and where the cap binds); the guests speak side by side in three tracks sized to their words
+   (5 · 3 · 4 columns), their sources on one line; the café's reply closes the width as a ruled band,
+   its link on the third guest's column line. */
 
 .rv__grid {
   display: grid;
@@ -9,10 +14,12 @@
 }
 
 /* ── The question and the answer ── */
-.rv__dlg { gap: clamp(8px, 1.2vw, 16px); }
+/* The 5,0's size lives on the aside, so the figures can measure against it. */
+.rv__aside { --rv-score: clamp(7rem, 34vw, 13rem); }
+.rv__dlg { gap: clamp(8px, 1.2vw, 1.25rem); }
 .rv__score {
   display: block;
-  font-size: clamp(7rem, 34vw, 13rem);
+  font-size: var(--rv-score);
   line-height: 0.8;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -34,7 +41,7 @@
 .rv__fig {
   display: flex;
   align-items: center;
-  min-height: 44px;
+  min-height: max(44px, 2.75rem);
   padding-block: 8px;
   border-top: 1px solid rgb(20 18 16 / 0.16);
 }
@@ -48,13 +55,17 @@
   --rv-hang: calc(var(--rv-q) * 1.18);
   display: grid;
   gap: clamp(56px, 8vw, 128px);
-  padding-left: var(--rv-hang);
   min-width: 0;
 }
+/* Every block keeps a hanging column for its dash (or the café's clover); the text holds the edge after it. */
+.rv-q,
+.rv__close { padding-left: var(--rv-hang); }
 
 .rv-q {
   position: relative;
   margin: 0;
+  min-width: 0;
+  container-type: inline-size;
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 500;
@@ -64,7 +75,7 @@
 .rv-q__dash {
   position: absolute;
   top: 0;
-  left: calc(-1 * var(--rv-hang));
+  left: 0;
   color: var(--accent);
   font-style: normal;
   font-weight: 500;
@@ -77,7 +88,7 @@
   hyphens: manual;
 }
 .rv-q__cap {
-  margin-top: clamp(10px, 1.2vw, 18px);
+  margin-top: clamp(10px, 1.2vw, 1.5rem);
   font-style: normal;
   line-height: 1;
 }
@@ -135,21 +146,21 @@
   .rv-dish:hover .rv-dish__name,
   .rv-dish:focus-visible .rv-dish__name { color: var(--accent-ink); }
 
-  /* The plate peeks out of its octagon above the name. */
+  /* The plate peeks out of its octagon above the name; it grows with the canvas (sizes in Reviews.tsx). */
   .rv-dish__peek {
     display: block;
     position: absolute;
     left: 50%;
     bottom: calc(100% + 0.3em);
     z-index: 3;
-    width: clamp(116px, 10vw, 164px);
+    width: clamp(7.25rem, 7.5vw, 13rem);
     aspect-ratio: 1;
     color: var(--color-ink);
     pointer-events: none;
     opacity: 0;
     transform: translate(-50%, 12px) rotate(-8deg) scale(0.86);
     transform-origin: 50% 100%;
-    filter: drop-shadow(6px 6px 0 rgb(20 18 16 / 0.1));
+    filter: drop-shadow(0.375rem 0.375rem 0 rgb(20 18 16 / 0.1));
     transition: opacity 240ms var(--ease-kd-ui), transform 560ms var(--ease-kd-out);
   }
   .rv-dish:hover .rv-dish__peek,
@@ -197,7 +208,7 @@
 .rv__clover {
   position: absolute;
   top: 0.1em;
-  left: calc(-1 * var(--rv-hang));
+  left: 0;
   width: calc(var(--rv-hang) * 0.7);
   aspect-ratio: 1;
   color: var(--color-tomato);
@@ -219,7 +230,6 @@
   margin-top: clamp(18px, 2.4vw, 32px);
   min-height: 44px;
   align-items: center;
-  font-size: 1rem;
 }
 /* Its dash joins the hanging column too, cut to the same length as the guests' dashes. */
 .rv__all .dash {
@@ -238,8 +248,9 @@
 .rv__all-city { color: var(--fg-soft); }
 .rv__all-city::before { content: "·" / ""; margin-right: 0.7em; opacity: 0.6; }
 
-/* ── Phones: the café's address takes its own line under the source ── */
-@media (max-width: 639.98px) {
+/* ── A narrow quote (phones): the café's address takes its own line under the source, rather than
+   wrapping with a stray separator. Desktop sets it for all three, so their captions match. ── */
+@container (max-width: 23rem) {
   .rv-q__cafe { flex-basis: 100%; }
   .rv-q__sep { display: none; }
 }
@@ -250,25 +261,164 @@
   .rv-q__text { max-width: 21em; }
 }
 
-/* ── Desktop: sticky answer on the left, the quotes on the right ── */
+/* ── Wide tablets: the figures stand beside the 5,0 (not under it), ruling off its height as on
+   desktop, so the band has no empty half. The 5,0 is already on desktop's 27vw, so nothing jumps at
+   1024px. At 768px the longest figure (315px) still keeps one line. ── */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .rv__aside {
+    --rv-score: clamp(13rem, 27vw, 17rem);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: max(var(--grid-gap), 3vw);
+    row-gap: clamp(8px, 1.2vw, 1.25rem);
+  }
+  .rv__dlg {
+    grid-column: 1 / -1;
+    grid-row: 1 / span 2;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+    gap: normal;
+  }
+  .rv__dlg .dlg-q { grid-column: 1 / -1; grid-row: 1; }
+  .rv__score { grid-column: 1; grid-row: 2; }
+  .rv__figs {
+    grid-column: 2;
+    grid-row: 2;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(44px, 1fr));
+    max-width: none;
+    margin: calc(var(--rv-score) * 0.03) 0 calc(var(--rv-score) * 0.17);
+  }
+  .rv__fig { align-items: flex-end; padding-block: 0 0.9em; }
+}
+
+/* ── Desktop: the whole width, gutter to gutter ── */
 @media (min-width: 1024px) {
   .rv__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
-    align-items: start;
+    column-gap: var(--grid-gap);
+    row-gap: clamp(56px, 5vw, 9rem);
   }
+
+  /* The answer band. The heading is a subgrid in both axes, so the question runs across the top and
+     the 5,0 takes its own row, which the figures (outside the heading) share. */
+  /* 27vw keeps the band's proportions from 1024 to 2560; the svh cap only binds past ~2:1 (a short
+     window), where 27vw would stand the 5,0 over half the screen's height. The rem cap (690px) stops
+     it at 2560 with the rem, so a 21:9 ultrawide keeps the 2560 band and gains air beside it. */
   .rv__aside {
-    grid-column: 1 / 6;
-    position: sticky;
-    top: calc(var(--header-h) + clamp(24px, 5vh, 56px));
+    --rv-score: clamp(15rem, min(27vw, 56svh), 34.5rem);
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: auto auto;
+    row-gap: clamp(8px, 1.2vw, 1.25rem);
   }
-  .rv__score { font-size: clamp(7rem, 18vw, 17rem); }
-  /* The dashes hang in the gutter; the text keeps the column edge. */
+  .rv__dlg {
+    grid-column: 1 / -1;
+    grid-row: 1 / span 2;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+    /* A subgrid's own gaps would shift its tracks off the section's columns. */
+    gap: normal;
+  }
+  .rv__dlg .dlg-q { grid-column: 1 / -1; grid-row: 1; }
+  .rv__score {
+    grid-column: 1 / 9;
+    grid-row: 2;
+  }
+  /* The figures rule off the 5,0's height beside it: the heavy rule on the top of its digits, the last
+     hairline on their baseline (the line box sits 0.03em above the digits and 0.17em below the
+     baseline), each figure standing on its rule. Five columns until four hold the longest figure. */
+  .rv__figs {
+    grid-column: 8 / 13;
+    grid-row: 2;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(max(44px, 2.75rem), 1fr));
+    max-width: none;
+    margin: calc(var(--rv-score) * 0.03) 0 calc(var(--rv-score) * 0.17);
+    font-size: 0.75rem;
+  }
+  .rv__fig { align-items: flex-end; padding-block: 0 0.9em; }
+
+  /* The guests, three across, each track sized to its words (5 · 3 · 4 columns), their sources
+     sharing one line (ragged tops). */
   .rv__quotes {
-    grid-column: 7 / 13;
-    padding-left: 0;
-    /* First quote's cap line meets the top of the 5,0. */
-    padding-top: clamp(30px, 3.5vw, 54px);
-    padding-bottom: clamp(8px, 2vw, 32px);
+    /* Same caps as the 5,0: the quotes stop at their 2560 size, and earlier on a short window. */
+    --rv-q: clamp(1.375rem, min(2.1vw, 4.4svh), 2.6875rem);
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: end;
+    column-gap: normal;
+    row-gap: clamp(56px, 5vw, 8rem);
   }
+  /* Bottom-aligned at one size, the three quotes share baselines, so a full line would run straight
+     into the next quote's dash («…произвело — Важно…»). The grid gap alone is ~0.8em; each track
+     keeps another 1em clear on its right, so the gutter reads as a column break. */
+  .rv-q:nth-of-type(3n + 1) { grid-column: 1 / 6; padding-right: 1em; }
+  .rv-q:nth-of-type(3n + 2) { grid-column: 6 / 9; padding-right: 1em; }
+  .rv-q:nth-of-type(3n) { grid-column: 9 / 13; }
+  .rv-q__cap { margin-top: clamp(14px, 1.3vw, 2rem); }
+  /* Every source credits the same way, the address under it, so the three captions keep one line. */
+  .rv-q__cafe { flex-basis: 100%; }
+  .rv-q__sep { display: none; }
+
+  /* The café signs off across the width: its clover and reply on the left, «Читать все отзывы» under
+     the third guest, on the same column line as the figures above. */
+  .rv__close {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+    margin-top: 0;
+    padding-left: 0;
+    padding-top: clamp(24px, 2.2vw, 3.5rem);
+    border-top: 1px solid rgb(20 18 16 / 0.16);
+  }
+  .rv__clover {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    width: calc(var(--rv-hang) * 0.7);
+  }
+  .rv__thanks {
+    grid-column: 1 / 9;
+    grid-row: 1;
+    padding-left: var(--rv-hang);
+    font-size: clamp(1.375rem, 1.7vw, 2.1875rem);
+  }
+  /* Both authored lines on one line; each keeps its own mask for the rise. */
+  .rv__thanks-mask { display: inline-block; }
+  .rv__all {
+    grid-column: 9 / 13;
+    grid-row: 1;
+    justify-self: start;
+    margin: 0 0 0 var(--rv-hang);
+  }
+}
+
+@media (min-width: 1280px) {
+  .rv__figs { grid-column: 9 / 13; font-size: 0.8125rem; }
+}
+/* Where the svh cap binds (27vw > 56svh), the 5,0 stops short of its old width: the figures step in
+   a column so the band keeps the same air between them as on a 16:9 screen. */
+@media (min-width: 1280px) and (min-aspect-ratio: 56/27) {
+  .rv__figs { grid-column: 8 / 13; }
+}
+/* Past 2560 the 5,0 stops (with the rem) while the columns keep widening: the figures step in a
+   column at a time, so the air between them stays near its 2560 width instead of opening a gap. */
+@media (min-width: 2900px) {
+  .rv__figs { grid-column: 8 / 13; }
+}
+@media (min-width: 3400px) {
+  .rv__figs { grid-column: 7 / 13; }
+}
+/* From 1600px the figures and the sources follow the 5,0 and the quotes (both stop at 2560), so they
+   never shrink to a footnote beside a 700px numeral. */
+@media (min-width: 1600px) {
+  .rv__figs { font-size: max(0.875rem, calc(var(--rv-score) * 0.028)); }
+  .rv-q__src { font-size: max(0.75rem, calc(var(--rv-q) * 0.29)); }
 }

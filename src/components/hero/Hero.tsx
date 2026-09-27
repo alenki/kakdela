@@ -59,38 +59,42 @@ export function Hero() {
             {t.hero.prompt} <span aria-hidden="true">↓</span>
           </p>
           </div>
-          <fieldset className="pad" data-pad aria-describedby="pad-prompt">
-            <legend className="sr-only">{t.a11y.padGroup}</legend>
-            <div className="pad__perf perf" aria-hidden="true" />
-            <div className="pad__tabs">
-              {answers.map((a) => {
-                const edge = tornEdge(a.id);
-                return (
-                  <label
-                    key={a.id}
-                    className="tab"
-                    htmlFor={`ans-${a.id}`}
-                    data-tab={a.id}
-                    style={{ "--stub": edge.stub, "--piece": edge.piece } as CSSProperties}
-                  >
-                    <input type="radio" name="answer" id={`ans-${a.id}`} value={a.id} className="tab__input" />
-                    <span className="tab__paper" data-tab-paper>
-                      <span className="tab__text a-voice">{a.label}</span>
-                    </span>
-                    {/* Read only once the tab is torn (hero.css): «Сонно, оторвано». */}
-                    <span className="tab__torn sr-only">, {t.hero.torn}</span>
-                  </label>
-                );
-              })}
+          {/* One cell for the tabs and the all-torn note: from 1024 the note hangs in the torn strip
+              instead of growing the notice (hero.css). */}
+          <div className="notice__pad">
+            <fieldset className="pad" data-pad aria-describedby="pad-prompt">
+              <legend className="sr-only">{t.a11y.padGroup}</legend>
+              <div className="pad__perf perf" aria-hidden="true" />
+              <div className="pad__tabs">
+                {answers.map((a) => {
+                  const edge = tornEdge(a.id);
+                  return (
+                    <label
+                      key={a.id}
+                      className="tab"
+                      htmlFor={`ans-${a.id}`}
+                      data-tab={a.id}
+                      style={{ "--stub": edge.stub, "--piece": edge.piece } as CSSProperties}
+                    >
+                      <input type="radio" name="answer" id={`ans-${a.id}`} value={a.id} className="tab__input" />
+                      <span className="tab__paper" data-tab-paper>
+                        <span className="tab__text a-voice">{a.label}</span>
+                      </span>
+                      {/* Read only once the tab is torn (hero.css): «Сонно, оторвано». */}
+                      <span className="tab__torn sr-only">, {t.hero.torn}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <script dangerouslySetInnerHTML={{ __html: PAD_SCRIPT }} />
+            </fieldset>
+            <div className="notice__empty" data-empty hidden>
+              <p className="reply">{t.hero.allTorn}</p>
+              <button type="button" className="btn" data-reprint>
+                <span className="btn-dash" aria-hidden="true" />
+                {t.hero.reprint}
+              </button>
             </div>
-            <script dangerouslySetInnerHTML={{ __html: PAD_SCRIPT }} />
-          </fieldset>
-          <div className="notice__empty" data-empty hidden>
-            <p className="reply">{t.hero.allTorn}</p>
-            <button type="button" className="btn" data-reprint>
-              <span className="btn-dash" aria-hidden="true" />
-              {t.hero.reprint}
-            </button>
           </div>
         </div>
 
@@ -122,16 +126,21 @@ export function Hero() {
                     <OctPhoto
                       photo={a.item.photo}
                       lace
-                      sizes="(min-width: 1280px) 17vw, (min-width: 1024px) 21vw, 38vw"
+                      // The photo inside the lace (78% of the dish cell). 1280–1919 the cell is the
+                      // stage minus the ~18rem reply column (hero.css), so it grows faster than vw.
+                      sizes="(min-width: 1920px) 17vw, (min-width: 1280px) calc(29.6vw - 225px), (min-width: 1024px) 15vw, 28vw"
                       loading="lazy"
                     />
                   </div>
                   <div className="panel__text">
                     <p className="panel__receipt mono" data-receipt>
                       <span className="panel__item">{a.item.name}</span>
-                      <span className="leader" aria-hidden="true" />
-                      <span className="panel__price">
-                        <Price price={a.item.price} />
+                      {/* The leader and the price wrap together: «………… 730 ₽» never splits. */}
+                      <span className="panel__due">
+                        <span className="leader" aria-hidden="true" />
+                        <span className="panel__price">
+                          <Price price={a.item.price} />
+                        </span>
                       </span>
                     </p>
                     <p className="panel__city label">
@@ -164,6 +173,7 @@ export function Hero() {
             <span className="btn-dash" aria-hidden="true" />
             {t.hero.actions.delivery}
           </RouteLink>
+          <span className="leader hero__rail" aria-hidden="true" />
           <a href="#komanda" className="hero__cue label">
             <span aria-hidden="true">↓</span> {t.hero.scrollCue}
           </a>

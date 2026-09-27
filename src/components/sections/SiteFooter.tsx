@@ -29,13 +29,16 @@ const phones = (Object.keys(flagship) as City[]).map((city) => ({
 const NAV: RouteKey[] = ["menu", "locations", "events", "about"];
 const navLabel = (key: RouteKey) => t.nav.links.find((l) => l.key === key)?.label ?? key;
 
-/** Small print: each «·»-separated phrase stays whole; lines break only after a «·». */
+/**
+ * Small print: each «·»-separated phrase stays whole; lines break only after a «·». The separators
+ * are elements too, so on desktop the facts strip can spread its phrases across the full width.
+ */
 function Phrases({ text }: { text: string }) {
   const parts = text.split(" · ");
   return parts.map((p, i) => (
     <Fragment key={i}>
       <span className="ft-nobr">{typo(p)}</span>
-      {i < parts.length - 1 && " · "}
+      {i < parts.length - 1 && <span className="ft-sep"> · </span>}
     </Fragment>
   ));
 }
@@ -75,6 +78,7 @@ function DoorArrow() {
  * Footer «— Спокойной ночи» (cobalt, slow). The conversation closes: the café asks once more,
  * the guest's own answer comes back in the heavy voice, and the café says goodnight by mood.
  * Then the service doors, contacts, the small print, and the giant wordmark closing like doors.
+ * All of it runs the full width: the exchange spans the field and the doors run edge to edge.
  */
 export function SiteFooter() {
   return (
@@ -85,14 +89,16 @@ export function SiteFooter() {
           <p className="ft-kicker label" data-ft-kicker>
             {t.footer.kicker}
           </p>
-          <DialogueHeading q={t.footer.q} id="footer-title" className="ft-dlg">
-            <FooterAnswer />
-          </DialogueHeading>
-          <div className="ft-reply">
-            <FooterGoodnight />
-            <FooterSignoff>
-              <Clover className="ft-signoff__clover" />
-            </FooterSignoff>
+          <div className="ft-exchange">
+            <DialogueHeading q={t.footer.q} id="footer-title" className="ft-dlg">
+              <FooterAnswer />
+            </DialogueHeading>
+            <div className="ft-reply">
+              <FooterGoodnight />
+              <FooterSignoff>
+                <Clover className="ft-signoff__clover" />
+              </FooterSignoff>
+            </div>
           </div>
           <FooterStatus />
         </div>

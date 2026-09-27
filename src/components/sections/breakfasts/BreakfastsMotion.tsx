@@ -37,13 +37,16 @@ export function BreakfastsMotion() {
         // would let «— ЧТО Н / А ЗАВТРАК?» break mid-word at 320–340px). Only the chars move.
         const split = SplitText.create(q, { type: "words,chars", aria: "none" });
         const mid = (split.chars.length - 1) / 2;
+        // 9px per letter up to a ~106px title (phones to 1440), then in proportion to it (≈16px at 2560),
+        // so the gather still reads on a title that spans columns 1–7 of a wide screen.
+        const spread = Math.max(9, (parseFloat(getComputedStyle(q).fontSize) || 0) * 0.085);
         gsap
           .timeline({
             scrollTrigger: { trigger: head, start: "top 85%", toggleActions: "play none none none" },
             defaults: { ease: "kd.out" },
             onComplete: () => split.revert(),
           })
-          .from(split.chars, { opacity: 0, x: (i: number) => (i - mid) * 9, duration: 1.1, stagger: { each: 0.02, from: "center" } }, 0)
+          .from(split.chars, { opacity: 0, x: (i: number) => (i - mid) * spread, duration: 1.1, stagger: { each: 0.02, from: "center" } }, 0)
           .from(all("[data-bf-kicker]"), { opacity: 0, y: 18, duration: 0.9, clearProps: "opacity,transform" }, 0.3);
       }
 

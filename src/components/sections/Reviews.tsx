@@ -63,7 +63,7 @@ function DishMention({ id }: { id: AnswerId }) {
       <span className="rv-dish__peek" aria-hidden="true" data-placeholder={a.item.photo.placeholder ? "" : undefined}>
         <span className="rv-dish__mat octagon" />
         <span className="rv-dish__oct octagon">
-          <Image src={a.item.photo.src} alt="" fill sizes="120px" loading="lazy" className="rv-dish__img" />
+          <Image src={a.item.photo.src} alt="" fill sizes="(min-width: 1548px) 6.3vw, 98px" loading="lazy" className="rv-dish__img" />
         </span>
         <svg className="rv-dish__line" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
           <polygon points={OCT_LINE} fill="none" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />

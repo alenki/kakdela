@@ -3,14 +3,14 @@
 /* ── Intro: the question, then the founding line in large roman ── */
 .team {
   --lead-size: clamp(1.75rem, 1rem + 3.3vw, 4rem);
-  --q-size: clamp(1.125rem, 0.9rem + 1.2vw, 2rem); /* = .dlg-q */
+  --q-size: var(--dlg-q-size); /* the question voice, as in every section */
   /* First-baseline offsets inside each line box (measured: Cormorant @1.1, Sofia Sans EC @1). */
   --lead-base: 0.8685;
   --q-base: 0.8;
 }
-.team__intro { display: grid; gap: clamp(28px, 3.6vw, 56px); }
+.team__intro { display: grid; gap: clamp(1.75rem, 3.6vw, 3.5rem); }
 
-.team__quote { margin: 0; display: grid; gap: clamp(18px, 2.2vw, 28px); }
+.team__quote { margin: 0; display: grid; gap: clamp(1.125rem, 2.2vw, 1.75rem); }
 .team__lead { margin: 0; }
 .team__lead-text {
   font-family: var(--font-serif);
@@ -39,23 +39,33 @@
 .team__source {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   color: var(--fg-soft);
 }
 .team__source::before {
   content: "";
   flex: none;
-  width: 28px;
+  width: 1.75rem;
   height: var(--rule);
   background: var(--accent);
 }
 
-/* Desktop: a dialogue across the spread. The question sits in the margin on the first line's
-   baseline; the answer runs to the right; the source closes the margin on the last line. */
+/* Tablet: the question above, the founding line across the whole row (no empty right third). */
+@media (min-width: 640px) {
+  .team { --lead-size: 5.4vw; }
+  .team__lead-text { max-width: 32ch; }
+}
+
+/* Desktop: a dialogue across the whole spread. The question sits in the three-column margin on
+   the first line's baseline; the founding line fills the other nine columns, gutter to gutter,
+   sized in vw against a fixed 32ch measure so it keeps the same five lines at 1024 and at 2560
+   (capped there, with the rem: on a 3440 ultrawide the line gains air on its right, not height);
+   the source closes the margin on the last line. */
 @media (min-width: 1024px) {
+  .team { --lead-size: clamp(3rem, 4.72vw, 6.0625rem); }
   .team__intro {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
+    column-gap: var(--grid-gap);
   }
   .team__title {
     grid-column: 1 / 4;
@@ -70,6 +80,7 @@
     grid-column: 1 / -1;
     grid-row: 1;
     grid-template-columns: subgrid;
+    column-gap: var(--grid-gap);
     align-items: last baseline;
   }
   .team__lead { grid-column: 4 / -1; grid-row: 1; }
@@ -77,14 +88,14 @@
 }
 
 /* ── People ── */
-.team__people { margin-top: clamp(56px, 8.5vw, 136px); }
+.team__people { margin-top: clamp(3.5rem, 8vw, 10rem); }
 
 .team__rail {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 16px;
+  gap: var(--grid-gap);
 }
 
 .team-card {
@@ -124,15 +135,15 @@
   content: "фото временное";
   content: "фото временное" / ""; /* the alt text already says so */
   position: absolute;
-  right: 10px;
-  bottom: 10px;
+  right: var(--badge-inset-r, 0.625rem);
+  bottom: 0.625rem;
   z-index: 3;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 2px 7px;
+  padding: 0.125rem 0.4375rem;
   background: rgb(20 18 16 / 0.72);
   color: var(--color-milk);
   border-radius: 999px;
@@ -140,7 +151,7 @@
 }
 
 .team-card__who {
-  margin-top: 16px;
+  margin-top: 1rem;
   color: var(--fg-soft);
 }
 .team-card__name,
@@ -153,10 +164,10 @@
   .team-card__role { white-space: normal; }
 }
 .team-card__answer {
-  margin-top: 10px;
+  margin-top: 0.625rem;
   /* Relative to the card, so the answer keeps its proportion on the rail, 2×2 and 4-up alike
-     (≈ 3.4vw on the desktop row). */
-  font-size: clamp(2rem, 15cqi, 3.25rem);
+     (≈ 3.3vw on the desktop row, capped at its 2560 size). */
+  font-size: clamp(2rem, 15cqi, 4.25rem);
   line-height: 0.9;
   padding-bottom: 0.04em;
   text-wrap: balance;
@@ -164,7 +175,7 @@
 .team-card__answer .dash { display: inline-block; margin-right: 0.12em; font-weight: 700; }
 .team-card__word { font-weight: 930; }
 .team-card__line {
-  margin-top: 12px;
+  margin-top: 0.75rem;
   font-size: clamp(1.1875rem, 1rem + 0.42vw, 1.4375rem);
   line-height: 1.2;
   max-width: 27ch;
@@ -173,7 +184,7 @@
 .team__progress { display: none; }
 
 .team__note {
-  margin-top: clamp(40px, 5vw, 72px);
+  margin-top: clamp(2.5rem, 5vw, 5rem);
   color: var(--fg-soft);
 }
 
@@ -228,20 +239,51 @@
 @media (min-width: 640px) {
   .team__rail {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 24px;
-    row-gap: clamp(48px, 7vw, 72px);
+    row-gap: clamp(3rem, 7vw, 4.5rem);
   }
-  .team-card:nth-child(even) { margin-top: 48px; }
+  .team-card:nth-child(even) { margin-top: 3rem; }
 }
-/* …with square portraits, so the 2×2 isn't a wall of tall stock photos. */
+/* …with square portraits, so the 2×2 isn't a wall of tall stock photos, each run out to its own
+   screen edge: the pair reads edge to edge, the text keeps the gutter. */
 @media (min-width: 640px) and (max-width: 1023.98px) {
   .team-card__photo { aspect-ratio: 1; }
+  .team-card:nth-child(odd) .team-card__photo {
+    margin-left: calc(-1 * var(--gutter));
+    border-radius: 0 2px 2px 0;
+  }
+  .team-card:nth-child(even) .team-card__photo {
+    margin-right: calc(-1 * var(--gutter));
+    border-radius: 2px 0 0 2px;
+    --badge-inset-r: calc(var(--gutter) + 0.625rem);
+  }
+  .team-card:nth-child(odd) .team-card__photo::before { border-left-width: 0; }
+  .team-card:nth-child(even) .team-card__photo::before { border-right-width: 0; }
 }
 
-/* Desktop: four in a row with an editorial stagger. */
+/* Desktop: one strip of four across the whole viewport. Each card takes three of the twelve
+   columns; the outer two portraits run on past the gutter to the screen edges, so the row reads
+   as a contact strip that continues beyond the page, while every line of text keeps the gutter.
+   All four portraits share one height (4:5 of a card's own column), so the bled ones are simply
+   wider, and the editorial stagger grows with the canvas. On ultrawide screens (3440×1440) and
+   short windows, 4:5 would outgrow the screen and push the staggered pair's answers below it, so
+   the height yields to 60% of the viewport, never below square (16:9 and 16:10 keep their 4:5). */
 @media (min-width: 1024px) {
   .team__rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .team-card:nth-child(even) { margin-top: 56px; }
+  .team-card:nth-child(even) { margin-top: clamp(3.5rem, 4.2vw, 8rem); }
+  .team-card__photo { aspect-ratio: auto; height: clamp(100cqi, 60svh, 125cqi); }
+  .team-card:first-child .team-card__photo {
+    margin-left: calc(-1 * var(--gutter));
+    border-radius: 0 2px 2px 0;
+  }
+  .team-card:last-child .team-card__photo {
+    margin-right: calc(-1 * var(--gutter));
+    border-radius: 2px 0 0 2px;
+    /* The badge stays inside the text column, not on the screen edge. */
+    --badge-inset-r: calc(var(--gutter) + 0.625rem);
+  }
+  /* No frame line along the screen edge. */
+  .team-card:first-child .team-card__photo::before { border-left-width: 0; }
+  .team-card:last-child .team-card__photo::before { border-right-width: 0; }
 }
 
 @media (hover: hover) and (pointer: fine) {

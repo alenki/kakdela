@@ -1,7 +1,18 @@
 /* ═════════════ BREAKFASTS «— Что на завтрак?»: a printed menu board ═════════════
    The thin question asks; six heavy answers reply, each one a breakfast you can order.
-   Mobile: 2-up cards (3-up from 640px). Desktop: a ruled board + a sticky plate on lace. */
-.bf { overflow-x: clip; }
+   Mobile: 2-up cards (3-up from 640px). Desktop (≥1024px), gutter to gutter on the 12-column grid:
+   the question and the ruled board own columns 1–7, the kicker and a sticky plate on lace own 8–12,
+   and the afterword closes both. Board type is sized off the board's own width (cqi), so the
+   question always spans it exactly and the rows keep their proportions from 1024 to 2560 (past
+   that, with the rem, the question and the rows stop growing: a 3440 ultrawide gets longer leaders
+   and air after the «?», and still shows three or four dishes a screen). */
+.bf {
+  overflow-x: clip;
+  /* The sticky plate's least distance from the header (and its reserve below). */
+  --bf-top: clamp(16px, 4vh, 3rem);
+  /* Plate → caption. */
+  --bf-cap-gap: clamp(12px, 2vh, 1.5rem);
+}
 
 /* The team above is cream too: a tighter top, and a printed ink edge across the wrap, like the
    head of a menu card, so the two sections read as two pages, not one long blank. */
@@ -10,14 +21,14 @@
   content: "";
   display: block;
   border-top: var(--rule) solid currentColor;
-  margin-bottom: clamp(32px, 3.4vw, 52px);
+  margin-bottom: clamp(32px, 3.4vw, 5.5rem);
 }
 
 /* ── Head ── */
 .bf__head {
   display: grid;
   gap: clamp(14px, 1.8vw, 24px);
-  margin-bottom: clamp(36px, 5vw, 80px);
+  margin-bottom: clamp(36px, 4.6vw, 7.5rem);
 }
 .bf__title { margin: 0; }
 .bf__title .dlg-q {
@@ -28,14 +39,24 @@
 }
 @media (min-width: 640px) { .bf__title .dlg-q { letter-spacing: 0.1em; } }
 .bf__kicker { margin: 0; max-width: 24ch; }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
+  /* Same columns as the board below: the question over the list, the kicker over the plate. */
   .bf__head {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
+    column-gap: var(--grid-gap);
     align-items: end;
   }
-  .bf__title { grid-column: 1 / 9; }
-  .bf__kicker { grid-column: 9 / 13; padding-bottom: 0.2em; }
+  .bf__title { grid-column: 1 / 8; container-type: inline-size; }
+  /* «— ЧТО НА ЗАВТРАК?» sets 6.99em wide (plus 0.1em of trailing tracking, hung past the edge):
+     at 14.1cqi it spans the board, its «?» over the prices, up to 2560 (195px, where the rem stops). */
+  .bf__title .dlg-q { font-size: min(14.1cqi, 9.75rem); margin-right: -0.1em; }
+  /* The café's reply keeps pace with the question as the canvas widens (≈33px at 1440, 50px at 2560). */
+  .bf__kicker {
+    grid-column: 8 / 13;
+    max-width: 26ch;
+    padding-bottom: 0.2em;
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 2.5625rem);
+  }
 }
 
 /* ── Board header: what's on, and whose prices ── */
@@ -45,7 +66,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px 16px;
-  margin-bottom: 14px;
+  margin-bottom: clamp(14px, 1vw, 1.5rem);
 }
 .bf-board__allday { margin: 0; color: var(--accent-ink); }
 .bf-board__city { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
@@ -216,25 +237,27 @@ html:not(.js) .bf-board__switch { display: none; }
   .bf__body {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
+    column-gap: var(--grid-gap);
   }
   .bf__main { grid-column: 1 / 8; min-width: 0; }
 
-  .bf-list { display: block; }
+  /* The board is the container: rows scale with columns 1–7, not with the viewport. */
+  .bf-list { display: block; container-type: inline-size; }
   .bf-item {
     container-type: normal;
-    grid-template-columns: clamp(2.25rem, 3.2vw, 3.5rem) minmax(0, max-content) minmax(2rem, 1fr) auto;
+    grid-template-columns: clamp(2.25rem, 5.9cqi, 4.125rem) minmax(0, max-content) minmax(2rem, 1fr) auto;
     grid-template-areas:
       "no name leader price"
       ". desc desc desc";
-    column-gap: clamp(10px, 1.1vw, 18px);
-    padding: clamp(16px, 1.8vw, 26px) 0 clamp(18px, 2.1vw, 30px);
+    column-gap: clamp(10px, 2cqi, 1.375rem);
+    padding: clamp(16px, 3.36cqi, 2.375rem) 0 clamp(18px, 3.9cqi, 2.75rem);
   }
   .bf-item__photo { display: none; }
   .bf-item__no { font-size: 0.8125rem; }
-  .bf-item__name { margin: 0; font-size: clamp(2.25rem, 5.6vw, 6.25rem); white-space: nowrap; }
-  .bf-item__price { font-size: clamp(0.9375rem, 0.7rem + 0.4vw, 1.1875rem); }
-  .bf-item__desc { margin-top: clamp(8px, 0.9vw, 14px); font-size: 1rem; line-height: 1.5; max-width: 48ch; }
+  /* The longest answer («— КАПИТАЛЬНЫЙ») is 6em: at 10.4cqi (the old 5.6vw, now per board) it still leaves the leader ~18% of the row. */
+  .bf-item__name { margin: 0; font-size: min(10.4cqi, 7.25rem); white-space: nowrap; }
+  .bf-item__price { font-size: clamp(0.9375rem, 2.2cqi, 1.5625rem); }
+  .bf-item__desc { margin-top: clamp(8px, 1.7cqi, 1.1875rem); font-size: 1rem; line-height: 1.5; max-width: 48ch; }
   /* The plate shows КБЖУ on desktop; the row keeps it for screen readers. */
   .bf-item__kbju {
     position: absolute;
@@ -261,24 +284,31 @@ html:not(.js) .bf-board__switch { display: none; }
   }
 }
 
-/* ── Desktop: the sticky plate ── */
+/* ── Desktop: the sticky plate ──
+   The doily fills columns 8–12 (≈38vw: 385px at 1024, 545 at 1440, 730 at 1920, 970 at 2560),
+   unless the screen is too short to hold it, the caption and the header while it sticks. While it
+   sticks it sits centred in the screen under the header, so a tall screen (16:10, portrait) shares
+   the spare height above and below the plate instead of leaving it all as a blank under the caption. */
 .bf-preview { display: none; }
 @media (min-width: 1024px) {
-  .bf-preview { display: block; grid-column: 8 / 13; position: relative; }
+  /* A container, so the sticky offset can know the column's width (100cqi). */
+  .bf-preview { display: block; grid-column: 8 / 13; position: relative; min-width: 0; container-type: inline-size; }
 }
 .bf-preview__sticky {
+  /* 8rem: the caption (number, name, КБЖУ strip), which is rem-sized too. */
+  --bf-cap: calc(var(--bf-cap-gap) + 8rem);
+  --bf-stage: min(100cqi, calc(100svh - var(--header-h) - 2 * var(--bf-top) - var(--bf-cap)));
   position: sticky;
-  top: calc(var(--header-h) + clamp(16px, 4vh, 44px));
+  top: calc(var(--header-h) + max(var(--bf-top), (100svh - var(--header-h) - var(--bf-stage) - var(--bf-cap)) / 2));
 }
 .bf-preview__inner {
-  --oct: min(30vw, 480px, calc((100svh - var(--header-h) - 250px) * 0.78));
   display: grid;
   justify-items: center;
-  gap: clamp(12px, 2vh, 22px);
+  gap: var(--bf-cap-gap);
 }
 .bf-stage {
   position: relative;
-  width: min(100%, calc(var(--oct) / 0.78));
+  width: var(--bf-stage);
   aspect-ratio: 1;
 }
 .bf-stage__lace {
@@ -287,9 +317,14 @@ html:not(.js) .bf-board__switch { display: none; }
   width: 100%;
   height: 100%;
   color: var(--color-ink);
-  filter: drop-shadow(5px 6px 0 rgb(20 18 16 / 0.07));
+  /* The printed offset grows with the doily. */
+  filter: drop-shadow(clamp(5px, 0.36vw, 10px) clamp(6px, 0.43vw, 12px) 0 rgb(20 18 16 / 0.07));
 }
 .bf-stage__plates { position: absolute; inset: 11%; }
+/* The stock-photo flag, in proportion to a plate that is up to ~760px wide. */
+@media (min-width: 1600px) {
+  .bf-slide .oct-photo[data-placeholder]::after { font-size: 0.6875rem; padding: 0.2em 0.7em; }
+}
 .bf-slide {
   position: absolute;
   inset: 0;
@@ -346,12 +381,12 @@ html:not(.js) .bf-board__switch { display: none; }
   flex-direction: column-reverse;
   align-items: center;
   gap: 2px;
-  padding: 8px clamp(10px, 1vw, 16px);
+  padding: 0.5rem clamp(10px, 1vw, 1.25rem);
 }
 .bf-kbju__cell + .bf-kbju__cell { border-left: 1px solid rgb(20 18 16 / 0.2); }
 .bf-kbju__value { margin: 0; font-size: 0.9375rem; font-weight: 500; }
 .bf-kbju__label {
-  font-size: 0.5625rem;
+  font-size: 0.625rem; /* 10px (12.5px at 2560): the smallest type on the page, still legible */
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-stretch: 87.5%;
@@ -364,17 +399,31 @@ html:not(.js) .bf-board__switch { display: none; }
   display: grid;
   gap: clamp(16px, 1.8vw, 24px);
   margin-top: 44px;
-  padding-top: clamp(24px, 2.8vw, 40px);
+  padding-top: clamp(24px, 2.8vw, 3.5rem);
 }
-@media (min-width: 1024px) { .bf-foot { margin-top: 0; } }
-.bf-after-wrap { display: grid; gap: 10px; }
+/* Desktop: the closing rule runs gutter to gutter, under the board and the plate alike; the reply
+   stays under the board (columns 1–7), the links and the note sit under the plate (8–12). */
+@media (min-width: 1024px) {
+  .bf-foot {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    row-gap: clamp(14px, 1.2vw, 1.75rem);
+    align-content: start;
+    margin-top: 0;
+  }
+  .bf-foot > .bf-after-wrap { grid-column: 1 / 8; grid-row: 1 / span 2; }
+  .bf-foot > .bf-links { grid-column: 8 / 13; grid-row: 1; padding-top: 0.5em; }
+  .bf-foot > .bf-note { grid-column: 8 / 13; grid-row: 2; align-self: start; }
+}
+.bf-after-wrap { display: grid; gap: 10px; align-content: start; }
 .bf-after {
   display: grid;
   gap: 0.2em;
   margin: 0;
-  font-size: clamp(1.375rem, 0.95rem + 1.3vw, 2.25rem);
+  font-size: clamp(1.375rem, 0.95rem + 1.3vw, 2.625rem);
   max-width: 34ch;
 }
+@media (min-width: 1024px) { .bf-after { max-width: 40ch; } }
 /* The dash hangs: wrapped lines align under the words, not under it (dash + space = 1.064em). */
 .bf-after__line { display: block; padding-left: 1.064em; text-indent: -1.064em; }
 .bf-after__price {
@@ -386,7 +435,7 @@ html:not(.js) .bf-board__switch { display: none; }
   vertical-align: 0.14em;
 }
 .bf-links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
-.bf-links .dlink { position: relative; font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem); }
+.bf-links .dlink { position: relative; }
 /* ≥44px targets without moving the underline away from the words. */
 .bf-links .dlink::before { content: ""; position: absolute; inset: -12px -8px; }
 .bf-note { margin: 0; font-size: 0.75rem; line-height: 1.55; color: var(--fg-soft); max-width: 58ch; }

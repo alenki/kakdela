@@ -191,22 +191,6 @@ export function BreakfastsSection() {
                 </li>
               ))}
             </ol>
-
-            <footer className="bf-foot" data-bf-foot>
-              <span className="bf-rule bf-rule--close" data-bf-rule aria-hidden="true" />
-              <Afterword />
-              <div className="bf-links">
-                <RouteLink to="menu" className="dlink">
-                  <span className="dash">—</span>
-                  {nb(t.breakfasts.links.menu)}
-                </RouteLink>
-                <RouteLink to="delivery" className="dlink">
-                  <span className="dash">—</span>
-                  {nb(t.breakfasts.links.delivery)}
-                </RouteLink>
-              </div>
-              <p className="bf-note mono">{nb(t.breakfasts.lightNote)}</p>
-            </footer>
           </div>
 
           {/* Desktop: a sticky plate on lace follows the hovered / focused / read row. Decorative
@@ -219,11 +203,9 @@ export function BreakfastsSection() {
                   <div className="bf-stage__plates">
                     {breakfasts.map((b, i) => (
                       <div key={b.id} className="bf-slide" data-bf-key={b.id} data-active={i === 0 ? "" : undefined}>
-                        <OctPhoto
-                          photo={b.photo}
-                          sizes="(min-width: 1600px) 480px, (min-width: 1024px) 30vw, 1px"
-                          loading="lazy"
-                        />
+                        {/* The plate is 78% of a stage that fills columns 8–12: ≈29.5vw at every
+                            desktop width (smaller only on short screens). */}
+                        <OctPhoto photo={b.photo} sizes="(min-width: 1024px) 30vw, 1px" loading="lazy" />
                       </div>
                     ))}
                   </div>
@@ -247,6 +229,24 @@ export function BreakfastsSection() {
             </div>
           </aside>
         </div>
+
+        {/* Outside the sticky body, so it spans the whole grid: the reply under the board, the links
+            and the note under the plate. */}
+        <footer className="bf-foot" data-bf-foot>
+          <span className="bf-rule bf-rule--close" data-bf-rule aria-hidden="true" />
+          <Afterword />
+          <div className="bf-links">
+            <RouteLink to="menu" className="dlink">
+              <span className="dash">—</span>
+              {nb(t.breakfasts.links.menu)}
+            </RouteLink>
+            <RouteLink to="delivery" className="dlink">
+              <span className="dash">—</span>
+              {nb(t.breakfasts.links.delivery)}
+            </RouteLink>
+          </div>
+          <p className="bf-note mono">{nb(t.breakfasts.lightNote)}</p>
+        </footer>
       </div>
       <BreakfastsPreview />
       <BreakfastsMotion />

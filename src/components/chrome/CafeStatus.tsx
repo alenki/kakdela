@@ -18,10 +18,14 @@ export function CafeStatus({ cafe, className }: { cafe: Cafe; className?: string
     );
   }
   const open = isOpen(cafe, now);
+  // Two unbreakable halves: where a column is narrow, the line may only break after «·».
+  const [head, tail] = open ? [t.status.open, `${t.status.until} ${cafe.close}`] : [t.status.closed, t.status.opensAt];
   return (
     <span className={cn("status mono", className)} data-open={open ? "" : undefined}>
       <span className="status__dot" data-state={open ? "open" : "closed"} aria-hidden="true" />
-      {open ? `${t.status.open} · ${t.status.until} ${cafe.close}` : `${t.status.closed} · ${t.status.opensAt}`}
+      <span className="status__text">
+        <span className="status__part">{head} ·</span> <span className="status__part">{tail}</span>
+      </span>
     </span>
   );
 }

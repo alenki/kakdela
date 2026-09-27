@@ -73,7 +73,9 @@ export function EveningSection() {
               {desserts.map((d, i) => (
                 <li key={d.id} className="ev-dessert" data-dessert={i}>
                   <div className="ev-dessert__media">
-                    <OctPhoto photo={d.photo} lace sizes="(min-width: 1024px) 30vw, (min-width: 640px) 40vw, 76vw" className="ev-dessert__photo" />
+                    {/* The image is the octagon inside the doily (78% of the card): 4 of 12 full-bleed
+                        columns ≈ 30vw on desktop, a 380px rail card from 500px, a 76vw card below. */}
+                    <OctPhoto photo={d.photo} lace sizes="(min-width: 1024px) 24vw, (min-width: 500px) 300px, 60vw" className="ev-dessert__photo" />
                     {d.tag && <span className="ev-chip">{d.tag}</span>}
                   </div>
                   <div className="ev-dessert__text">

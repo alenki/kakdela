@@ -283,15 +283,28 @@ export function CupNote() {
           pending?.kill();
           pending = gsap.delayedCall(0.06, () => flush(i));
         };
-        // A row is "at the cup" when its centre crosses the line the note sits on: the sleeve, at
-        // ~65% of the viewport on desktop (sticky top 14vh + cup 60vh, sleeve at 0.69 of the cup);
-        // on phones the badge is up top, so the reading line is 60%. The last drink must also be
-        // written while the cup is still on screen, so its start never falls later than the moment
-        // the section's bottom meets the viewport's. Each row ends exactly where the next starts.
-        const line = desk ? 0.65 : 0.6;
+        // A row is "at the cup" when its centre crosses the line the note sits on. On desktop that
+        // is the sleeve of the stuck cup, measured from the layout (the cup's size and the sticky
+        // top follow the viewport, so it is re-read on every refresh); on phones the badge is up
+        // top, so the reading line is 60%. The last drink must also be written while the cup is
+        // still on screen, so its start never falls later than the moment the section's bottom
+        // meets the viewport's. Each row ends exactly where the next starts.
+        const sticky = root.querySelector<HTMLElement>(".coffee__sticky");
+        const cupWrap = root.querySelector<HTMLElement>("[data-cup-enter]");
+        const readingLine = () => {
+          if (!desk || !sticky || !cupWrap) return window.innerHeight * 0.6;
+          const top = parseFloat(getComputedStyle(sticky).top);
+          // offsetTop/offsetHeight ignore the entrance transform; the sleeve's centre is y 319 of 460.
+          const sleeve = (Number.isFinite(top) ? top : 0) + cupWrap.offsetTop + cupWrap.offsetHeight * (NOTE.cy / 460);
+          return gsap.utils.clamp(0.3, 0.85, sleeve / window.innerHeight) * window.innerHeight;
+        };
         const startOf = (i: number): number => {
           const r = rows[i].getBoundingClientRect();
-          const y = r.top + window.scrollY + r.height / 2 - window.innerHeight * line;
+          // Drinks side by side (the two-column board) share a line of the card: each takes its own
+          // slice of it, left to right, so the notes still come one at a time and in menu order.
+          const band = rows.filter((o) => Math.abs(o.getBoundingClientRect().top - r.top) < 2);
+          const k = Math.max(0, band.indexOf(rows[i]));
+          const y = r.top + window.scrollY + (r.height * (k + 0.5)) / band.length - readingLine();
           if (i < rows.length - 1) return y;
           const sectionEnd = root.getBoundingClientRect().bottom + window.scrollY - window.innerHeight - 2;
           return Math.max(Math.min(y, sectionEnd), i > 0 ? startOf(i - 1) + 1 : 0);

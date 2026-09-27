@@ -29,18 +29,31 @@ export function FooterMotion() {
         const q = talk.querySelector("[data-dlg-q]");
         const line = talk.querySelector("[data-ft-answer]");
         const word = talk.querySelector("[data-ft-word]");
-        const tail = talk.querySelectorAll("[data-ft-signoff], [data-ft-status]");
+        const signoff = talk.querySelector("[data-ft-signoff]");
+        const status = talk.querySelector("[data-ft-status]");
+        // From 640 up the live status sits at the far end of the clock line, facing the kicker: it
+        // arrives with it. On phones it closes the exchange, after the sign-off.
+        const clockLine = window.matchMedia("(min-width: 640px)").matches;
         const tl = gsap.timeline({
           defaults: { ease: "kd.out" },
           scrollTrigger: { trigger: talk, start: "top 74%", toggleActions: "play none none none" },
         });
-        tl.from(talk.querySelector("[data-ft-kicker]"), { opacity: 0, x: -14, duration: 0.8, clearProps: "opacity,transform" }, 0)
-          .from(q, { opacity: 0, y: 18, duration: 1, clearProps: "opacity,transform" }, 0.1)
+        tl.from(talk.querySelector("[data-ft-kicker]"), { opacity: 0, x: -14, duration: 0.8, clearProps: "opacity,transform" }, 0);
+        if (clockLine) tl.from(status, { opacity: 0, x: 14, duration: 0.8, clearProps: "opacity,transform" }, 0.08);
+        // The reply wraps under a long answer (flex-wrap on the heading's width). The answer changes
+        // width while it gathers weight, so hold the heading at its final width until it has landed,
+        // or the reply could jump between lines mid-entrance. Measured when the entrance plays: the
+        // guest may have answered in the hero after this was set up.
+        const dlg = talk.querySelector<HTMLElement>(".ft-dlg");
+        if (dlg) tl.set(dlg, { flexBasis: () => `${dlg.getBoundingClientRect().width}px`, immediateRender: false }, 0);
+        tl.from(q, { opacity: 0, y: 18, duration: 1, clearProps: "opacity,transform" }, 0.1)
           .from(line, { opacity: 0, yPercent: 10, duration: 1.1, clearProps: "opacity,transform" }, 0.45)
-          // The answer gathers weight as it lands, as it did up in the hero.
-          .from(word, { fontWeight: 180, letterSpacing: "0.06em", duration: 1.3, ease: "kd.settle", clearProps: "fontWeight,letterSpacing" }, 0.45)
+          // The answer gathers weight as it lands, as it did up in the hero. Its end state is read
+          // when it starts (not at setup), so an answer given since then lands at its own posture.
+          .from(word, { fontWeight: 180, letterSpacing: "0.06em", duration: 1.3, ease: "kd.settle", immediateRender: false, clearProps: "fontWeight,letterSpacing" }, 0.45)
           .from(talk.querySelector("[data-ft-night]"), { opacity: 0, y: 16, duration: 1, clearProps: "opacity,transform" }, 1.05)
-          .from(tail, { opacity: 0, y: 10, duration: 0.8, stagger: 0.12, clearProps: "opacity,transform" }, 1.35);
+          .from(clockLine ? [signoff] : [signoff, status], { opacity: 0, y: 10, duration: 0.8, stagger: 0.12, clearProps: "opacity,transform" }, 1.35);
+        if (dlg) tl.set(dlg, { clearProps: "flexBasis" }, 1.75);
       }
 
       // ── 2 · Service doors: the frame draws, the doors rise one after another ──
@@ -69,7 +82,8 @@ export function FooterMotion() {
       const svg = sign?.querySelector<SVGSVGElement>("svg");
       if (!sign || !svg) return;
       const part = (p: string) => svg.querySelector(`[data-part="${p}"]`);
-      // SVG transforms are in viewBox units: convert 18vw through the rendered width.
+      // SVG transforms are in viewBox units: convert 18vw through the rendered width (the mark runs
+      // gutter to gutter, so this is re-measured on every refresh, e.g. after a resize).
       const door = () => (window.innerWidth * DOOR_VW * WORDMARK_VIEWBOX.w) / Math.max(1, svg.getBoundingClientRect().width);
       // 'top 85%' → 'bottom bottom', but never shorter than a fifth of the screen (short phones).
       const range = () => {

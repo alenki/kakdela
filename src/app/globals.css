@@ -44,21 +44,41 @@
 /* ───────────────────────── Base ───────────────────────── */
 @layer base {
   :root {
+    /* Full-bleed layout: content runs gutter to gutter at every width, never a centred column. */
     --gutter: 16px;
+    --grid-gap: 16px;
     --header-h: 56px;
     --header-offset: var(--header-h);
     --rule: 1.5px;
     --section-pad: clamp(88px, 13vh, 184px);
+    /* Type scale. The rem freezes at 20px from 2560px, so every vw/cqi-driven display size is
+       capped (in rem) at about its 2560 value: past 2560 both scales stop together and extra width
+       becomes air and wider columns, never taller type. */
+    /* The question voice («— А кофе?»): one size in every section (≈ 1:5 of a one-line answer). */
+    --dlg-q-size: clamp(1.125rem, 0.9rem + 1.2vw, 2.5rem);
+    /* Dash text links («— Все кофейни»): body size, a touch above it on phones. */
+    --dlink-size: 1.0625rem;
     color-scheme: light;
   }
   @media (min-width: 640px) {
-    :root { --gutter: clamp(24px, 4vw, 64px); }
+    :root { --gutter: clamp(24px, 3.4vw, 104px); --grid-gap: clamp(20px, 1.6vw, 48px); }
   }
   @media (min-width: 1024px) {
-    :root { --header-h: 64px; }
+    :root { --header-h: 64px; --dlink-size: 1.125rem; }
+  }
+  /* The header's contents grow with the rem; its bar keeps the same proportion. Plain px:
+     HeroController parses this value with parseFloat. */
+  @media (min-width: 1920px) {
+    :root { --header-h: 72px; }
+  }
+  @media (min-width: 2400px) {
+    :root { --header-h: 80px; }
   }
 
   html {
+    /* Past 1600px the rem grows with the canvas (16px → 20px at 2560px), so type and
+       rem-sized components fill a wide screen instead of floating in it. */
+    font-size: clamp(100%, 0.5833rem + 0.4167vw, 125%);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -132,10 +152,12 @@
 
   .wrap {
     width: 100%;
-    max-width: 1600px;
-    margin-inline: auto;
     padding-inline: var(--gutter);
   }
+  /* Breaks a child of .wrap out to the viewport edges (images, skylines, rails). */
+  .bleed { margin-inline: calc(-1 * var(--gutter)); }
+  .bleed-l { margin-left: calc(-1 * var(--gutter)); }
+  .bleed-r { margin-right: calc(-1 * var(--gutter)); }
   .section-pad { padding-block: var(--section-pad); }
 
   /* ───── The two voices of the logo ───── */
@@ -176,8 +198,10 @@
 
   /* Dialogue heading block */
   .dlg { display: flex; flex-direction: column; gap: 0.35em; }
-  .dlg-q { font-size: clamp(1.125rem, 0.9rem + 1.2vw, 2rem); color: var(--fg); }
-  .dlg-a { font-size: clamp(3rem, 1.2rem + 7.4vw, 9rem); }
+  .dlg-q { font-size: var(--dlg-q-size); color: var(--fg); }
+  /* The default answer (two-line answers, e.g. «— Ближе, чем кажется.»): a step under the one-line
+     poster answers (Coffee, Evening: ≈9.8vw, capped at 12.5–12.75rem), ≈0.83 of them at every width. */
+  .dlg-a { font-size: clamp(3rem, 1.2rem + 7.4vw, 10.5rem); }
   .dlg-a .dash { display: inline-block; margin-right: 0.12em; }
   .dlg-line { display: block; }
   .kicker {
@@ -245,6 +269,7 @@
     display: inline-flex;
     align-items: baseline;
     gap: 0.45em;
+    font-size: var(--dlink-size);
     font-weight: 500;
     border-bottom: var(--rule) solid transparent;
     transition: border-color 320ms var(--ease-kd-ui);

@@ -6,6 +6,7 @@ import { CitySwitch } from "./CitySwitch";
 import { CafeStatus } from "./CafeStatus";
 import { cafes } from "@/content/cafes";
 import { external } from "@/content/routes";
+import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 
 type LenisLike = { stop: () => void; start: () => void };
@@ -57,6 +58,9 @@ export function MenuDialog() {
           if (e.target === ref.current) hide();
         }}
       >
+        {/* Full-bleed composition (chrome.css): the top bar sits exactly where the header was, a board of
+            answers runs gutter to gutter (3 × 3 from 1024px; on tablets «— Меню» heads 2 columns), and the
+            city band below it is set on the board's thirds. */}
         <div className="menu-dialog__inner wrap">
           <div className="menu-dialog__top">
             <span className="label">{t.nav.sections}</span>
@@ -65,44 +69,47 @@ export function MenuDialog() {
               <span className="menu-dialog__x" aria-hidden="true" />
             </button>
           </div>
-          <div className="menu-dialog__grid">
-            <nav aria-label={t.nav.sections}>
-              <ul className="menu-dialog__links" role="list">
-                {t.nav.links.map((l, i) => (
-                  <li key={l.key} style={{ "--i": i } as React.CSSProperties}>
-                    <RouteLink to={l.key} className="menu-link" onClick={hide}>
-                      <span className="menu-link__aside reply">{l.aside}</span>
-                      <span className="menu-link__label a-voice">
-                        <span className="dash">—</span>
-                        {l.label}
-                      </span>
-                    </RouteLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <aside className="menu-dialog__side">
+          <nav className="menu-dialog__nav" aria-label={t.nav.sections}>
+            <ul className="menu-dialog__links" role="list">
+              {t.nav.links.map((l, i) => (
+                <li key={l.key} style={{ "--i": i } as React.CSSProperties}>
+                  <RouteLink to={l.key} className="menu-link" onClick={hide}>
+                    <span className="menu-link__aside reply">{l.aside}</span>
+                    <span className="menu-link__label a-voice">
+                      <span className="dash">—</span>
+                      {l.label}
+                    </span>
+                  </RouteLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <aside className="menu-dialog__side">
+            <div className="menu-dialog__city">
               <CitySwitch />
-              <ul className="menu-dialog__cafes" role="list">
-                {cafes.map((c) => (
-                  <li key={c.id} data-city-only={c.city}>
-                    <span className="menu-dialog__addr">{c.address}</span>
-                    <CafeStatus cafe={c} />
-                  </li>
-                ))}
-              </ul>
-              <div className="menu-dialog__contacts">
-                <a className="mono" href="tel:+79280826111" data-city-only="nalchik">+7 (928) 082-61-11</a>
-                <a className="mono" href="tel:+79280773249" data-city-only="vladikavkaz">+7 (928) 077-32-49</a>
-                <a className="dlink" href={external.telegram} target="_blank" rel="noreferrer">
-                  <span className="dash">—</span>Telegram <span className="label" lang="en">how you doin’?</span>
-                  <span className="sr-only"> {t.a11y.newTab}</span>
-                </a>
-                <a className="dlink" href={external.instagram} target="_blank" rel="noreferrer">
-                  <span className="dash">—</span>Instagram <span className="label">@kakdela.coffee</span>
-                  <span className="sr-only"> {t.a11y.newTab}</span>
-                </a>
-              </div>
+            </div>
+            <ul className="menu-dialog__cafes" role="list">
+              {cafes.map((c) => (
+                <li key={c.id} data-city-only={c.city}>
+                  <span className="menu-dialog__addr">{typograf(c.address)}</span>
+                  <span className="leader menu-dialog__leader" aria-hidden="true" />
+                  <CafeStatus cafe={c} />
+                </li>
+              ))}
+            </ul>
+            <div className="menu-dialog__contacts">
+              <a className="mono menu-dialog__phone" href="tel:+79280826111" data-city-only="nalchik">+7 (928) 082-61-11</a>
+              <a className="mono menu-dialog__phone" href="tel:+79280773249" data-city-only="vladikavkaz">+7 (928) 077-32-49</a>
+              <a className="dlink" href={external.telegram} target="_blank" rel="noreferrer">
+                <span className="dash">—</span>Telegram <span className="label" lang="en">how you doin’?</span>
+                <span className="sr-only"> {t.a11y.newTab}</span>
+              </a>
+              <a className="dlink" href={external.instagram} target="_blank" rel="noreferrer">
+                <span className="dash">—</span>Instagram <span className="label">@kakdela.coffee</span>
+                <span className="sr-only"> {t.a11y.newTab}</span>
+              </a>
+            </div>
+            <div className="menu-dialog__meta">
               <p className="label menu-dialog__halal">{t.nav.halal}</p>
               {/* A named group (aria-label is not allowed on a plain div); EN is text, not a control yet. */}
               <div className="menu-dialog__lang label" role="group" aria-label={t.nav.lang.label}>
@@ -111,8 +118,8 @@ export function MenuDialog() {
                   {t.nav.lang.en} · {t.nav.lang.soon}
                 </span>
               </div>
-            </aside>
-          </div>
+            </div>
+          </aside>
         </div>
       </dialog>
     </>

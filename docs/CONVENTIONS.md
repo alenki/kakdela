@@ -28,7 +28,7 @@ The site is one conversation. «Как дела?» asks, and every section answe
 ## Design tokens (globals.css)
 - **Colours:** `sky`, `sky-deep`, `cream`, `milk`, `ink`, `graphite`, `tomato` (large text or graphics only), `tomato-ink` (small red text), `cobalt`, `cobalt-deep`, `oxblood`, `oxblood-2`, `butter` (rare, never text on light). Tailwind utilities exist, e.g. `bg-cobalt` and `text-tomato-ink`.
 - **Sections:** `<section id="…" className="field section-pad" data-theme="sky|cream|tomato|oxblood|cobalt">`. `.field` sets `--bg`, `--fg`, `--fg-soft`, `--accent`, grain, and colours for dark themes.
-- **Layout:** `.wrap` gives the max width plus `--gutter` side padding (16px on mobile). Desktop is a 12-column grid with 24px gaps. There must never be horizontal scroll.
+- **Layout:** every section is **full viewport width**. `.wrap` has no max width; it only adds `--gutter` side padding (16px on mobile, `clamp(24px, 3.4vw, 104px)` from 640px). Desktop is a 12-column grid, gutter to gutter, with `--grid-gap` column gaps. Compose for 1440, 1920 and 2560 alike: no centred columns and no dead halves. Running text still keeps a `ch` measure. `.bleed`, `.bleed-l` and `.bleed-r` break imagery out to the viewport edges; text always keeps the gutter. Past 1600px the root font size grows (16px → 20px at 2560px), so anything sized in rem scales with the canvas. There must never be horizontal scroll.
 - **Type classes:**
   - `.q-voice`: thin tracked caps.
   - `.a-voice`: heavy condensed caps.

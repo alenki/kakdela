@@ -176,7 +176,7 @@ function CafeRow({ cafe: c }: { cafe: Cafe }) {
                 src={c.photo.src}
                 alt={c.photo.alt}
                 fill
-                sizes="(min-width: 1024px) 480px, (min-width: 640px) 46vw, calc(100vw - 32px)"
+                sizes="(min-width: 1600px) 70vw, (min-width: 1024px) 62vw, (min-width: 640px) 93vw, calc(100vw - 32px)"
                 placeholder="blur"
                 loading="lazy"
                 className="cafe__img"
@@ -217,10 +217,13 @@ export function LocationsSection() {
       <div className="wrap">
         <header className="loc-head" data-loc-head>
           <DialogueHeading id="gde-title" q={t.locations.q} a={t.locations.a} className="loc-head__dlg" />
-          <LocationsReply className="loc-head__reply reply" />
-          <div className="loc-tools">
-            <CitySwitch className="loc-tools__switch" />
-            <NearestButton points={points} />
+          {/* Beside the answer on wide screens, under it below 1600px (locations.css). */}
+          <div className="loc-head__aside">
+            <LocationsReply className="loc-head__reply reply" />
+            <div className="loc-tools">
+              <CitySwitch className="loc-tools__switch" />
+              <NearestButton points={points} />
+            </div>
           </div>
         </header>
 

@@ -2,17 +2,21 @@
 .evening {
   /* Above the cream section, so the lace can hang over the seam. */
   z-index: 1;
-  --step: clamp(36px, 5.4vw, 92px);
+  /* One stair of the dessert staircase. It grows with the canvas (no px cap): on a 2560 screen the
+     climb has to read across 2400px, not 1600. */
+  --step: clamp(36px, 6.5vw, 14rem);
   --hair: rgb(255 248 238 / 0.2);
 }
 
-/* ── The lace seam: picots over cream, scallops over oxblood ── */
+/* ── The lace seam: picots over cream, scallops over oxblood ──
+   Height in rem (38px up to 1600px, 47.5px at 2560) so the lace scales with the page; `top` is
+   SEAM_Y/H of it (17/38, see LaceSeam.tsx), which keeps the section edge on the ribbon line. */
 .ev-seam {
   position: absolute;
   left: 0;
-  top: -17px; /* SEAM_Y in LaceSeam.tsx */
+  top: -1.0625rem;
   width: 100%;
-  height: 38px;
+  height: 2.375rem;
   pointer-events: none;
 }
 
@@ -20,31 +24,42 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin: 0 0 clamp(18px, 2.4vw, 32px);
+  margin: 0 0 clamp(18px, 2.2vw, 3rem);
   color: var(--fg-soft);
 }
 .ev-kicker::before {
   content: "";
   flex: none;
   align-self: flex-start;
-  width: 28px;
+  width: 1.75rem;
   height: 1.5px;
   margin-top: calc(0.7em - 0.75px); /* middle of the first line (line-height 1.4) */
   background: var(--accent);
 }
 
-.ev-desserts__a { font-size: clamp(3rem, 0.9rem + 6.6vw, 8rem); }
-.ev-chess__a { font-size: clamp(2.75rem, 0.8rem + 5vw, 6.25rem); }
+/* The desserts answer is the section's poster line: on one line it spans ≈ ¾ of the canvas at every
+   desktop width up to 2560 (the line is ≈ 8× its size), so «слаще» lands over the sweetest dessert.
+   There it stops with the rem, as Coffee's answer does (250px). */
+.ev-desserts__a { font-size: clamp(3rem, 0.6rem + 9.2vw, 12.5rem); }
+/* From 1280, two lines in the six-column conversation column («— Блиц.» / «До десяти минут.»).
+   The long line can't break (no-break spaces) and is ≈ 6.6× its size: this keeps it at ≈ 83% of
+   the column at every width, never close to the board. Where the board is height-capped (a screen
+   short for its width) the column is wider and the answer may run as one line across it. */
+.ev-chess__a { font-size: clamp(2.75rem, 0.4rem + 5.4vw, 7.375rem); }
 /* Phones: the answer leads at full voice and may break as «— Дальше — / слаще.» (the no-break
    space keeps the dash on line 1); the chess answer steps down beneath it. */
 @media (max-width: 639.98px) {
   .ev-desserts__a { font-size: clamp(3rem, 14.5vw, 4.25rem); }
   .ev-chess__a { font-size: clamp(2.25rem, 11vw, 3rem); }
 }
+/* Tablets: one column, so the chess answer runs on one line; keep it under the desserts answer. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .ev-chess__a { font-size: clamp(2.75rem, 0.5rem + 5.6vw, 4rem); }
+}
 .ev-dlg .dlg-q { color: var(--fg-soft); }
 .ev-reply {
-  margin: clamp(14px, 1.8vw, 26px) 0 0;
-  font-size: clamp(1.4rem, 1rem + 1.15vw, 2.15rem);
+  margin: clamp(14px, 1.8vw, 3rem) 0 0;
+  font-size: clamp(1.4rem, 1rem + 1.15vw, 2.5rem);
   max-width: 26ch;
   text-wrap: balance;
   color: var(--fg);
@@ -53,7 +68,7 @@
 /* ═════ A · Desserts ═════ */
 .ev-desserts__head { margin-bottom: clamp(28px, 4vw, 56px); }
 
-/* Mobile: a swipe rail of 76vw cards with a counter. */
+/* Phones and tablets: a swipe rail of cards with a counter. */
 .ev-rail-wrap { position: relative; min-width: 0; }
 .ev-rail {
   position: relative;
@@ -89,12 +104,12 @@
   right: 0;
   top: 7%;
   transform: rotate(5deg);
-  padding: 7px 12px 6px;
+  padding: 0.64em 1.1em 0.55em;
   border-radius: 999px;
   background: var(--color-butter);
   color: var(--color-ink);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-stretch: 87.5%;
   letter-spacing: 0.02em;
   line-height: 1.2;
@@ -102,18 +117,18 @@
   box-shadow: 0 3px 0 rgb(20 18 16 / 0.32);
 }
 
-.ev-dessert__text { margin-top: clamp(10px, 1.4vw, 18px); }
-.ev-dessert__row { display: flex; align-items: baseline; gap: 10px; }
+.ev-dessert__text { margin-top: clamp(10px, 1.2vw, 2rem); }
+.ev-dessert__row { display: flex; align-items: baseline; gap: 0.625rem; }
 .ev-dessert__name {
   margin: 0;
-  font-size: clamp(2rem, 1.35rem + 1.5vw, 3rem);
+  font-size: clamp(2rem, 1.35rem + 1.5vw, 3.3125rem);
   line-height: 1.02;
   white-space: nowrap;
   text-wrap: nowrap;
 }
 .ev-dessert__price { font-size: 0.875rem; white-space: nowrap; }
 .ev-dessert__desc {
-  margin: 8px 0 0;
+  margin: 0.5rem 0 0;
   max-width: 34ch;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -158,7 +173,8 @@
 }
 .ev-pie {
   flex: 1 1 360px;
-  max-width: 620px;
+  /* A receipt line, not a full-width rule: the leader stays about as long as the dessert rows'. */
+  max-width: 40rem;
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.6;
@@ -180,19 +196,36 @@
   .ev-dessert:hover .oct-photo__img { transform: scale(1.05); }
 }
 
-/* Desktop: three up, a staircase that climbs with the price — дальше, слаще. */
+/* Desktop: the staircase climbs with the price across all twelve columns — дальше, слаще.
+   Row 1 kicker, row 2 the answer across the canvas, row 3 the staircase band: Сан-Себастьян
+   (440 ₽) at the top right under «слаще», Брауни a step down, Медовик two steps down at the left.
+   The band's two empty corners are the copy's: the reply sits on the top-left landing above
+   Медовик, the cherry pie and «Все десерты» close the receipt in the bottom-right under
+   Сан-Себастьян. Two steps are always taller than the reply and the foot, so nothing collides. */
 @media (min-width: 1024px) {
   .ev-desserts {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
+    column-gap: var(--grid-gap);
   }
-  .ev-desserts__head { grid-column: 1 / 9; margin-bottom: 0; }
-  .ev-rail-wrap { grid-column: 1 / -1; margin-top: calc(var(--step) * -1); }
+  /* The header's lines join the section grid (it has no semantics of its own inside the section). */
+  .ev-desserts__head { display: contents; }
+  .ev-kicker { grid-column: 1 / -1; grid-row: 1; }
+  .ev-desserts .ev-dlg { grid-column: 1 / -1; grid-row: 2; }
+  .ev-reply {
+    position: relative;
+    z-index: 1;
+    grid-column: 1 / 5;
+    grid-row: 3;
+    align-self: start;
+    max-width: 20ch;
+  }
+  .ev-rail-wrap { grid-column: 1 / -1; grid-row: 3; margin-top: clamp(14px, 1.8vw, 3rem); }
   .ev-rail {
     display: grid;
+    /* Three equal tracks with the section gap sit exactly on the 12-column grid (4 + 4 + 4). */
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    gap: var(--grid-gap);
     align-items: start;
     margin: 0;
     padding: 0;
@@ -202,7 +235,32 @@
   .ev-dessert:nth-child(1) { margin-top: calc(var(--step) * 2); }
   .ev-dessert:nth-child(2) { margin-top: var(--step); }
   .ev-rail-meta { display: none; }
-  .ev-desserts__foot { grid-column: 1 / -1; }
+
+  /* The sticker grows with its doily (11px at 1024 → 17px at 2560). */
+  .ev-chip { font-size: clamp(0.6875rem, 0.3rem + 0.45vw, 0.875rem); }
+  .ev-dessert__price { font-size: clamp(0.875rem, 0.7rem + 0.25vw, 1.0625rem); }
+  .ev-dessert__desc { font-size: clamp(0.9375rem, 0.75rem + 0.3vw, 1.125rem); }
+
+  /* The last receipt lines, in the corner the staircase leaves under Сан-Себастьян. */
+  .ev-desserts__foot {
+    grid-column: 9 / -1;
+    grid-row: 3;
+    align-self: end;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    margin-top: 0;
+    padding-top: clamp(12px, 1vw, 1.25rem);
+  }
+  .ev-pie { flex: none; width: 100%; max-width: none; font-size: clamp(0.8125rem, 0.65rem + 0.25vw, 1rem); }
+}
+/* Four columns hold the receipt line with its leader only from 1600 (it needs ≈ 440px at 1440);
+   below that it is set as dialogue, «… мороженого — 350 ₽», and wraps where it has to. */
+@media (min-width: 1024px) and (max-width: 1599.98px) {
+  .ev-pie { display: block; }
+  .ev-pie .leader { display: none; }
+  .ev-pie__dash { display: inline; }
 }
 
 /* ═════ B · Chess ═════ */
@@ -211,10 +269,12 @@
   /* One track that may shrink below its content: nothing inside can push the page wider at 320. */
   grid-template-columns: minmax(0, 1fr);
   gap: clamp(24px, 3vw, 40px);
-  margin-top: clamp(88px, 10vw, 168px);
+  margin-top: clamp(88px, 9vw, 15rem);
 }
 .ev-chess__head { min-width: 0; }
 
+/* The score sheet: the move in mono caps, the dialogue line beside it. Sizes are set on the row, so
+   the move column, the padding and the underline grow with the line on wide screens. */
 .ev-notation {
   margin: 0;
   padding: 0;
@@ -223,16 +283,17 @@
 }
 .ev-note {
   display: grid;
-  grid-template-columns: 6.2em minmax(0, 1fr);
+  grid-template-columns: 5.2em minmax(0, 1fr);
   align-items: baseline;
-  gap: 12px;
-  padding: 13px 0 12px;
+  gap: 0.65em;
+  padding: 0.7em 0 0.62em;
   border-bottom: 1px solid var(--hair);
+  font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem);
 }
-.ev-note__move { font-size: 0.8125rem; letter-spacing: 0.02em; color: var(--fg-soft); }
+.ev-note__move { font-size: max(0.8125rem, 0.68em); letter-spacing: 0.02em; color: var(--fg-soft); }
 .ev-note[data-side="b"] .ev-note__move { color: var(--color-butter); }
-.ev-note__line { font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem); line-height: 1.35; }
-.ev-note__text { position: relative; display: inline-block; padding-bottom: 5px; }
+.ev-note__line { font-size: 1em; line-height: 1.35; }
+.ev-note__text { position: relative; display: inline-block; padding-bottom: 0.26em; }
 .ev-note__ul {
   position: absolute;
   left: 0;
@@ -247,15 +308,25 @@
 /* Static state (no JS, reduced motion, and the end of the replay): the invitation is underlined. */
 .ev-note[data-row="3"] .ev-note__ul { transform: scaleX(1); }
 
-/* The board: milk frame, milk-10% light squares, dark squares let the oxblood through. */
+/* The board: milk frame, milk-10% light squares, dark squares let the oxblood through.
+   It is as large as its column allows but never taller than the screen: the side is capped at the
+   viewport height minus the header and the files/caption rows, so the whole position — and the
+   replay — is always in view at once, from a 390 phone to a 3440 ultrawide. */
+.ev-chess {
+  --ranks: 0.75rem; /* the rank-number column, shared with the note under the board */
+  /* The tallest board that fits the screen; never below 18rem, so a landscape phone still gets a
+     playable board rather than a stamp. */
+  --board-max: max(18rem, calc(100svh - var(--header-h) - 5.5rem));
+}
 .ev-board {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 10px;
-  row-gap: 8px;
-  width: 100%;
-  max-width: 640px;
+  grid-template-columns: var(--ranks) minmax(0, 1fr);
+  column-gap: 0.625rem;
+  row-gap: 0.5rem;
+  width: min(100%, var(--board-max));
   margin: 0;
+  /* Rank and file letters keep pace with a board that can be 1250px wide. */
+  --coord-fs: clamp(0.6875rem, 0.2rem + 0.5vw, 1.125rem);
 }
 .ev-board__ranks {
   grid-column: 1;
@@ -263,7 +334,7 @@
   display: grid;
   grid-template-rows: repeat(8, minmax(0, 1fr));
   align-items: center;
-  font-size: 11px;
+  font-size: var(--coord-fs);
   line-height: 1;
   color: var(--fg-soft);
 }
@@ -283,7 +354,7 @@
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   text-align: center;
-  font-size: 11px;
+  font-size: var(--coord-fs);
   line-height: 1;
   color: var(--fg-soft);
 }
@@ -322,8 +393,8 @@
   --accent: var(--color-tomato);
   --focus: var(--color-tomato-ink);
   display: grid;
-  gap: 12px;
-  padding: clamp(20px, 2.6vw, 34px);
+  gap: 0.75rem;
+  padding: clamp(20px, 2.2vw, 3.25rem);
   border-radius: 2px;
   background: var(--color-milk) url("/tex/grain-light.png") 0 0 / 128px 128px;
   color: var(--color-ink);
@@ -338,8 +409,8 @@
   color: var(--color-graphite);
 }
 .ev-event__top .label { margin: 0; }
-.ev-event__mark { flex: none; width: 30px; height: auto; margin-top: -4px; color: var(--color-ink); }
-.ev-event__title { margin: 0; font-size: clamp(2.4rem, 1.5rem + 2.6vw, 4.25rem); }
+.ev-event__mark { flex: none; width: 1.875rem; height: auto; margin-top: -4px; color: var(--color-ink); }
+.ev-event__title { margin: 0; font-size: clamp(2.4rem, 1.5rem + 2.6vw, 4.875rem); }
 .ev-event__body { margin: 0; max-width: 42ch; font-size: 1rem; line-height: 1.5; }
 .ev-event__foot {
   display: flex;
@@ -347,8 +418,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px 20px;
-  margin-top: 6px;
-  padding-top: 16px;
+  margin-top: 0.375rem;
+  padding-top: 1rem;
   border-top: var(--rule) dashed rgb(20 18 16 / 0.22);
 }
 .ev-event__when { margin: 0; font-size: 0.8125rem; }
@@ -376,23 +447,72 @@
   color: var(--fg-soft);
 }
 
-@media (min-width: 640px) and (max-width: 1023.98px) {
-  .ev-chess__board { max-width: 600px; }
-}
+/* Desktop: the conversation and the board answer each other across the canvas.
+   Left: the score sheet and the ticket. Right: the board, as big as its half of the canvas (six of
+   twelve columns: 50% less half a gap) and the screen height allow, with the family note beneath it
+   like a line written under the position. On screens that are short for their width (2560×1080,
+   3440×1440) the height cap wins: the board's track shrinks to the board and the conversation
+   widens into the rest, so no dead channel opens between them. The ticket spans the last two rows,
+   so whichever side runs longer, the note stays tucked under the board.
+   1024–1279: the answer runs one line across the top. From 1280 it takes the left column in two
+   lines («— Блиц.» / «До десяти минут.») and the board rises level with the question. */
 @media (min-width: 1024px) {
   .ev-chess {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 24px;
-    row-gap: clamp(28px, 3vw, 44px);
+    grid-template-columns: minmax(0, 1fr) min(calc(50% - var(--grid-gap) / 2), calc(var(--board-max) + var(--grid-gap)));
+    grid-template-rows: auto auto auto 1fr;
+    column-gap: var(--grid-gap);
+    row-gap: clamp(28px, 2.6vw, 4.5rem);
     align-items: start;
   }
-  /* The answer runs one line across; the dialogue and the board answer each other beneath it. */
   .ev-chess__head { grid-column: 1 / -1; grid-row: 1; }
-  .ev-notation,
-  .ev-event,
-  .ev-kids { grid-column: 1 / 7; }
-  .ev-notation { grid-row: 2; }
-  .ev-event { grid-row: 3; }
-  .ev-kids { grid-row: 4; }
-  .ev-chess__board { grid-column: 7 / 13; grid-row: 2 / 5; display: flex; justify-content: flex-end; }
+  .ev-notation { grid-column: 1; grid-row: 2; }
+  .ev-event { grid-column: 1; grid-row: 3 / 5; }
+  .ev-chess__board {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    display: flex;
+    justify-content: flex-end;
+    padding-left: var(--grid-gap);
+  }
+  /* Same width and edges as the board; the text starts on the board's a-file edge. */
+  .ev-kids {
+    grid-column: 2;
+    grid-row: 4;
+    max-width: none;
+    padding-left: calc(var(--grid-gap) + var(--ranks) + 0.625rem);
+  }
+  .ev-kids > span:last-child { max-width: 56ch; }
+  .ev-note { font-size: clamp(1.0625rem, 0.45rem + 1.2vw, 2rem); }
+  .ev-event__body { font-size: clamp(1rem, 0.85rem + 0.2vw, 1.125rem); }
+}
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .ev-chess__a { font-size: clamp(2.75rem, 0.5rem + 6.6vw, 6rem); }
+}
+@media (min-width: 1280px) {
+  .ev-chess__head { grid-column: 1; }
+  .ev-chess__board { grid-row: 1 / 4; }
+}
+
+/* Wide screens: the ticket (the conversation column, six columns or wider) gets a stub. The title runs across; below it the details sit
+   on the left, and the date line and the vote button are torn off behind a dashed perforation. */
+@media (min-width: 1600px) {
+  .ev-event {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0;
+  }
+  .ev-event__top,
+  .ev-event__title { grid-column: 1 / -1; }
+  .ev-event__body { grid-column: 1; grid-row: 3; align-self: start; padding-right: clamp(24px, 2vw, 3rem); }
+  .ev-event__foot {
+    grid-column: 2;
+    grid-row: 3;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    padding: 0.25rem 0 0.25rem clamp(24px, 2vw, 3rem);
+    border-top: 0;
+    border-left: var(--rule) dashed rgb(20 18 16 / 0.22);
+  }
 }

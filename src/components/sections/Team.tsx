@@ -1,12 +1,29 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { team } from "@/content/people";
 import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { TeamMotion } from "./team/TeamMotion";
 
-// Card widths: a quarter of the capped 1600px wrap on desktop, half on tablet, the rail on phones.
-const CARD_SIZES = "(min-width: 1600px) 360px, (min-width: 1024px) 22vw, (min-width: 640px) 45vw, 78vw";
+/**
+ * The width each portrait really renders at (the row has no cap, so vw holds at 2560 too).
+ * Desktop: a quarter of the gutter-to-gutter row (≈ 22vw) at most 4:5 of that width (≈ 28vw tall;
+ * less on ultrawide screens, where the frame height is capped by the viewport), and the two outer
+ * frames bleed one gutter (3.4vw) further to the screen edge. Tablet: half the row, square, every
+ * frame bled to its edge (≈ 49vw). Phones: the swipe rail, min(78vw, 340px) at 4:5.
+ * `object-fit: cover` scales a landscape picture to the frame's height, so it needs more pixels
+ * than the frame is wide.
+ */
+function photoSizes(src: StaticImageData, edge: boolean) {
+  const ratio = src.width / src.height;
+  const fit = (w: number, h: number) => Math.ceil(Math.max(w, h * ratio));
+  return [
+    `(min-width: 1024px) ${fit(edge ? 26 : 23, 28)}vw`,
+    `(min-width: 640px) ${fit(49, 49)}vw`,
+    `(min-width: 436px) ${fit(340, 425)}px`,
+    `${fit(78, 98)}vw`,
+  ].join(", ");
+}
 
 /** The verbatim About line, with «как дела?» lifted into the heavy tomato voice. */
 function Lead() {
@@ -56,14 +73,14 @@ export function TeamSection() {
 
         <div className="team__people">
           <ul className="team__rail" data-team-rail aria-label={t.team.listLabel}>
-            {team.map((p) => (
+            {team.map((p, i) => (
               <li key={p.id} className="team-card" data-team-card>
                 <div className="team-card__photo" data-placeholder={p.photo.placeholder ? "" : undefined}>
                   <Image
                     src={p.photo.src}
                     alt={p.photo.alt}
                     fill
-                    sizes={CARD_SIZES}
+                    sizes={photoSizes(p.photo.src, i === 0 || i === team.length - 1)}
                     placeholder="blur"
                     className="team-card__img"
                   />

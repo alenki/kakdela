@@ -4,7 +4,7 @@
   left: 12px;
   top: 12px;
   z-index: 100;
-  padding: 10px 16px;
+  padding: 0.625rem 1rem;
   background: var(--color-ink);
   color: var(--color-milk);
   border-radius: 999px;
@@ -27,6 +27,10 @@ a[href], button, input, select, textarea, summary, [tabindex="0"] {
 }
 
 /* ───── Header ───── */
+/* Full bleed: .wrap runs gutter to gutter, so the logo and the nav sit on the same edges as every
+   section's content. Sizes are in rem, which grows past 1600px (16px → 20px at 2560), so the header
+   keeps its proportions on wide canvases; its height stays var(--header-h) (globals), which the
+   sections under it rely on. */
 .site-header {
   --hdr-fg: var(--color-ink);
   position: fixed;
@@ -40,8 +44,11 @@ a[href], button, input, select, textarea, summary, [tabindex="0"] {
 .site-header[data-theme="tomato"],
 .site-header[data-theme="oxblood"],
 .site-header[data-theme="cobalt"] { --hdr-fg: var(--color-milk); }
-.site-header[data-hidden] { transform: translateY(-100%); }
-/* Past the hero: a solid plate in the colour of the field beneath, with a hairline. */
+/* The extra 2px take the plate's hairline (a 1.5px shadow below the bar) out of view as well. */
+.site-header[data-hidden] { transform: translateY(calc(-100% - 2px)); }
+/* Shift+Tab back into a tucked-away header brings it back, so focus is never off screen. */
+.site-header[data-hidden]:focus-within { transform: none; }
+/* Once the page scrolls: a solid plate in the colour of the field beneath, with a hairline. */
 .site-header::before {
   content: "";
   position: absolute;
@@ -74,7 +81,8 @@ html:not(.js) .hdr-burger { display: none; }
 }
 .site-header__logo, .site-header__nav { pointer-events: auto; }
 .site-header__logo { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; }
-.site-header__mark--full { display: none; position: relative; height: 26px; aspect-ratio: 1671 / 342; }
+/* 26px up to 1600px, then with the rem: 28px at 1920, 32.5px at 2560. */
+.site-header__mark--full { display: none; position: relative; height: 1.625rem; aspect-ratio: 1671 / 342; }
 .site-header__letters {
   position: absolute;
   inset: 0;
@@ -94,11 +102,11 @@ html:not(.js) .hdr-burger { display: none; }
   transform: rotate(var(--turn, 0deg));
   transition: transform 900ms cubic-bezier(0.18, 0.9, 0.32, 1.04);
 }
-.site-header__nav { display: flex; align-items: center; gap: clamp(12px, 2vw, 28px); }
+.site-header__nav { display: flex; align-items: center; gap: clamp(12px, 1.5vw, 2.25rem); }
 .hdr-link, .hdr-burger {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
   min-height: 44px;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -115,7 +123,7 @@ html:not(.js) .hdr-burger { display: none; }
 .hdr-link::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 10px;
+  left: 0; right: 0; bottom: calc(50% - 0.95em);
   height: 1.5px;
   background: currentColor;
   transform: scaleX(0);
@@ -123,15 +131,28 @@ html:not(.js) .hdr-burger { display: none; }
   transition: transform 320ms var(--ease-kd-out);
 }
 @media (hover: hover) and (pointer: fine) { .hdr-link:hover::after { transform: scaleX(1); } }
-.hdr-burger__lines { display: inline-grid; gap: 5px; width: 22px; }
+.hdr-burger__lines { display: inline-grid; gap: 0.3125rem; width: 1.375rem; }
 .hdr-burger__lines span { display: block; height: 1.5px; background: currentColor; transition: transform 320ms var(--ease-kd-out); }
 @media (hover: hover) and (pointer: fine) {
-  .hdr-burger:hover .hdr-burger__lines span:first-child { transform: translateX(4px); }
-  .hdr-burger:hover .hdr-burger__lines span:last-child { transform: translateX(-4px); }
+  .hdr-burger:hover .hdr-burger__lines span:first-child { transform: translateX(0.25rem); }
+  .hdr-burger:hover .hdr-burger__lines span:last-child { transform: translateX(-0.25rem); }
 }
 @media (max-width: 380px) { .hdr-burger__label { display: none; } }
 
 /* ───── «Разделы» dialog ───── */
+/*
+ * Full-screen and full-bleed. Three rows: the top bar (exactly the header's height, so «Закрыть» lands
+ * where «Разделы» was), the board of answers (takes the spare height, so on tall screens its rows
+ * stretch and each question sits a pause above its answer), and the city band.
+ *   phone          one column, as a list
+ *   640–1023       board in 2 columns under a full-width «— Меню»; band: switch, cafés (full-width
+ *                  receipt rows), contacts | meta
+ *   ≥1024          board 3 × 3 across all 12 columns; band on the board's thirds:
+ *                  switch + contacts | cafés (1 column, 2 from 1280px); meta as a closing baseline.
+ *                  Vladikavkaz (2 cafés): switch | cafés in one row, the contacts on the thirds below
+ * The label size comes from its own cell (container units), so the longest answer always fits its
+ * column, from a 286px tablet cell to a 768px cell at 2560.
+ */
 .menu-dialog {
   position: fixed;
   inset: 0;
@@ -142,6 +163,7 @@ html:not(.js) .hdr-burger { display: none; }
   margin: 0;
   padding: 0;
   border: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   clip-path: inset(0 0 0 0);
@@ -150,56 +172,169 @@ html:not(.js) .hdr-burger { display: none; }
 .menu-dialog:not([open]) { clip-path: inset(0 0 100% 0); }
 @starting-style { .menu-dialog[open] { clip-path: inset(0 0 100% 0); } }
 .menu-dialog::backdrop { background: transparent; }
-.menu-dialog__inner { min-height: 100%; padding-block: 12px 40px; display: flex; flex-direction: column; }
-.menu-dialog__top { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+.menu-dialog__inner {
+  --menu-rule: color-mix(in srgb, var(--fg) 18%, transparent);
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  padding-block: 0 clamp(28px, 4vh, 4rem);
+}
+.menu-dialog__top { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
 .menu-dialog__close {
-  display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
+  display: inline-flex; align-items: center; gap: 0.75rem; min-height: 44px;
   font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase;
   background: none; border: 0; color: inherit; cursor: pointer;
 }
-.menu-dialog__x { position: relative; width: 22px; height: 22px; }
+.menu-dialog__x { position: relative; width: 1.375rem; height: 1.375rem; }
 .menu-dialog__x::before, .menu-dialog__x::after {
   content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: currentColor;
 }
 .menu-dialog__x::before { transform: rotate(45deg); }
 .menu-dialog__x::after { transform: rotate(-45deg); }
-.menu-dialog__grid { display: grid; gap: 40px; margin-top: clamp(24px, 6vh, 64px); flex: 1; }
-@media (min-width: 1024px) { .menu-dialog__grid { grid-template-columns: 1fr minmax(300px, 380px); gap: 64px; } }
+
+/* Board of answers */
+.menu-dialog__nav { display: grid; margin-top: clamp(24px, 6vh, 64px); }
 .menu-dialog__links { display: grid; gap: 2px; align-content: start; }
-@media (min-width: 1024px) { .menu-dialog__links { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(24px, 3vw, 56px); row-gap: clamp(6px, 1.4vh, 14px); } }
-.menu-dialog__links li {
+.menu-dialog__links li { position: relative; container-type: inline-size; }
+.menu-link {
+  display: flex;
+  flex-direction: column;
+  padding-block: 6px;
   opacity: 1;
   transform: none;
   transition: opacity 500ms var(--ease-kd-out), transform 700ms var(--ease-kd-out);
   transition-delay: calc(120ms + var(--i) * 45ms);
 }
-@starting-style { .menu-dialog[open] .menu-dialog__links li { opacity: 0; transform: translateY(40%); } }
-.menu-link { display: flex; flex-direction: column; padding-block: 6px; }
-.menu-link__aside { font-size: clamp(1rem, 0.9rem + 0.4vw, 1.25rem); color: var(--fg-soft); }
+@starting-style { .menu-dialog[open] .menu-link { opacity: 0; transform: translateY(1.25rem); } }
+.menu-link__aside { font-size: clamp(1rem, 0.72rem + 0.55vw, 1.625rem); color: var(--fg-soft); }
 .menu-link__label { font-size: clamp(2.5rem, 1.4rem + 3.4vw, 4.75rem); transition: font-weight 350ms var(--ease-kd-out); }
 .menu-link__label .dash { display: inline-block; transition: margin 350ms var(--ease-kd-out); margin-right: 0.12em; }
 @media (hover: hover) and (pointer: fine) {
   .menu-link:hover .menu-link__label { font-weight: 700; }
   .menu-link:hover .menu-link__label .dash { margin-right: 0.3em; }
 }
-.menu-dialog__side { display: grid; gap: 28px; align-content: start; }
-.menu-dialog__cafes { display: grid; gap: 0; }
-.menu-dialog__cafes li {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
-  padding-block: 10px; border-bottom: var(--rule) solid rgb(20 18 16 / 0.18); font-size: 0.9375rem;
+@media (min-width: 640px) {
+  .menu-dialog__nav { margin-top: clamp(16px, 4vh, 4.5rem); }
+  /* Rows share the spare height (the nav is a stretched grid row, so 1fr resolves). */
+  .menu-dialog__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    align-content: stretch;
+    column-gap: var(--grid-gap);
+    row-gap: 0;
+  }
+  /* Each cell opens with a rule that draws in, left to right, as the board appears. */
+  .menu-dialog__links li::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--rule);
+    background: currentColor;
+    transform-origin: left;
+    transition: transform 800ms var(--ease-kd-out);
+    transition-delay: calc(60ms + var(--i) * 45ms);
+  }
+  @starting-style { .menu-dialog[open] .menu-dialog__links li::before { transform: scaleX(0); } }
+  .menu-link {
+    height: 100%;
+    justify-content: space-between;
+    gap: clamp(8px, 1.4vh, 1.25rem);
+    padding-block: clamp(10px, 1.6vh, 1.5rem) clamp(12px, 2vh, 1.75rem);
+  }
+  /* «— Бонусная карта», the widest answer, is 6.74em: 13.6cqi keeps it (and the hover's wider dash) inside its cell. */
+  .menu-link__label { font-size: clamp(2.25rem, 13.6cqi, 8rem); }
 }
-.menu-dialog__addr { font-weight: 500; }
-.menu-dialog__contacts { display: grid; gap: 10px; }
+/* Tablets: nine answers don't fill two columns, so the first, «— Меню», takes the whole top row as the
+   headline answer (its cell is twice as wide, so its label is too). Its own row is auto-sized, the
+   other four share the spare height. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .menu-dialog__links { grid-template-rows: auto; }
+  .menu-dialog__links li:first-child { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+  .menu-dialog__links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* City band */
+.menu-dialog__side { display: grid; gap: 28px; align-content: start; margin-top: 40px; }
+.menu-dialog__city { display: grid; }
+/* In the dialog the switch is a full-width two-way control: each city takes half. */
+.menu-dialog__city .city-switch__opt { flex: 1 1 0; justify-content: center; }
+.menu-dialog__cafes { column-gap: var(--grid-gap); }
+/* A receipt row: address, dotted leader, status. The address never splits (typograf holds «ул. …, 1»
+   together); when the row is too tight (phones, or the longer «закрыто · откроемся в 07:30» at night)
+   the status drops to a second line, flush right, and the leader runs out the first. */
+.menu-dialog__cafes li {
+  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.625rem; row-gap: 0.25rem;
+  padding-block: 0.625rem; border-bottom: var(--rule) solid var(--menu-rule); font-size: 0.9375rem;
+  break-inside: avoid;
+}
+.menu-dialog__leader { flex: 1 1 0; min-width: 1rem; }
+.menu-dialog__addr { font-weight: 500; min-width: 0; }
+.menu-dialog__cafes .status { margin-left: auto; }
+.menu-dialog__contacts { display: grid; gap: 10px; justify-items: start; align-content: start; }
 .menu-dialog__contacts .label { color: var(--fg-soft); }
+.menu-dialog__phone { font-size: clamp(1.125rem, 0.95rem + 0.5vw, 1.875rem); }
 /* Touch: each contact is a 44px+ target (the gap moves into the links as padding). */
 @media (pointer: coarse) {
   .menu-dialog__contacts { gap: 0; }
   .menu-dialog__contacts > a { padding-block: 10px; }
 }
+.menu-dialog__meta { display: grid; gap: 28px; }
 .menu-dialog__lang { display: flex; gap: 16px; color: var(--fg-soft); }
 .menu-dialog__lang [aria-current] { color: var(--fg); }
+@media (min-width: 640px) {
+  .menu-dialog__side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    margin-top: clamp(28px, 5vh, 4.5rem);
+  }
+  .menu-dialog__city, .menu-dialog__cafes { grid-column: 1 / -1; }
+  .menu-dialog__meta { gap: 16px; align-content: start; }
+}
+@media (min-width: 1024px) {
+  .menu-dialog__side {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    /* Row 2 is flexible, so the tall café list stretches it rather than pushing the contacts down. */
+    grid-template-rows: auto 1fr auto;
+    row-gap: clamp(20px, 3vh, 2.5rem);
+  }
+  .menu-dialog__city { grid-column: 1 / span 4; grid-row: 1; align-self: start; }
+  .menu-dialog__contacts { grid-column: 1 / span 4; grid-row: 2; }
+  /* The café list's first rule lines up with the switch's top edge. */
+  .menu-dialog__cafes { grid-column: 5 / -1; grid-row: 1 / span 2; border-top: var(--rule) solid var(--menu-rule); }
+  .menu-dialog__cafes li { padding-block: clamp(8px, 1.2vh, 0.75rem); }
+  .menu-dialog__meta {
+    grid-column: 1 / -1; grid-row: 3;
+    display: flex; justify-content: space-between; align-items: baseline; gap: var(--grid-gap);
+    padding-top: clamp(12px, 2vh, 1.25rem);
+    border-top: var(--rule) solid var(--menu-rule);
+  }
+}
+/* Vladikavkaz has two cafés: a single receipt row beside the switch, so the contacts leave the left
+   column and run under the whole band on the board's thirds (phone | Telegram | Instagram) instead of
+   leaving two thirds of the band empty. CSS only, like every city swap. */
+@media (min-width: 1024px) {
+  html[data-city="vladikavkaz"] .menu-dialog__cafes { grid-row: 1; }
+  html[data-city="vladikavkaz"] .menu-dialog__contacts {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: baseline;
+  }
+}
+/* Landscape tablets: the single café column is the band's tallest item; tighten it so the dialog fits. */
+@media (min-width: 1024px) and (max-width: 1279.98px) and (max-height: 820px) {
+  .menu-dialog__cafes li { padding-block: 6px; }
+}
+/* Two café columns, each exactly one board third, filled top to bottom in list order. */
+@media (min-width: 1280px) {
+  .menu-dialog__cafes { columns: 2; }
+}
 
 /* ───── City switch ───── */
+/* rem sizes: identical to the old px up to 1600px, then they grow with the canvas like the type. */
 .city-switch {
   display: inline-flex;
   padding: 3px;
@@ -211,9 +346,9 @@ html:not(.js) .hdr-burger { display: none; }
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 16px;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
   border: 0;
   border-radius: 999px;
   background: none;
@@ -236,13 +371,13 @@ html[data-city="vladikavkaz"] .city-switch:not([data-ready]) [data-city-opt="vla
 .city-switch__opt[data-active] .city-switch__label,
 .city-switch__opt[data-active] .city-switch__count { color: var(--bg, var(--color-cream)); }
 .city-switch__count { font-size: 0.75rem; opacity: 0.7; }
-.city-switch--compact .city-switch__opt { min-height: 36px; padding: 0 12px; font-size: 0.8125rem; }
+.city-switch--compact .city-switch__opt { min-height: 2.25rem; padding: 0 0.75rem; font-size: 0.8125rem; }
 /* keep a 44px hit area even when the pill is visually compact */
 .city-switch__opt::after { content: ""; position: absolute; inset: -4px -2px; }
 
 /* ───── Live status ───── */
-.status { display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; letter-spacing: 0.02em; white-space: nowrap; }
-.status__dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+.status { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; letter-spacing: 0.02em; white-space: nowrap; }
+.status__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
 .status__dot[data-state="open"] { background: #2e8b57; border-color: #2e8b57; position: relative; }
 .status__dot[data-state="open"]::after {
   content: ""; position: absolute; inset: -1.5px; border-radius: 50%; border: 1.5px solid #2e8b57;
@@ -269,7 +404,7 @@ html[data-city="vladikavkaz"] .city-switch:not([data-ready]) [data-city-opt="vla
 }
 .action-bar__btn + .action-bar__btn { border-left: var(--rule) solid rgb(20 18 16 / 0.2); }
 .action-bar__btn:first-child { background: var(--color-cobalt); color: var(--color-milk); }
-/* Tablets: a floating pill, not a phone bar stretched edge to edge. */
+/* Tablets: a floating thumb control, not a phone bar stretched edge to edge (hidden from 1024px). */
 @media (min-width: 640px) {
   .action-bar {
     inset-inline: 0;
@@ -286,8 +421,87 @@ html[data-city="vladikavkaz"] .city-switch:not([data-ready]) [data-city-opt="vla
 html[data-dialog] .action-bar { display: none; }
 
 /* ───── Not found ───── */
-.not-found { min-height: 100svh; display: flex; align-items: center; padding-block: 120px 80px; }
-.not-found__inner { display: grid; gap: 32px; }
-.not-found .dlg-a { font-size: clamp(3rem, 1.4rem + 7vw, 8.5rem); max-width: 14ch; }
+/*
+ * One screen: the voiced answer set as display type across the full width, the three ways on, and the
+ * city's horizon bleeding edge to edge along the bottom. The answer's two sentences are two lines
+ * (.not-found__line), so it always breaks after «Ещё варим.».
+ *   phone          stacked, answer capped at 14ch; links as a list; skyline sliced from the centre
+ *   640–1023       the answer at 10vw (its long line, «Загляните чуть позже.», is 8.6em); a taller horizon
+ *   ≥1024          12 columns: code, dialogue and links span them all; the links sit on the thirds.
+ *                  The horizon is width-bound (6:1), so the type also answers to the height: min(10vw, 16vh)
+ *   ≥2:1           the horizon drops its empty top sky (15vw keeps ~9 units above the summits)
+ *   ≥21:9          the whole answer on one line, gutter to gutter (13.65em wide)
+ */
+.not-found {
+  --nf-a: clamp(3rem, 1.4rem + 7vw, 8.5rem);
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-top: calc(var(--header-h) + clamp(32px, 7vh, 6rem));
+  overflow-x: clip;
+}
+.not-found__inner { display: grid; gap: 32px; align-content: center; padding-bottom: clamp(40px, 7vh, 6rem); }
+.not-found .dlg-a { font-size: var(--nf-a); max-width: 14ch; }
+.not-found__line { display: block; }
+/* The answer's line box (0.86) is shorter than its glyphs: keep Ё's dots clear of the question. */
+.not-found__dlg { gap: max(0.35em, calc(var(--nf-a) * 0.22)); }
 .not-found__clover { display: inline-block; width: 1em; height: 1em; color: var(--color-tomato); vertical-align: -0.15em; }
 .not-found__links { display: grid; gap: 12px; font-size: 1.125rem; }
+/* The three ways on are the page's actions: they keep the list's larger size, not the section links' --dlink-size. */
+.not-found__links .dlink { font-size: inherit; }
+.not-found__sky { position: relative; color: var(--fg); }
+/* Natural 6:1 from 576px up; phones slice it from the centre (both summits stay in view). */
+.not-found__svg { width: 100%; height: max(96px, 16.667vw); }
+/* Grain under the horizon: clip the mountain mass to the band between ridge and foothills (NotFoundSkyClips)
+   and drop the flat --bg mask, so the field's grain runs uninterrupted to the page edge. */
+.not-found__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.not-found__sky [data-skyline] > path[fill^="var(--bg"] { fill: none; }
+.not-found__sky [data-skyline="nalchik"] > path[fill="var(--color-sky-deep)"],
+.not-found__sky [data-skyline="nalchik"] > g[clip-path] { clip-path: url(#nf-mass-nalchik); }
+.not-found__sky [data-skyline="vladikavkaz"] > path[fill="var(--color-sky-deep)"],
+.not-found__sky [data-skyline="vladikavkaz"] > g[clip-path] { clip-path: url(#nf-mass-vladikavkaz); }
+/* From tablets the answer runs the full measure: 10vw keeps «Загляните чуть позже.» (8.6em) on one line. */
+@media (min-width: 640px) {
+  .not-found { --nf-a: 10vw; }
+  .not-found .dlg-a { max-width: none; }
+  /* Portrait tablets have height to spare: a taller, centre-sliced horizon takes it. */
+  .not-found__svg { height: max(16.667vw, 18vh); }
+}
+@media (min-width: 1024px) {
+  .not-found {
+    --nf-a: min(10vw, 16vh);
+    padding-top: calc(var(--header-h) + clamp(24px, 5vh, 5rem));
+  }
+  /* The horizon's own empty sky (its top ~14%) is the rest of the pause above it. */
+  .not-found__inner {
+    padding-bottom: clamp(16px, 3vh, 3rem);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    row-gap: clamp(24px, 4vh, 3.5rem);
+  }
+  .not-found__code, .not-found__dlg, .not-found__links { grid-column: 1 / -1; }
+  .not-found__code { font-size: 0.8125rem; }
+  /* Capped at its 2560 size (the rem stops there; the answer is height-capped too). */
+  .not-found .dlg-q { font-size: clamp(1.5rem, 0.6rem + 1.6vw, 2.6875rem); }
+  .not-found__links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    font-size: clamp(1.125rem, 0.8rem + 0.55vw, 1.5rem);
+  }
+  .not-found__links li { padding-top: clamp(12px, 1.8vh, 1.25rem); border-top: var(--rule) solid currentColor; }
+}
+/* Wide screens (and short laptop viewports): 16.667vw of horizon would take a third of the height. At
+   15vw the slice (xMidYMax) only drops the empty sky above the summits (peaks sit at y≈34 of 240). */
+@media (min-width: 1024px) and (min-aspect-ratio: 2/1) {
+  .not-found {
+    --nf-a: min(10vw, 15vh);
+    padding-top: calc(var(--header-h) + clamp(16px, 3vh, 3rem));
+  }
+  .not-found__svg { height: 15vw; }
+}
+/* Ultra-wide: two lines would leave the right half of the long one empty; set the answer on one line,
+   gutter to gutter (13.65em incl. the dash), still capped by the height. */
+@media (min-width: 1024px) and (min-aspect-ratio: 21/9) {
+  .not-found { --nf-a: min(calc((100vw - 2 * var(--gutter)) / 13.9), 20vh); }
+  .not-found__line { display: inline; }
+}

@@ -44,11 +44,13 @@ function RowNote({ note }: { note: string }) {
   // Only the question is prose («в горы?»); the answer («V60 280») is a name and a price, not a number to group.
   return (
     <p className="drink__note mono" aria-hidden="true">
-      {typograf(q)}
+      <span>{typograf(q)}</span>
       {a && (
         <>
           {" "}
-          <NoteArrow className="drink__arrow" /> {a}
+          <span className="drink__note-a">
+            <NoteArrow className="drink__arrow" /> {a}
+          </span>
         </>
       )}
     </p>
@@ -57,8 +59,9 @@ function RowNote({ note }: { note: string }) {
 
 /**
  * «— А кофе?» / «— А с кофе мы не шутим.» — the loud supporting set-piece on the tomato field.
- * The cobalt takeaway cup stays in view (CSS sticky) while the signature card scrolls past it;
- * the CupNote island rewrites the barista's note on the sleeve for each drink.
+ * Desktop: the answer runs gutter to gutter; under it the cobalt takeaway cup stays in view (CSS
+ * sticky) while the signature card scrolls past it — one column of drinks up to 1600px, a two-column
+ * menu board beyond. The CupNote island rewrites the barista's note on the sleeve for each drink.
  */
 export function CoffeeSection() {
   return (
@@ -128,7 +131,7 @@ export function CoffeeSection() {
                     </div>
                     <div className="drink__thumb">
                       {photo ? (
-                        <OctPhoto photo={photo} sizes="(min-width: 1024px) 168px, 84px" loading="lazy" />
+                        <OctPhoto photo={photo} sizes="(min-width: 1600px) 8vw, (min-width: 764px) 11vw, 84px" loading="lazy" />
                       ) : (
                         <Wordmark variant="badge" className="drink__badge" />
                       )}

@@ -15,5 +15,3 @@ export function hashString(s: string): number {
   for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
   return h >>> 0;
 }
-
-export const round1 = (n: number) => Math.round(n * 10) / 10;

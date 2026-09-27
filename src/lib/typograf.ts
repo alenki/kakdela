@@ -5,10 +5,12 @@
  */
 
 // Built from their code points so they stay visible and unambiguous in source.
-/** No-break space (U+00A0). */
+/** No-break space (U+00A0). Also the digit-group separator in «2 709» and «5 000»: Onest's word space is
+ *  already narrow (≈ 0.27em), and its narrow no-break space (U+202F) is half that, too thin to read at
+ *  label size («2709»). */
 export const NBSP = String.fromCharCode(0xa0);
-/** Narrow no-break space (U+202F): the thousands separator in «5 000». */
-export const NNBSP = String.fromCharCode(0x202f);
+/** Word joiner (U+2060): no break at this point, and nothing printed. */
+export const WJ = String.fromCharCode(0x2060);
 
 /**
  * Which short words are held to the next word:
@@ -31,18 +33,20 @@ const SHORT_RE = Object.fromEntries(
 const UNITS = "ккал|кг|км|мл|мин|см|шт|г|л|м|ч|%";
 
 const RULES: [RegExp, string][] = [
-  // An opening dialogue dash holds on to the first word: «— А домой привезёте?»
-  [/^—\s+/u, `—${NBSP}`],
-  // A dash or «·» never starts a line: it stays with the word before.
-  [/\s+([—–·])/gu, `${NBSP}$1`],
+  // An opening dialogue dash (U+2014) holds on to the first word.
+  [/^\u2014\s+/u, `\u2014${NBSP}`],
+  // A dash (U+2014, U+2013) or «·» never starts a line: it stays with the word before.
+  [/\s+([\u2014\u2013·])/gu, `${NBSP}$1`],
   // Particles stay with the word before: «так же», «было ли».
   [/\s+(же|ли|бы)(?=[\s.,!?…:;»]|$)/giu, `${NBSP}$1`],
   // Street abbreviations stay with the name: «пр. Шогенцукова».
   [/(?<=^|[\s«(])(ул|пр|пер|пл|д)\.\s+/giu, `$1.${NBSP}`],
   // House numbers stay with the street name: «Байсултанова, 1» (not a list: «50 м, 1,4 км»).
   [/(?<=\p{Lu}\p{Ll}*),\s+(?=\d)/gu, `,${NBSP}`],
-  // Digit groups never split, with a narrow no-break space: «2 709», «5 000».
-  [/(?<=\d)\s(?=\d{3}(?!\d))/gu, NNBSP],
+  // Digit groups never split: «2 709», «5 000» (a no-break space; see NBSP).
+  [/(?<=\d)\s(?=\d{3}(?!\d))/gu, NBSP],
+  // The brand's own question never splits: «как дела?», wherever it appears.
+  [/(?<=(?:^|[\s«„(])[Кк]ак)\s+(?=дела(?!\p{L}))/gu, NBSP],
   // A number keeps its unit, and «₽» never starts a line.
   [new RegExp(`(?<=\\d)\\s+(?=(?:${UNITS})(?![\\p{L}\\d]))`, "gu"), NBSP],
   [/\s+₽/gu, `${NBSP}₽`],
@@ -50,7 +54,7 @@ const RULES: [RegExp, string][] = [
 
 /**
  * Apply the no-break rules: short words stay with the next word (see `TypografLevel`), a dash never
- * starts a line, numbers keep their digit groups, units and «₽». Idempotent.
+ * starts a line, numbers keep their digit groups, units and «₽», and «как дела» stays whole. Idempotent.
  */
 export function typograf(s: string, level: TypografLevel = 3): string {
   const out = s.replace(SHORT_RE[level], `$1${NBSP}`);
@@ -60,6 +64,12 @@ export function typograf(s: string, level: TypografLevel = 3): string {
 /** The last two words travel together, so a paragraph never ends on a lone word. */
 export const bindLastWord = (s: string) => s.replace(/ (?=[^ ]+$)/u, NBSP);
 
-/** «Блиц. До десяти минут.»: if the text has to wrap, it breaks only between the sentences. */
-export const keepLastSentence = (s: string) =>
-  s.replace(/(?<=[.!?…]\s)[^.!?…]+[.!?…]?$/u, (m) => m.replace(/ /g, NBSP));
+/**
+ * Names stay whole (apply after `typograf()`, where a line may carry a dish or a person's answer): a
+ * hyphenated word never breaks at its hyphen («Эспрессо-тоник», «По-настоящему»: a word joiner after
+ * it), and a name in «ёлочки» up to 32 characters long stays on one line («Как в сказке»). Idempotent.
+ */
+export const keepWhole = (s: string) =>
+  s
+    .replace(/(?<=\p{L})-(?=\p{L})/gu, `-${WJ}`)
+    .replace(/«[^«»]{1,32}»/gu, (m) => m.replace(/\s/gu, NBSP));

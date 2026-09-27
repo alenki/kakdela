@@ -3,30 +3,35 @@ import { cn } from "@/lib/format";
 
 type Props = {
   as?: "h2" | "h3";
-  /** Question line (thin voice). */
+  /** The small label above the title: the section's plain name («Кофе»). */
   q: string;
-  /** Answer line (heavy voice). Optional: some sections only ask. */
+  /** The title, in display type («А с кофе мы не шутим.»). Without it (and without children), `q` is the title. */
   a?: string;
   id?: string;
   className?: string;
   answerClassName?: string;
+  /** Extra title content, rendered after the title inside the heading. */
   children?: ReactNode;
 };
 
 /**
- * Russian dialogue typesetting: every line opens with a real em-dash (read naturally by screen
- * readers), set in tomato. Question in the thin voice, answer in the heavy voice.
+ * Every section heading: a sentence-case label over one title in heavy condensed caps. No dashes. Put
+ * it in a `.section-head` with an optional `.lead` sibling to get the shared desktop layout.
+ * data-dlg-q / data-dlg-a are motion hooks.
  */
 export function DialogueHeading({ as: Tag = "h2", q, a, id, className, answerClassName, children }: Props) {
+  const title = a ?? (children ? undefined : q);
+  const label = title === q ? undefined : q;
   return (
     <Tag id={id} className={cn("dlg", className)}>
-      <span className="dlg-line dlg-q q-voice" data-dlg-q>
-        <span className="dash">—</span> {q}
-      </span>
-      {a && (
-        <span className={cn("dlg-line dlg-a a-voice", answerClassName)} data-dlg-a>
-          <span className="dash">—</span>
-          {a}
+      {label && (
+        <span className="dlg-label label" data-dlg-q>
+          {label}
+        </span>
+      )}{" "}
+      {title && (
+        <span className={cn("dlg-title display", answerClassName)} data-dlg-a>
+          {title}
         </span>
       )}
       {children}

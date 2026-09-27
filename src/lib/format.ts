@@ -1,8 +1,8 @@
 import type { City, Price } from "@/content/types";
-import { NBSP, NNBSP } from "./typograf";
+import { NBSP } from "./typograf";
 
-/** «5 000» with a narrow no-break space as the thousands separator. */
-export const groupDigits = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NNBSP);
+/** «5 000»: digit groups joined by a no-break space (see NBSP in typograf.ts). */
+export const groupDigits = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP);
 
 /** «670 ₽» (no-break space before the sign). */
 export const rub = (n: number) => `${groupDigits(n)}${NBSP}₽`;

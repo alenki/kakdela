@@ -12,11 +12,6 @@ export function minutesInMoscow(date: Date): number {
   return h * 60 + m;
 }
 
-export const hhmm = (mins: number) => {
-  const m = ((mins % 1440) + 1440) % 1440;
-  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-};
-
 /** "00:00" closing is treated as 24:00 (end of the same day). */
 export function toMinutes(t: string, isClose = false): number {
   const [h, m] = t.split(":").map(Number);
@@ -27,11 +22,6 @@ export function toMinutes(t: string, isClose = false): number {
 export function isOpen(cafe: Pick<Cafe, "open" | "close">, mins: number): boolean {
   const o = toMinutes(cafe.open), c = toMinutes(cafe.close, true);
   return mins >= o && mins < c;
-}
-
-export function minutesUntilOpen(cafe: Pick<Cafe, "open" | "close">, mins: number): number {
-  const o = toMinutes(cafe.open);
-  return mins < o ? o - mins : 1440 - mins + o;
 }
 
 /** Hour as a fraction, e.g. 7:30 → 7.5. */

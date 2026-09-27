@@ -20,7 +20,7 @@ const PHOTOS = [
   // Drinks (client)
   { slug: "espresso-tonik", url: OLD + "bar/Drink_6474b98f84065.jpg", alt: "Эспрессо тоник со льдом" },
   { slug: "dalshe-slashe", url: OLD + "bar/Drink_6474b756ba8c6.jpg", alt: "Авторский напиток «Дальше слаще»" },
-  { slug: "klever", url: OLD + "bar/Drink_6474b645a2adc.jpg", alt: "Кофе «Клевер» — альтернативное заваривание" },
+  { slug: "klever", url: OLD + "bar/Drink_6474b645a2adc.jpg", alt: "Кофе «Клевер», альтернативное заваривание" },
   { slug: "stanciya-mir", url: OLD + "bar/Drink_6808e22e7956a.jpg", alt: "Авторский фильтр «Станция Мир» с сиропом из горных трав" },
   { slug: "kapuchino", url: OLD + "bar/Drink_647498fc26f9f.jpg", alt: "Капучино" },
   { slug: "zolotoj-kleverok", url: OLD + "bar/Drink_69ec6ff878e4d.jpg", alt: "Напиток «Золотой клеверок» с леденцом-клевером на кружевной салфетке" },

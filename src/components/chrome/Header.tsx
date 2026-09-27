@@ -11,16 +11,17 @@ export function Header() {
       <a href="#main" className="skip-link">
         {t.a11y.skip}
       </a>
-      <header className="site-header" data-header data-theme="sky">
+      {/* data-theme follows the section under the bar (HeaderBehavior); the theme tokens do the rest. */}
+      <header className="site-header" data-header data-theme="cream">
         <div className="site-header__inner wrap">
           {/* prefetch off: this is the homepage linking to itself */}
           <Link href="/" prefetch={false} className="site-header__logo" aria-label={t.a11y.home}>
-            {/* Desktop: letters from a cached mask image (painted with currentColor) + inline badge that nods. */}
+            {/* Desktop: letters from a cached mask image (painted with currentColor) + the inline badge. */}
             <span className="site-header__mark site-header__mark--full" aria-hidden="true">
               <span className="site-header__letters" />
-              <Wordmark variant="compact" letters={false} className="site-header__badge-in" cloverClassName="hdr-clover" />
+              <Wordmark variant="compact" letters={false} className="site-header__badge-in" cloverClassName="site-header__clover" />
             </span>
-            <Wordmark variant="badge" className="site-header__mark site-header__mark--badge" cloverClassName="hdr-clover" />
+            <Wordmark variant="badge" className="site-header__mark site-header__mark--badge" cloverClassName="site-header__clover" />
           </Link>
           <nav className="site-header__nav" aria-label={t.a11y.mainNav}>
             <RouteLink to="menu" className="hdr-link">

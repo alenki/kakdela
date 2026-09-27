@@ -28,8 +28,8 @@ const nearestTag = (d: number) =>
 
 /**
  * Re-order the server-rendered rows with CSS `order` (no React re-render of café content), tag the
- * nearest in each city, light its pin, switch city if the nearest café is in the other one, and
- * glide the rows into place (FLIP).
+ * nearest in each city, switch city if the nearest café is in the other one, and glide the rows
+ * into place (FLIP).
  */
 function applyRanking(ranked: Ranked[]) {
   const root = document.getElementById("gde");
@@ -40,7 +40,7 @@ function applyRanking(ranked: Ranked[]) {
 
   // Rows still waiting for their scroll entrance would otherwise move while invisible.
   gsap.killTweensOf(all);
-  gsap.set(all, { "--draw": 1, opacity: 1, y: 0, clearProps: "opacity,transform" });
+  gsap.set(all, { opacity: 1, y: 0, clearProps: "opacity,transform" });
   const first = new Map(all.map((r) => [r, r.getBoundingClientRect().top]));
 
   const rank: Record<City, number> = { nalchik: 0, vladikavkaz: 0 };
@@ -56,7 +56,6 @@ function applyRanking(ranked: Ranked[]) {
       tag.hidden = false;
       tag.textContent = r === 0 ? nearestTag(p.d) : typograf(t.locations.away(dist(p.d)));
     }
-    root.querySelectorAll(`[data-pin="${p.id}"]`).forEach((pin) => pin.toggleAttribute("data-near", r === 0));
     if (p === ranked[0]) nearestRow = row;
   }
 
@@ -77,7 +76,7 @@ function applyRanking(ranked: Ranked[]) {
   else gsap.delayedCall(0.55, open);
 }
 
-/** «— Какая ближе ко мне?»: geolocation is asked for only on this click. */
+/** «Какая ближе ко мне?»: geolocation is asked for only on this click. */
 export function NearestButton({ points }: { points: NearPoint[] }) {
   const [state, setState] = useState<State>({ kind: "idle" });
   const request = useRef(0);
@@ -129,10 +128,9 @@ export function NearestButton({ points }: { points: NearPoint[] }) {
         aria-describedby="gde-near-msg"
         data-busy={busy ? "" : undefined}
       >
-        <span className="btn-dash" aria-hidden="true" />
         {t.locations.nearest}
       </button>
-      <p id="gde-near-msg" className="loc-near__msg mono" role="status" data-state={state.kind}>
+      <p id="gde-near-msg" className="loc-near__msg" role="status" data-state={state.kind}>
         {state.kind === "locating" ? t.locations.locating : state.kind === "error" ? typograf(t.locations.denied) : state.kind === "done" ? typograf(state.text) : ""}
       </p>
     </>

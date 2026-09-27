@@ -1,212 +1,124 @@
 import { Fragment } from "react";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { Clover } from "@/components/brand/Clover";
 import { RouteLink } from "@/components/chrome/RouteLink";
-import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { flagship } from "@/content/cafes";
 import { external, type RouteKey } from "@/content/routes";
 import type { City } from "@/content/types";
-import { typograf } from "@/lib/typograf";
+import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { FooterAnswer, FooterGoodnight, FooterSignoff, FooterStatus } from "./footer/FooterVoice";
 import { MotionToggle } from "./footer/MotionToggle";
 import { FooterMotion } from "./footer/FooterMotion";
 
-/**
- * Small-type rules for the footer copy: a dash or «·» never starts a line, an opening dash never
- * hangs alone, one-letter words stay with the next word. Level 1 keeps the footer's breaks as they
- * were (FooterVoice uses the same); the default level would also hold «на», «до», «во» (see typograf).
- */
-const typo = (s: string) => typograf(s, 1);
+// Split as in the «Разделы» dialog: the four places set large, the services in the text face.
+const PLACES: RouteKey[] = ["menu", "locations", "events", "about"];
+const SERVICES: RouteKey[] = ["delivery", "catering", "bonus", "certificates", "careers"];
+const linkLabel = (key: RouteKey) => typograf(t.nav.links.find((l) => l.key === key)?.label ?? key);
 
 /** The city's main line is its flagship's: Байсултанова, 1 in Nalchik, Куйбышева, 3 in Vladikavkaz. */
-const phones = (Object.keys(flagship) as City[]).map((city) => ({
-  city,
-  tel: flagship[city].phone,
-  display: flagship[city].phoneDisplay,
-}));
+const CITIES = Object.keys(flagship) as City[];
+const SOCIAL = [
+  { label: "Telegram", href: external.telegram },
+  { label: "Instagram", href: external.instagram },
+];
 
-const NAV: RouteKey[] = ["menu", "locations", "events", "about"];
-const navLabel = (key: RouteKey) => t.nav.links.find((l) => l.key === key)?.label ?? key;
-
-/**
- * Small print: each «·»-separated phrase stays whole; lines break only after a «·». The separators
- * are elements too, so on desktop the facts strip can spread its phrases across the full width.
- */
+/** Small print: each «·»-separated phrase stays whole, so a line only ever breaks after a «·». */
 function Phrases({ text }: { text: string }) {
   const parts = text.split(" · ");
   return parts.map((p, i) => (
     <Fragment key={i}>
-      <span className="ft-nobr">{typo(p)}</span>
-      {i < parts.length - 1 && <span className="ft-sep"> · </span>}
+      <span className="ft-nobr">{typograf(p, 1)}</span>
+      {i < parts.length - 1 && `${NBSP}· `}
     </Fragment>
   ));
 }
 
-/** «— Бонусная карта»: the dash never sits alone on a line, however narrow the door. */
-function DoorLabel({ label }: { label: string }) {
-  const [first, ...rest] = label.split(" ");
-  return (
-    <span className="ft-door__label a-voice">
-      <span className="ft-nobr">
-        <span className="dash">—</span>
-        {first}
-      </span>
-      {rest.length > 0 && ` ${typo(rest.join(" "))}`}
-    </span>
-  );
-}
-
-/** ↗ drawn, not typed (glyph coverage varies across the four families). */
-function ExtArrow() {
-  return (
-    <svg className="ft-ext" viewBox="0 0 10 10" aria-hidden="true" focusable="false">
-      <path d="M2.5 7.5 7.5 2.5M3.6 2.5h3.9v3.9" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function DoorArrow() {
-  return (
-    <svg className="ft-door__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M3 12h17M14 5.5 20.5 12 14 18.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
 /**
- * Footer «— Спокойной ночи» (cobalt, slow). The conversation closes: the café asks once more,
- * the guest's own answer comes back in the heavy voice, and the café says goodnight by mood.
- * Then the service doors, contacts, the small print, and the giant wordmark closing like doors.
- * All of it runs the full width: the exchange spans the field and the doors run edge to edge.
+ * The page ends at night, set like the «Разделы» dialog: the places large, the services, the city's
+ * phone with the socials and the café facts, one line of small print, and the full wordmark in milk
+ * with its tomato clover: the footer's one moment.
  */
 export function SiteFooter() {
   return (
-    <footer id="footer" className="field ft" data-theme="cobalt">
+    <footer id="footer" className="field ft" data-theme="ink">
       <div className="wrap">
-        {/* ── The closing exchange ── */}
-        <div className="ft-talk" data-ft-talk>
-          <p className="ft-kicker label" data-ft-kicker>
-            {t.footer.kicker}
-          </p>
-          <div className="ft-exchange">
-            <DialogueHeading q={t.footer.q} id="footer-title" className="ft-dlg">
-              <FooterAnswer />
-            </DialogueHeading>
-            <div className="ft-reply">
-              <FooterGoodnight />
-              <FooterSignoff>
-                <Clover className="ft-signoff__clover" />
-              </FooterSignoff>
-            </div>
-          </div>
-          <FooterStatus />
-        </div>
-
-        {/* ── Service doors: dialogue links ── */}
-        <nav className="ft-doors" aria-label={t.footer.doorsLabel} data-ft-doors>
-          <span className="ft-rule" data-ft-rule aria-hidden="true" />
-          <ul className="ft-doors__list" role="list">
-            {t.footer.doors.map((d) => (
-              <li key={d.key} className="ft-doors__item" data-ft-door>
-                <RouteLink to={d.key} className="ft-door">
-                  <span className="ft-door__q reply">{typo(d.q)}</span>
-                  <DoorLabel label={d.label} />
-                  <DoorArrow />
-                </RouteLink>
-              </li>
-            ))}
-          </ul>
-          <span className="ft-rule" data-ft-rule aria-hidden="true" />
-        </nav>
-
-        {/* ── Contacts ── */}
-        <div className="ft-info">
-          <div className="ft-col ft-col--social" data-ft-info>
-            <p className="ft-col__label label">{t.footer.social}</p>
-            <ul className="ft-social-list" role="list">
-              <li>
-                <a className="ft-social" href={external.telegram} target="_blank" rel="noreferrer">
-                  <span className="ft-social__name">
-                    <span className="dash">—</span>
-                    {t.footer.telegram.label}
-                    <ExtArrow />
-                  </span>
-                  <span className="ft-social__note">
-                    <span className="ft-social__en" lang="en">
-                      {t.footer.telegram.title}
-                    </span>{" "}
-                    <span className="reply">{t.footer.telegram.desc}</span>
-                  </span>
-                  <span className="sr-only"> {t.a11y.newTab}</span>
-                </a>
-              </li>
-              <li>
-                <a className="ft-social" href={external.instagram} target="_blank" rel="noreferrer">
-                  <span className="ft-social__name">
-                    <span className="dash">—</span>
-                    {t.footer.instagram.label}
-                    <ExtArrow />
-                  </span>
-                  <span className="ft-social__note mono">{t.footer.instagram.handle}</span>
-                  <span className="sr-only"> {t.a11y.newTab}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="ft-col ft-col--phone" data-ft-info>
-            <p className="ft-col__label label">
-              {t.footer.phone}
-              {" · "}
-              {phones.map((p) => (
-                <span key={p.city} data-city-only={p.city}>
-                  {t.city[p.city]}
-                </span>
-              ))}
-            </p>
-            {phones.map((p) => (
-              <a key={p.city} className="ft-phone mono" href={`tel:${p.tel}`} data-city-only={p.city}>
-                {p.display}
-              </a>
-            ))}
-          </div>
-
-          <nav className="ft-col ft-col--nav" aria-label={t.footer.navLabel} data-ft-info>
-            <p className="ft-col__label label" aria-hidden="true">
+        <div className="ft-grid">
+          <nav className="ft-col" aria-labelledby="ft-places" data-ft-col>
+            <p id="ft-places" className="ft-label label">
               {t.nav.sections}
             </p>
-            <ul className="ft-nav" role="list">
-              {NAV.map((key) => (
+            <ul className="ft-list ft-list--places display" role="list">
+              {PLACES.map((key) => (
                 <li key={key}>
-                  <RouteLink to={key} className="ft-nav__link">
-                    <span className="dash">—</span>
-                    {navLabel(key)}
+                  <RouteLink to={key} className="ft-link">
+                    {linkLabel(key)}
                   </RouteLink>
                 </li>
               ))}
             </ul>
           </nav>
-        </div>
 
-        {/* ── Small print ── */}
-        <div className="ft-print" data-ft-info>
-          <p className="ft-utility label">
-            <Phrases text={t.footer.utility} />
-          </p>
-          <div className="ft-legal label">
-            <p>
-              <Phrases text={t.footer.copyright} />
+          <nav className="ft-col" aria-labelledby="ft-services" data-ft-col>
+            <p id="ft-services" className="ft-label label">
+              {t.footer.services}
             </p>
-            <p>{typo(t.footer.photoCredit)}</p>
-            <MotionToggle />
+            <ul className="ft-list" role="list">
+              {SERVICES.map((key) => (
+                <li key={key}>
+                  <RouteLink to={key} className="ft-link">
+                    {linkLabel(key)}
+                  </RouteLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="ft-col" data-ft-col>
+            <address className="ft-address">
+              <p className="ft-label label">
+                {t.footer.phone}
+                {`${NBSP}· `}
+                {CITIES.map((city) => (
+                  <span key={city} data-city-only={city}>
+                    {t.city[city]}
+                  </span>
+                ))}
+              </p>
+              <div className="ft-list">
+                {CITIES.map((city) => (
+                  <a key={city} className="ft-link ft-phone" href={`tel:${flagship[city].phone}`} data-city-only={city}>
+                    {flagship[city].phoneDisplay}
+                  </a>
+                ))}
+              </div>
+              <ul className="ft-social" role="list">
+                {SOCIAL.map((s) => (
+                  <li key={s.label}>
+                    <a className="dlink" href={s.href} target="_blank" rel="noreferrer">
+                      {s.label}
+                      <span className="dlink__ext" aria-hidden="true">↗</span>
+                      <span className="sr-only"> {t.a11y.newTab}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </address>
+            <p className="ft-note label">
+              <Phrases text={t.footer.utility} />
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* ── The doors close: the wordmark assembles as the page ends ── */}
-      <div className="ft-sign" data-ft-sign>
-        <Wordmark variant="full" className="ft-mark" />
+        <div className="ft-legal label">
+          <p>
+            <Phrases text={t.footer.copyright} />
+          </p>
+          <p>{typograf(t.footer.photoCredit, 1)}</p>
+          <MotionToggle />
+        </div>
+
+        <div className="ft-sign" data-ft-sign>
+          <Wordmark variant="full" className="ft-mark" cloverClassName="ft-mark__clover" />
+        </div>
       </div>
       <FooterMotion />
     </footer>

@@ -23,7 +23,6 @@ export const reviews: Review[] = [
     text: "Отличное место для всей семьи, яркий интерьер, уютно… Заказали «Лучше всех» и «Как в сказке»… Бариста варят достойный эспрессо.",
     cafeId: "bajsultanova-1",
     sourceUrl: yandexReviews("231916384633"),
-    mentions: ["luchshe-vseh", "kak-v-skazke"],
     permission: false,
   },
 ];
@@ -35,7 +34,7 @@ export const team: TeamMember[] = [
     name: "Бариста",
     role: "Байсултанова, 1",
     answer: "Лучше всех",
-    line: "Сегодня на фильтре новая Эфиопия. Заходите — налью попробовать.",
+    line: "Сегодня на фильтре новая Эфиопия. Заходите, налью попробовать.",
     photo: photos.team1,
     placeholder: true,
   },
@@ -44,7 +43,7 @@ export const team: TeamMember[] = [
     name: "Бариста",
     role: "Шогенцукова, 19",
     answer: "Как в сказке",
-    line: "Первый капучино — в 7:30, первая партия в блиц — вечером.",
+    line: "Первый капучино в 7:30, первая партия в блиц вечером.",
     photo: photos.team2,
     placeholder: true,
   },
@@ -71,6 +70,6 @@ export const team: TeamMember[] = [
 export const chessEvent = {
   title: "Шахматный блиц",
   where: "пр. Шогенцукова, 19",
-  body: "Несколько туров, партия — до десяти минут. Победителю — сертификат на 5 000 ₽.",
-  when: "Даты — в Telegram",
+  body: "Несколько туров, партия до десяти минут. Победитель получает сертификат на 5 000 ₽.",
+  when: "Даты объявляем в Telegram",
 };

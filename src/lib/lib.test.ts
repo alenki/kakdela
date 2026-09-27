@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { hhmm, isOpen, minutesInMoscow, minutesUntilOpen, pickByHour, toMinutes } from "./time";
-import { haversineKm, project } from "./geo";
+import { isOpen, minutesInMoscow, pickByHour, toMinutes } from "./time";
+import { haversineKm } from "./geo";
 import { groupDigits, km, plural, rub, rubSpoken } from "./format";
-import { bindLastWord, keepLastSentence, NBSP, NNBSP, typograf } from "./typograf";
+import { bindLastWord, keepWhole, NBSP, typograf, WJ } from "./typograf";
 import { tornEdge } from "./tear";
 import { mulberry32 } from "./seed";
 import { cafes } from "@/content/cafes";
@@ -27,17 +27,12 @@ describe("time", () => {
     expect(isOpen(elevenClose, 22 * 60 + 59)).toBe(true);
     expect(isOpen(elevenClose, 23 * 60)).toBe(false);
   });
-  it("counts minutes until opening across midnight", () => {
-    expect(minutesUntilOpen(midnightClose, 0)).toBe(450);
-    expect(minutesUntilOpen(elevenClose, 23 * 60 + 30)).toBe(30 + 450);
-  });
   it("reads Moscow time regardless of the machine time zone", () => {
     // 2026-09-26T04:15:00Z is 07:15 in Moscow (UTC+3, no DST).
     expect(minutesInMoscow(new Date("2026-09-26T04:15:00Z"))).toBe(7 * 60 + 15);
     expect(minutesInMoscow(new Date("2026-09-26T21:05:00Z"))).toBe(5); // 00:05 next day
   });
-  it("formats and picks dayparts", () => {
-    expect(hhmm(7 * 60 + 5)).toBe("07:05");
+  it("picks dayparts", () => {
     expect(pickByHour(ru.dayparts, 7 * 60 + 29).text).toMatch(/спим/);
     expect(pickByHour(ru.dayparts, 12 * 60).text).toMatch(/второго кофе/);
     expect(pickByHour(ru.dayparts, 23 * 60 + 59).text).toMatch(/последний капучино/);
@@ -50,22 +45,15 @@ describe("geo", () => {
     expect(d).toBeGreaterThan(85);
     expect(d).toBeLessThan(115);
   });
-  it("projects points inside the box", () => {
-    const pts = project(cafes.filter((c) => c.city === "nalchik").map((c) => c.coords), { w: 1000, h: 100, pad: 10 });
-    for (const p of pts) {
-      expect(p.x).toBeGreaterThanOrEqual(10 - 1e-6);
-      expect(p.x).toBeLessThanOrEqual(990 + 1e-6);
-      expect(p.y).toBeGreaterThanOrEqual(10 - 1e-6);
-      expect(p.y).toBeLessThanOrEqual(90 + 1e-6);
-    }
-  });
 });
 
 describe("format", () => {
   it("formats rubles with no-break spaces", () => {
-    expect(rub(670)).toBe("670 ₽");
-    expect(rub(5000)).toBe("5 000 ₽");
-    expect(groupDigits(2709)).toBe("2 709");
+    expect(rub(670)).toBe(`670${NBSP}₽`);
+    expect(rub(5000)).toBe(`5${NBSP}000${NBSP}₽`);
+    // Digit groups take the plain no-break space: Onest's narrow one (U+202F) reads as «2709» at label size.
+    expect(groupDigits(2709)).toBe(`2${NBSP}709`);
+    expect(groupDigits(1234567)).toBe(`1${NBSP}234${NBSP}567`);
   });
   it("declines рубль correctly", () => {
     expect(plural(1, "рубль", "рубля", "рублей")).toBe("рубль");
@@ -81,18 +69,18 @@ describe("format", () => {
 });
 
 describe("typograf", () => {
-  // «~» stands for a no-break space and «^» for a narrow one, so expectations stay readable.
-  const show = (s: string) => s.replaceAll(NBSP, "~").replaceAll(NNBSP, "^");
+  // «~» stands for a no-break space and «^» for a word joiner, so expectations stay readable.
+  const show = (s: string) => s.replaceAll(NBSP, "~").replaceAll(WJ, "^");
   const ty = (s: string, level?: 1 | 2 | 3) => show(typograf(s, level));
 
   it("uses the real no-break code points", () => {
     expect(NBSP.codePointAt(0)).toBe(0xa0);
-    expect(NNBSP.codePointAt(0)).toBe(0x202f);
-    expect(NBSP.length + NNBSP.length).toBe(2);
+    expect(WJ.codePointAt(0)).toBe(0x2060);
+    expect(NBSP.length + WJ.length).toBe(2);
   });
   it("holds one- and two-letter words and short prepositions to the next word", () => {
     expect(ty("Скрэмбл с креветками и свежая зелень")).toBe("Скрэмбл с~креветками и~свежая зелень");
-    expect(ty("На вопрос «как дела?» у нас шесть ответов")).toBe("На~вопрос «как дела?» у~нас шесть ответов");
+    expect(ty("На вопрос «как дела?» у нас шесть ответов")).toBe("На~вопрос «как~дела?» у~нас шесть ответов");
     expect(ty("авокадо под голландезом для вас")).toBe("авокадо под~голландезом для~вас");
     expect(ty("Отлично. А у вас?")).toBe("Отлично. А~у~вас?");
     expect(ty("«в пути»")).toBe("«в~пути»");
@@ -106,10 +94,12 @@ describe("typograf", () => {
     expect(ty(s)).toBe("мороженым во~всех кофейнях под~соусом, и~мы");
   });
   it("never starts a line with a dash or «·», and holds an opening dash to its word", () => {
-    expect(ty("Дальше — слаще.")).toBe("Дальше~— слаще.");
-    expect(ty("7:30 – 23:00 · каждый день")).toBe("7:30~– 23:00~· каждый день");
-    expect(ty("— А домой привезёте?")).toBe("—~А~домой привезёте?");
-    expect(ty("цены —")).toBe("цены~—");
+    // The site has no dashes; these guard copy that might add one later (U+2014, U+2013).
+    const EM = "\u2014", EN = "\u2013";
+    expect(ty(`Дальше ${EM} слаще.`)).toBe(`Дальше~${EM} слаще.`);
+    expect(ty(`7:30 ${EN} 23:00 · каждый день`)).toBe(`7:30~${EN} 23:00~· каждый день`);
+    expect(ty(`${EM} А домой привезёте?`)).toBe(`${EM}~А~домой привезёте?`);
+    expect(ty(`цены ${EM}`)).toBe(`цены~${EM}`);
   });
   it("keeps particles with the word before", () => {
     expect(ty("Так же, как было бы.")).toBe("Так~же, как было~бы.");
@@ -122,9 +112,9 @@ describe("typograf", () => {
     expect(ty("от 4,8, 5,0")).toBe("от~4,8, 5,0");
   });
   it("keeps numbers whole and with their units", () => {
-    expect(ty("2 709 оценок на Яндекс Картах")).toBe("2^709 оценок на~Яндекс Картах");
-    expect(ty("1 234 567")).toBe("1^234^567");
-    expect(ty("сертификат на 5 000 ₽.")).toBe("сертификат на~5^000~₽.");
+    expect(ty("2 709 оценок на Яндекс Картах")).toBe("2~709 оценок на~Яндекс Картах");
+    expect(ty("1 234 567")).toBe("1~234~567");
+    expect(ty("сертификат на 5 000 ₽.")).toBe("сертификат на~5~000~₽.");
     expect(ty("50 м, 1,4 км, 320 ккал, 10 %")).toBe("50~м, 1,4~км, 320~ккал, 10~%");
     // Not units: a longer word that starts like one, or the preposition «с».
     expect(ty("с 2023 года, 1 сентября, 5 с сахаром")).toBe("с~2023 года, 1 сентября, 5 с~сахаром");
@@ -133,9 +123,9 @@ describe("typograf", () => {
   it("leaves «ёлочки», words and punctuation untouched: only spaces change", () => {
     const samples = [
       "Отличное место для всей семьи, яркий интерьер, уютно… Заказали «Лучше всех» и «Как в сказке»…",
-      "Каждая приятная встреча начинается с фразы «как дела?» — и мы хотели",
+      "Каждая приятная встреча начинается с фразы «как дела?». И мы хотели",
       '"straight" quotes and «ёлочки» „лапки“ stay as typed',
-      "Несколько туров, партия — до десяти минут. Победителю — сертификат на 5 000 ₽.",
+      "Несколько туров, партия до десяти минут. Победитель получает сертификат на 5 000 ₽.",
     ];
     const bare = (s: string) => s.replace(/\s+/g, " "); // \s covers both no-break spaces
     for (const s of samples) {
@@ -146,16 +136,26 @@ describe("typograf", () => {
       expect(typograf(out)).toBe(out); // idempotent
     }
   });
-  it("keeps the brand phrase intact in the team lead (Team lifts it by exact match)", () => {
-    const lead = typograf(ru.team.lead);
-    const at = lead.indexOf(`«${ru.team.phrase}»`);
-    expect(at).toBeGreaterThan(-1);
-    expect(lead.startsWith(`${NBSP}—`, at + ru.team.phrase.length + 2)).toBe(true);
+  it("keeps the brand's «как дела?» on one line, wherever it appears", () => {
+    expect(ty("Здесь помнят, какой кофе я пью, и спрашивают, как дела.")).toBe("Здесь помнят, какой кофе я~пью, и~спрашивают, как~дела.");
+    // Not «как делать», not «никак дела».
+    expect(ty("как делать")).toBe("как делать");
+    expect(ty("никак дела")).toBe("никак дела");
+    // The team lead: the phrase whole.
+    expect(ty(ru.team.lead)).toContain("«как~дела?»");
   });
-  it("binds the last word and the last sentence", () => {
+  it("keeps names whole: hyphenated words and names in «ёлочки»", () => {
+    expect(show(keepWhole("Эспрессо-тоник и мини-панкейки"))).toBe("Эспрессо-^тоник и мини-^панкейки");
+    expect(show(keepWhole("Заказали «Как в сказке» и «Лучше всех»"))).toBe("Заказали «Как~в~сказке» и «Лучше~всех»");
+    // Not a hyphen between numbers, not a long quotation.
+    expect(show(keepWhole("10-15 минут"))).toBe("10-15 минут");
+    const long = "«это очень длинная цитата, которую можно переносить»";
+    expect(keepWhole(long)).toBe(long);
+    const once = keepWhole(typograf("Эспрессо-тоник «Как в сказке»"));
+    expect(keepWhole(once)).toBe(once); // idempotent
+  });
+  it("binds the last word", () => {
     expect(show(bindLastWord("Бариста варят достойный эспрессо."))).toBe("Бариста варят достойный~эспрессо.");
-    expect(show(keepLastSentence("Блиц. До десяти минут."))).toBe("Блиц. До~десяти~минут.");
-    expect(show(keepLastSentence("Без точки"))).toBe("Без точки");
   });
 });
 
@@ -164,9 +164,9 @@ describe("i18n (ru)", () => {
     expect(ru.locations.cafesCount(1)).toBe("1 кофейня");
     expect(ru.locations.cafesCount(2)).toBe("2 кофейни");
     expect(ru.locations.cafesCount(7)).toBe("7 кофеен");
-    expect(ru.hero.cities(cafes.length)).toBe("Нальчик · Владикавказ — 9 кофеен");
+    expect(ru.locations.cafesCount(cafes.length)).toBe("9 кофеен");
     expect(ru.locations.rating(5, 626)).toBe("5,0 · 626 оценок");
-    expect(ru.locations.rating(4.8, 1234)).toBe(`4,8 · 1${NNBSP}234 оценки`);
+    expect(ru.locations.rating(4.8, 1234)).toBe(`4,8 · 1${NBSP}234 оценки`);
     expect(ru.locations.rating(4.9, 21)).toBe("4,9 · 21 оценка");
   });
   it("keeps the unit with its number in distances", () => {

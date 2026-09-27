@@ -6,7 +6,7 @@ import { isOpen } from "@/lib/time";
 import { t } from "@/i18n";
 import { cn } from "@/lib/format";
 
-/** Live open/closed badge. Server renders the neutral «с 7:30»; the clock fills in after mount. */
+/** Live open/closed status. Server renders the neutral hours («07:30–23:00»); the clock fills in after mount. */
 export function CafeStatus({ cafe, className }: { cafe: Cafe; className?: string }) {
   const now = useKd((s) => s.now);
   if (now === null) {

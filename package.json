@@ -14,8 +14,7 @@
     "assets:icons": "node scripts/make-icons.mjs",
     "assets:grain": "node scripts/make-grain.mjs",
     "shot": "node scripts/shot.mjs",
-    "perf": "node scripts/perf.mjs",
-    "assets:lace": "node scripts/make-lace.mjs"
+    "perf": "node scripts/perf.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

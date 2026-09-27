@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, SplitText } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { answerById, answers, DEFAULT_ANSWER } from "@/content/answers";
 import type { AnswerId } from "@/content/types";
 import { kd } from "@/lib/store";
@@ -12,11 +12,11 @@ import { mulberry32, hashString } from "@/lib/seed";
 const TEAR_AT = 64; // px of downward pull that rips the tab
 const TENSION = 0.35;
 
-type Source = "pointer" | "drag" | "key-arrow" | "key" | "init";
+type Source = "pointer" | "drag" | "key-arrow" | "key";
 
 /**
- * Brings the notice to life: tearing tabs (drag, click, tap, Space), the three-beat answer scene,
- * the all-torn/reprint loop and the first-visit logo assembly. Markup and content stay
+ * Brings the notice to life: tearing tabs (drag, click, tap, Space), the answer changing under them,
+ * the all-torn/reprint loop and a short first-visit settle of the tabs. Markup and content stay
  * server-rendered; this only toggles data attributes and animates between siblings.
  */
 export function HeroController() {
@@ -49,20 +49,15 @@ export function HeroController() {
     hero.dataset.js = "";
     panelOf(active)?.setAttribute("data-active", "");
     tabOf(active)?.setAttribute("data-current", "");
-    if (document.documentElement.dataset.guess === "1") hero.dataset.guess = "";
     kd.set({ answer: active, guessed: document.documentElement.dataset.guess === "1" });
 
     let scene: gsap.core.Timeline | null = null;
-    let split: SplitText | null = null;
     const torn = new Set<AnswerId>();
-    let firstTear = true;
 
-    // ── Beat choreography ──
-    function show(id: AnswerId, source: Source) {
-      if (id === active && source !== "init") return;
+    // ── The answer changes: the old one fades, the new one lands ──
+    function show(id: AnswerId) {
+      if (id === active) return;
       scene?.progress(1);
-      split?.revert();
-      split = null;
       const prev = panelOf(active);
       const next = panelOf(id);
       if (!next) return;
@@ -70,14 +65,12 @@ export function HeroController() {
       tabOf(id)?.setAttribute("data-current", "");
       active = id;
 
-      const a = answerById[id];
-
       if (prev && prev !== next) {
         prev.removeAttribute("data-active");
         if (!reduced()) {
           prev.setAttribute("data-leaving", "");
           gsap.fromTo(prev, { opacity: 1 }, {
-            opacity: 0, duration: 0.22, ease: "kd.peel",
+            opacity: 0, duration: 0.2, ease: "kd.peel",
             onComplete: () => { prev.removeAttribute("data-leaving"); gsap.set(prev, { clearProps: "opacity" }); },
           });
         }
@@ -89,32 +82,11 @@ export function HeroController() {
       next.setAttribute("data-active", "");
       if (reduced()) return;
 
-      const word = next.querySelector<HTMLElement>("[data-word]");
-      const dash = next.querySelector<HTMLElement>(".panel__a .dash");
-      const photo = next.querySelector<HTMLElement>("[data-photo]");
-      const receipt = next.querySelector<HTMLElement>("[data-receipt]");
-      const reply = next.querySelector<HTMLElement>("[data-reply]");
-      const more = next.querySelector<HTMLElement>(".panel__more");
-
-      scene = gsap.timeline({ defaults: { ease: "kd.out" } });
-      // Beat 1 — the answer lands heavy (0–0.6s).
-      if (word) {
-        scene.fromTo(word,
-          { fontWeight: 180, letterSpacing: "0.06em", opacity: 0, yPercent: 14, skewX: 0, scaleY: 1 },
-          { fontWeight: a.posture.weight, letterSpacing: "-0.005em", opacity: 1, yPercent: 0, skewX: a.posture.skewX, scaleY: a.posture.scaleY, duration: 0.62, ease: "kd.settle", clearProps: "fontWeight,letterSpacing,transform" },
-          0);
-      }
-      if (dash) scene.fromTo(dash, { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.45 }, 0);
-      // Beat 2 — the dish and its price (0.35–0.95s).
-      if (photo) scene.fromTo(photo, { scale: 0.86, rotate: -9, opacity: 0 }, { scale: 1, rotate: -2, opacity: 1, duration: 0.7, clearProps: "scale,opacity" }, 0.3);
-      if (receipt) scene.fromTo(receipt, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.5, clearProps: "all" }, 0.4);
-      // Beat 3 — the café replies (0.6–1.1s).
-      if (reply) {
-        split = SplitText.create(reply, { type: "words", aria: "none" });
-        scene.fromTo(split.words, { opacity: 0, yPercent: 60 }, { opacity: 1, yPercent: 0, duration: 0.5, stagger: 0.022 }, 0.6);
-        scene.call(() => { split?.revert(); split = null; });
-      }
-      if (more) scene.fromTo(more, { opacity: 0 }, { opacity: 1, duration: 0.4, clearProps: "opacity" }, 0.85);
+      const word = next.querySelector<HTMLElement>("[data-answer]");
+      const rest = next.querySelectorAll<HTMLElement>(".panel__photo, .panel__text > *");
+      scene = gsap.timeline({ defaults: { ease: "kd.out", clearProps: "opacity,transform" } });
+      if (word) scene.fromTo(word, { opacity: 0, yPercent: 14 }, { opacity: 1, yPercent: 0, duration: 0.5, ease: "kd.settle" }, 0);
+      scene.fromTo(rest, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05 }, 0.12);
     }
 
     // ── Tearing ──
@@ -129,11 +101,6 @@ export function HeroController() {
       if (!tab || !paper || torn.has(id)) return;
       torn.add(id);
       kd.set({ torn: [...torn] });
-      if (firstTear) {
-        firstTear = false;
-        hero!.dataset.first = "";
-      }
-      delete hero!.dataset.guess;
 
       if (!reduced()) {
         const rect = paper.getBoundingClientRect();
@@ -141,6 +108,14 @@ export function HeroController() {
         clone.removeAttribute("data-tab-paper");
         clone.classList.add("tab__paper--falling");
         clone.style.cssText = `left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;clip-path:${tab.style.getPropertyValue("--piece")};`;
+        // The word is sized off the notice (cqw); out of it, the falling piece keeps the same size and ink.
+        const word = paper.querySelector<HTMLElement>(".tab__text");
+        const cloneWord = clone.querySelector<HTMLElement>(".tab__text");
+        if (word && cloneWord) {
+          const cs = getComputedStyle(word);
+          cloneWord.style.fontSize = cs.fontSize;
+          cloneWord.style.color = cs.color;
+        }
         layer.appendChild(clone);
         const rnd = mulberry32(hashString(id) + torn.size);
         const spin = (rnd() - 0.5) * 32 + vx * 0.012;
@@ -168,14 +143,14 @@ export function HeroController() {
       }
     }
 
-    /** «Сонно — Эспрессо-тоник, 290 рублей». Every answer is announced, including a tear of the
+    /** «Сонно: Эспрессо-тоник, 290 рублей». Every answer is announced, including a tear of the
      *  pre-selected guess, where show() has nothing to redraw. */
     let announceTimer = 0;
     function announce(id: AnswerId) {
       if (!live) return;
       const a = answerById[id];
       const price = a.item.price[kd.get().city];
-      const text = `${a.label} — ${a.item.name}${price != null ? `, ${rubSpoken(price)}` : ""}`;
+      const text = `${a.label}: ${a.item.name}${price != null ? `, ${rubSpoken(price)}` : ""}`;
       // Same words again (tearing the answer already shown): clear first so it is re-announced.
       if (live.textContent === text) live.textContent = "";
       window.clearTimeout(announceTimer);
@@ -183,7 +158,6 @@ export function HeroController() {
     }
 
     function select(id: AnswerId, source: Source, vx = 0, vy = 0) {
-      delete hero!.dataset.guess;
       if (source === "key-arrow") {
         // Browsing with the arrows previews an answer; only a tear (Space, click, drag) is remembered.
         kd.preview(id);
@@ -192,7 +166,7 @@ export function HeroController() {
         kd.answer(id);
       }
       announce(id);
-      show(id, source);
+      show(id);
       revealOnPhone(id);
     }
 
@@ -244,6 +218,7 @@ export function HeroController() {
       const id = tab.dataset.tab as AnswerId;
       if (torn.has(id)) return;
       const paper = tab.querySelector<HTMLElement>("[data-tab-paper]")!;
+      intro?.progress(1);
       drag = { id, tab, paper, x0: e.clientX, y0: e.clientY, t: performance.now(), lx: e.clientX, ly: e.clientY, vx: 0, vy: 0, on: false };
     };
     const onPointerMove = (e: PointerEvent) => {
@@ -316,53 +291,33 @@ export function HeroController() {
       torn.clear();
       kd.resetTorn();
       if (empty) empty.hidden = true;
-      const papers = Array.from(hero.querySelectorAll<HTMLElement>(".tab"));
-      papers.forEach((t) => t.removeAttribute("data-torn"));
+      const tabs = Array.from(hero.querySelectorAll<HTMLElement>(".tab"));
+      tabs.forEach((tab) => tab.removeAttribute("data-torn"));
       if (!reduced()) {
-        gsap.fromTo(papers.map((t) => t.querySelector("[data-tab-paper]")), { yPercent: -100 }, { yPercent: 0, duration: 0.7, stagger: 0.04, ease: "kd.out", clearProps: "transform" });
+        gsap.fromTo(tabs.map((tab) => tab.querySelector("[data-tab-paper]")), { yPercent: -100 }, { yPercent: 0, duration: 0.7, stagger: 0.04, ease: "kd.out", clearProps: "transform" });
       }
       inputOf(active)?.focus();
     };
     reprint?.addEventListener("click", onReprint);
 
-    // ── First-visit logo assembly (≤1.4s, skippable) ──
-    let intro: gsap.core.Timeline | null = null;
+    // ── First visit this session: the freshly hung tabs sway once and settle (transform only) ──
     const html = document.documentElement;
-    const skip = () => intro?.progress(1);
+    let intro: gsap.core.Tween | null = null;
     if (html.classList.contains("intro") && !reduced()) {
-      const logo = hero.querySelector<SVGSVGElement>(".notice__logo");
-      const q = (sel: string) => Array.from(logo?.querySelectorAll<SVGElement>(sel) ?? []);
-      const hatchWrap = hero.querySelector<HTMLElement>(".notice__hatch");
-      const hatch = Array.from(hatchWrap?.querySelectorAll<SVGPathElement>("[data-hatch]") ?? []);
-      intro = gsap.timeline({
-        defaults: { ease: "kd.out" },
-        onComplete: () => {
-          try { sessionStorage.setItem("kd-intro", "1"); } catch {}
-          gsap.set(hatchWrap, { autoAlpha: 0 });
+      intro = gsap.fromTo(
+        hero.querySelectorAll(".tab__paper"),
+        { rotation: (i: number) => (i % 2 ? 1.6 : -1.6) },
+        {
+          rotation: 0, duration: 0.9, stagger: 0.03, ease: "kd.settle", clearProps: "transform",
+          onComplete: () => { try { sessionStorage.setItem("kd-intro", "1"); } catch {} },
         },
-      });
-      intro
-        .fromTo(q('[data-part="oct"]'), { drawSVG: "0%", opacity: 1 }, { drawSVG: "100%", duration: 0.6, ease: "kd.inOut" }, 0)
-        .fromTo(hatchWrap, { autoAlpha: 1 }, { autoAlpha: 1, duration: 0.01 }, 0)
-        .fromTo(hatch, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.28, stagger: 0.01 }, 0.1)
-        .fromTo(q('[data-part="clover"]'), { opacity: 0, scale: 0.92, transformOrigin: "50% 45%" }, { opacity: 1, scale: 1, duration: 0.4 }, 0.55)
-        .to(hatchWrap, { autoAlpha: 0, duration: 0.3 }, 0.85)
-        .fromTo(q('[data-part="kak"] path').reverse(), { x: 90, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, stagger: 0.06 }, 0.3)
-        .fromTo(q('[data-part="dela"] path'), { x: -90, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, stagger: 0.06 }, 0.3)
-        .fromTo(q('[data-part="kofe"] path, [data-part="zavtraki"] path'), { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.02 }, 0.6)
-        .fromTo(hero.querySelectorAll(".tab__paper"), { yPercent: -8, rotation: (i: number) => (i % 2 ? 2 : -2) }, { yPercent: 0, rotation: 0, duration: 0.9, stagger: 0.035, ease: "kd.settle", clearProps: "transform" }, 0.7);
-      html.classList.remove("intro");
-      window.addEventListener("wheel", skip, { once: true, passive: true });
-      window.addEventListener("touchstart", skip, { once: true, passive: true });
-      window.addEventListener("keydown", skip, { once: true });
-      window.addEventListener("pointerdown", skip, { once: true });
-    } else {
-      html.classList.remove("intro");
+      );
     }
+    html.classList.remove("intro");
 
     // Warm the other answer photos once the page is idle (so a tear never shows an empty frame).
     const warm = () => {
-      hero.querySelectorAll<HTMLImageElement>(".panel .oct-photo__img").forEach((img) => {
+      hero.querySelectorAll<HTMLImageElement>(".panel .photo__img").forEach((img) => {
         if (img.complete && img.naturalWidth) return;
         const pre = new Image();
         pre.sizes = img.sizes;
@@ -376,12 +331,11 @@ export function HeroController() {
     return () => {
       window.clearTimeout(announceTimer);
       scene?.progress(1).kill();
-      // Strict-mode remount (dev) or unmount mid-intro: revert and let the next mount replay it.
+      // Strict-mode remount (dev) or unmount mid-sway: revert and let the next mount replay it.
       if (intro && intro.progress() < 1) {
         intro.revert();
         html.classList.add("intro");
       } else intro?.kill();
-      split?.revert();
       layer.remove();
       pad.removeEventListener("keydown", onKeyDown);
       pad.removeEventListener("keyup", onKeyUp);
@@ -392,10 +346,6 @@ export function HeroController() {
       window.removeEventListener("pointercancel", onPointerCancel);
       pad.removeEventListener("click", onClick, true);
       reprint?.removeEventListener("click", onReprint);
-      window.removeEventListener("wheel", skip);
-      window.removeEventListener("touchstart", skip);
-      window.removeEventListener("keydown", skip);
-      window.removeEventListener("pointerdown", skip);
       if (ric) window.cancelIdleCallback(idle);
       else window.clearTimeout(idle);
       delete hero.dataset.js;

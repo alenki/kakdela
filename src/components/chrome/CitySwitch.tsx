@@ -10,15 +10,24 @@ import { cn } from "@/lib/format";
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
 const subscribeNever = () => () => {};
 
-/** «Нальчик 7 | Владикавказ 2». Every instance stays in sync through the store + html[data-city]. */
-export function CitySwitch({ className, compact }: { className?: string; compact?: boolean }) {
+/**
+ * «Нальчик 7 | Владикавказ 2». Every instance stays in sync through the store + html[data-city].
+ * The group is named «Город» unless `labelledBy` points at a visible label (e.g. «Цены» in breakfasts).
+ */
+export function CitySwitch({ className, compact, labelledBy }: { className?: string; compact?: boolean; labelledBy?: string }) {
   const city = useKd((s) => s.city);
   const group = useId();
   // Until hydration the store only knows the server default, so CSS paints the active pill from
   // html[data-city] (set before paint); the animated Motion pill takes over once ready.
   const ready = useSyncExternalStore(subscribeNever, () => true, () => false);
   return (
-    <div role="radiogroup" aria-label={t.a11y.city} className={cn("city-switch", compact && "city-switch--compact", className)} data-ready={ready ? "" : undefined}>
+    <div
+      role="radiogroup"
+      aria-label={labelledBy ? undefined : t.a11y.city}
+      aria-labelledby={labelledBy}
+      className={cn("city-switch", compact && "city-switch--compact", className)}
+      data-ready={ready ? "" : undefined}
+    >
       {CITIES.map((c) => {
         const active = city === c;
         return (

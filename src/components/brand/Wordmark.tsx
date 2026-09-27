@@ -19,8 +19,8 @@ type Props = {
 };
 
 /**
- * The «Как дела?» wordmark, traced from the client's logo. Parts carry data-part so motion code can
- * animate them: kak, kofe, zavtraki, oct, clover, dela. Paths use currentColor.
+ * The «Как дела?» wordmark, traced from the client's logo. Parts carry data-part (kak, kofe, zavtraki,
+ * oct, clover, dela), so CSS can colour one of them, e.g. the tomato clover. Paths use currentColor.
  */
 export function Wordmark({ variant = "full", className, title, cloverClassName, letters: withLetters = true }: Props) {
   const vb = VIEWBOX[variant];
@@ -39,7 +39,7 @@ export function Wordmark({ variant = "full", className, title, cloverClassName, 
       {letters && (
         <g data-part="kak">
           {WORDMARK.kak.map((s, i) => (
-            <path key={i} d={s.d} fillRule="evenodd" data-i={i} />
+            <path key={i} d={s.d} fillRule="evenodd" />
           ))}
         </g>
       )}
@@ -47,12 +47,12 @@ export function Wordmark({ variant = "full", className, title, cloverClassName, 
         <>
           <g data-part="kofe">
             {WORDMARK.kofe.map((s, i) => (
-              <path key={i} d={s.d} fillRule="evenodd" data-i={i} />
+              <path key={i} d={s.d} fillRule="evenodd" />
             ))}
           </g>
           <g data-part="zavtraki">
             {WORDMARK.zavtraki.map((s, i) => (
-              <path key={i} d={s.d} fillRule="evenodd" data-i={i} />
+              <path key={i} d={s.d} fillRule="evenodd" />
             ))}
           </g>
         </>
@@ -73,7 +73,7 @@ export function Wordmark({ variant = "full", className, title, cloverClassName, 
       {letters && (
         <g data-part="dela">
           {WORDMARK.dela.map((s, i) => (
-            <path key={i} d={s.d} fillRule="evenodd" data-i={i} />
+            <path key={i} d={s.d} fillRule="evenodd" />
           ))}
         </g>
       )}

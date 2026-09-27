@@ -11,34 +11,24 @@
 @import "../styles/sections/footer.css";
 
 /* ───────────────────────── Tokens ───────────────────────── */
+/* Warm paper, black ink, one red. Tomato is the only accent: the logo clover, focus, and at most one
+   small highlight per viewport. It is never a section background and never a block of body text. */
 @theme {
-  --color-sky: #dce8f4;
-  --color-sky-deep: #a9c4e6;
   --color-cream: #f3ebdc;
   --color-milk: #fff8ee;
   --color-ink: #141210;
   --color-graphite: #4a4540;
   --color-tomato: #d0392b;
   --color-tomato-ink: #b32e22;
-  --color-cobalt: #2f62c8;
-  --color-cobalt-deep: #1e3f8a;
-  --color-oxblood: #5a1414;
-  --color-oxblood-2: #6b1e1b;
-  --color-butter: #f2d64b;
 
   --ease-kd-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-kd-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-kd-ui: cubic-bezier(0.2, 0, 0, 1);
-
-  --radius-kd: 2px;
 }
 
 @theme inline {
   --font-display: var(--nf-display), "Arial Narrow", sans-serif;
   --font-serif: var(--nf-serif), Georgia, serif;
   --font-sans: var(--nf-sans), system-ui, sans-serif;
-  --font-mono: var(--nf-mono), ui-monospace, monospace;
-  --font-hand: var(--nf-hand), cursive;
 }
 
 /* ───────────────────────── Base ───────────────────────── */
@@ -48,23 +38,31 @@
     --gutter: 16px;
     --grid-gap: 16px;
     --header-h: 56px;
-    --header-offset: var(--header-h);
-    --rule: 1.5px;
-    --section-pad: clamp(88px, 13vh, 184px);
-    /* Type scale. The rem freezes at 20px from 2560px, so every vw/cqi-driven display size is
-       capped (in rem) at about its 2560 value: past 2560 both scales stop together and extra width
-       becomes air and wider columns, never taller type. */
-    /* The question voice («— А кофе?»): one size in every section (≈ 1:5 of a one-line answer). */
-    --dlg-q-size: clamp(1.125rem, 0.9rem + 1.2vw, 2.5rem);
-    /* Dash text links («— Все кофейни»): body size, a touch above it on phones. */
-    --dlink-size: 1.0625rem;
-    color-scheme: light;
+    --section-pad: clamp(80px, 11vh, 168px);
+    /* Heading block → content: the same pause in every section. */
+    --head-gap: clamp(40px, 4.5vw, 96px);
+    /* A list or grid → the closing line under it (the links, a note, the pie): the same step everywhere. */
+    --foot-gap: clamp(2rem, 2.8vw, 3.25rem);
+
+    /* Type scale. One section-title size and one item-title size for the whole site. The rem grows
+       past 1600px (16px → 20px at 2560), so the rem caps hold each size at about its 2560 value. */
+    --fs-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    --fs-small: 0.875rem;
+    --fs-label: 0.8125rem;
+    --lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+    --h2: clamp(2.75rem, 1.4rem + 5.4vw, 7.5rem);
+    --h3: clamp(1.75rem, 1.2rem + 2vw, 3.25rem);
+
+    /* Hairlines are 1px of the current text colour, so they work on both themes. */
+    --rule: 1px;
+    --line: color-mix(in srgb, currentColor 16%, transparent);
+    --line-strong: color-mix(in srgb, currentColor 28%, transparent);
   }
   @media (min-width: 640px) {
     :root { --gutter: clamp(24px, 3.4vw, 104px); --grid-gap: clamp(20px, 1.6vw, 48px); }
   }
   @media (min-width: 1024px) {
-    :root { --header-h: 64px; --dlink-size: 1.125rem; }
+    :root { --header-h: 64px; }
   }
   /* The header's contents grow with the rem; its bar keeps the same proportion. Plain px:
      HeroController parses this value with parseFloat. */
@@ -75,6 +73,32 @@
     :root { --header-h: 80px; }
   }
 
+  /* ───── Themes ───── */
+  /* Two themes. Any element with data-theme (sections, the header, the action bar, the dialog) gets its
+     tokens; .field paints them. The page is one café day: cream until the evening, ink at night. */
+  :root,
+  [data-theme="cream"] {
+    --bg: var(--color-cream);
+    --fg: var(--color-ink);
+    --fg-soft: var(--color-graphite);
+    --accent: var(--color-tomato);
+    --accent-ink: var(--color-tomato-ink);
+    --focus: var(--color-tomato-ink);
+    --grain: url("/tex/grain-light.png");
+    color-scheme: light;
+  }
+  [data-theme="ink"] {
+    --bg: var(--color-ink);
+    --fg: var(--color-milk);
+    --fg-soft: rgb(255 248 238 / 0.68);
+    --accent: var(--color-tomato);
+    /* Small red text needs a lift on ink (5.2:1). */
+    --accent-ink: color-mix(in srgb, var(--color-tomato) 78%, var(--color-milk));
+    --focus: var(--color-milk);
+    --grain: url("/tex/grain-dark.png");
+    color-scheme: dark;
+  }
+
   html {
     /* Past 1600px the rem grows with the canvas (16px → 20px at 2560px), so type and
        rem-sized components fill a wide screen instead of floating in it. */
@@ -82,21 +106,22 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    background: var(--color-sky);
+    background: var(--color-cream);
     overflow-x: clip;
   }
   body {
     font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.55;
     color: var(--color-ink);
     background: var(--color-cream);
     overflow-x: clip;
-    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-    line-height: 1.55;
   }
-  ::selection { background: var(--color-tomato); color: var(--color-milk); }
+  ::selection { background: var(--color-ink); color: var(--color-cream); }
+  [data-theme="ink"] ::selection { background: var(--color-milk); color: var(--color-ink); }
 
   :focus-visible {
-    outline: 2px solid var(--focus, var(--color-tomato-ink));
+    outline: 2px solid var(--focus);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -106,34 +131,13 @@
   p { text-wrap: pretty; }
 }
 
-/* ───────────────────────── Section themes ───────────────────────── */
 @layer components {
+  /* ───── Sections ───── */
   .field {
-    --bg: var(--color-cream);
-    --fg: var(--color-ink);
-    --fg-soft: var(--color-graphite);
-    --accent: var(--color-tomato);
-    --accent-ink: var(--color-tomato-ink);
-    --focus: var(--color-tomato-ink);
-    --rule-color: currentColor;
     position: relative;
     background-color: var(--bg);
     color: var(--fg);
     isolation: isolate;
-  }
-  .field[data-theme="sky"] { --bg: var(--color-sky); }
-  .field[data-theme="cream"] { --bg: var(--color-cream); }
-  .field[data-theme="tomato"] {
-    --bg: var(--color-tomato); --fg: var(--color-milk); --fg-soft: rgb(255 248 238 / 0.92);
-    --accent: var(--color-milk); --accent-ink: var(--color-milk); --focus: var(--color-milk);
-  }
-  .field[data-theme="oxblood"] {
-    --bg: var(--color-oxblood); --fg: var(--color-milk); --fg-soft: rgb(255 248 238 / 0.86);
-    --accent: var(--color-butter); --accent-ink: var(--color-butter); --focus: var(--color-milk);
-  }
-  .field[data-theme="cobalt"] {
-    --bg: var(--color-cobalt); --fg: var(--color-milk); --fg-soft: rgb(255 248 238 / 0.9);
-    --accent: var(--color-milk); --accent-ink: var(--color-milk); --focus: var(--color-milk);
   }
   /* Grain: pre-tinted, scrolls with content, never blended. */
   .field::before {
@@ -142,82 +146,89 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-image: url("/tex/grain-light.png");
-    background-size: 128px 128px;
-    opacity: 0.55;
+    background: var(--grain) 0 0 / 128px 128px;
+    opacity: 0.3;
   }
-  .field[data-theme="tomato"]::before,
-  .field[data-theme="oxblood"]::before,
-  .field[data-theme="cobalt"]::before { background-image: url("/tex/grain-dark.png"); opacity: 0.5; }
+  /* Consecutive cream sections are divided by one hairline across the gutters, not by a colour change.
+     A background layer, so every pseudo-element stays free for the section. */
+  .field[data-theme="cream"] + .field[data-theme="cream"] {
+    background-image: linear-gradient(var(--line), var(--line));
+    background-size: calc(100% - 2 * var(--gutter)) 1px;
+    background-position: var(--gutter) 0;
+    background-repeat: no-repeat;
+  }
 
   .wrap {
     width: 100%;
     padding-inline: var(--gutter);
   }
-  /* Breaks a child of .wrap out to the viewport edges (images, skylines, rails). */
+  /* Breaks a child of .wrap out to the viewport edges (images, rails). */
   .bleed { margin-inline: calc(-1 * var(--gutter)); }
   .bleed-l { margin-left: calc(-1 * var(--gutter)); }
   .bleed-r { margin-right: calc(-1 * var(--gutter)); }
-  .section-pad { padding-block: var(--section-pad); }
+  .section-pad { padding-block: var(--section-pad) calc(var(--section-pad) * 1.15); }
 
-  /* ───── The two voices of the logo ───── */
-  .q-voice {
+  /* ───── Type ───── */
+  .display {
     font-family: var(--font-display);
-    font-weight: 180;
+    font-weight: 860;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    line-height: 1;
+    line-height: 0.9;
+    letter-spacing: -0.01em;
   }
-  .a-voice {
-    font-family: var(--font-display);
-    font-weight: 930;
-    text-transform: uppercase;
-    letter-spacing: -0.005em;
-    line-height: 0.86;
-  }
+  .item-title { font-size: var(--h3); }
   .reply {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 500;
     line-height: 1.15;
   }
+  /* Prices, hours, phones: Onest with tabular figures (₽ is never set in the display face). */
   .mono {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0;
   }
   .label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-stretch: 87.5%;
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
+    font-weight: 500;
     line-height: 1.4;
+    color: var(--fg-soft);
   }
-  .dash { color: var(--accent); }
-
-  /* Dialogue heading block */
-  .dlg { display: flex; flex-direction: column; gap: 0.35em; }
-  .dlg-q { font-size: var(--dlg-q-size); color: var(--fg); }
-  /* The default answer (two-line answers, e.g. «— Ближе, чем кажется.»): a step under the one-line
-     poster answers (Coffee, Evening: ≈9.8vw, capped at 12.5–12.75rem), ≈0.83 of them at every width. */
-  .dlg-a { font-size: clamp(3rem, 1.2rem + 7.4vw, 10.5rem); }
-  .dlg-a .dash { display: inline-block; margin-right: 0.12em; }
-  .dlg-line { display: block; }
-  .kicker {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: clamp(1.25rem, 1rem + 1.2vw, 2.125rem);
-    line-height: 1.15;
-    color: var(--fg);
+  .lead {
+    max-width: 44ch;
+    font-family: var(--font-sans);
+    font-size: var(--lead);
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--fg-soft);
+    /* Two to four lines beside a title: even lines, broken at the sense (usually the dash). */
+    text-wrap: balance;
   }
 
-  /* 1.5px rules */
-  .rule { border-color: var(--rule-color); border-width: 0; }
-  .rule-t { border-top: var(--rule) solid currentColor; }
-  .rule-b { border-bottom: var(--rule) solid currentColor; }
+  /* ───── Section heading: label over title, lead beside it ───── */
+  .dlg { display: flex; flex-direction: column; gap: 0.875rem; margin: 0; }
+  /* The small size up to a laptop, then it grows with the title, so the pair keeps its proportion on a
+     wide canvas (≈ 1:6.6 from 1440 to 2560; 14px under the 150px title would get lost). */
+  .dlg-label { font-size: clamp(var(--fs-small), 0.5rem + 0.5vw, 1.125rem); }
+  .dlg-title { font-size: var(--h2); }
+  /* Desktop: the title spans cols 1–8, the lead cols 9–12 on the title's last baseline. */
+  .section-head { display: grid; row-gap: 1.25rem; margin-bottom: var(--head-gap); }
+  @media (min-width: 1024px) {
+    .section-head {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+      align-items: last baseline;
+    }
+    .section-head > .dlg { grid-column: 1 / span 8; }
+    .section-head > :not(.dlg) { grid-column: 9 / -1; }
+  }
 
-  /* Dotted receipt leader */
+  /* ───── Rules ───── */
+  .rule-t { border-top: 1px solid var(--line); }
+  .rule-b { border-bottom: 1px solid var(--line); }
+
+  /* Dotted leader: only inside menu price rows (name …… price). */
   .leader {
     flex: 1 1 auto;
     min-width: 1.5rem;
@@ -227,68 +238,84 @@
     background-size: 6px 100%;
     background-repeat: repeat-x;
     background-position: 0 50%;
-    opacity: 0.55;
+    opacity: 0.45;
   }
 
-  /* Buttons: pills only for actions */
+  /* ───── Secondary menu row: name …… price, in the text face ───── */
+  /* The hero's dish, the breakfasts extras, the evening pie. The name takes what the price leaves; when
+     it wraps, the leader runs on from the end of its last line (a word joiner glues it to the last word;
+     it paints to the right and is clipped at the name's edge, keeping at least 1.5rem) and the price sits
+     on that line's baseline. Never a lone leader line.
+       <p class="menu-row">
+         <span class="menu-row__name">Name<span class="menu-row__lead" aria-hidden="true">{WJ}<span class="leader menu-row__dots" /></span></span>
+         <span class="menu-row__price mono">350 ₽</span>
+       </p> */
+  .menu-row { display: flex; align-items: last baseline; column-gap: 0.5em; margin: 0; font-weight: 500; line-height: 1.35; }
+  .menu-row__name { flex: 1 1 0; min-width: 0; overflow-x: clip; text-wrap: balance; }
+  .menu-row__lead { white-space: nowrap; padding-right: 1.5rem; }
+  .menu-row__dots { display: inline-block; width: 100vw; margin: 0 -100vw 0 0.5em; }
+  .menu-row__price { flex: none; white-space: nowrap; }
+
+  /* ───── Buttons: pills, at most two in a group ───── */
   .btn {
-    --btn-bg: transparent;
-    --btn-fg: var(--fg);
     display: inline-flex;
     align-items: center;
-    gap: 0.6em;
-    min-height: 52px;
-    padding: 0 1.4em;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: 48px;
+    padding: 0 1.25em;
+    border: 1px solid var(--line-strong);
     border-radius: 999px;
-    border: var(--rule) solid currentColor;
-    background: var(--btn-bg);
-    color: var(--btn-fg);
+    background: transparent;
+    color: var(--fg);
     font-family: var(--font-sans);
-    font-weight: 500;
     font-size: 0.9375rem;
+    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
-    transition: background-color 320ms var(--ease-kd-ui), color 320ms var(--ease-kd-ui), transform 320ms var(--ease-kd-ui);
+    cursor: pointer;
+    transition: background-color 200ms var(--ease-kd-ui), border-color 200ms var(--ease-kd-ui), transform 120ms var(--ease-kd-ui);
   }
-  .btn-primary { --btn-bg: var(--color-cobalt); --btn-fg: var(--color-milk); border-color: var(--color-cobalt); }
-  .btn .btn-dash {
-    display: inline-block;
-    width: 0.8em;
-    height: 1.5px;
-    background: currentColor;
-    transition: width 320ms var(--ease-kd-out);
-  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--fg); border-color: var(--fg); color: var(--bg); }
   @media (hover: hover) and (pointer: fine) {
-    .btn:hover .btn-dash { width: 1.4em; }
-    .btn-primary:hover { --btn-bg: var(--color-cobalt-deep); border-color: var(--color-cobalt-deep); }
-    .btn:not(.btn-primary):hover { --btn-bg: var(--fg); --btn-fg: var(--bg); }
+    .btn:hover { border-color: currentColor; }
+    .btn-primary:hover {
+      background: color-mix(in srgb, var(--fg) 84%, var(--bg));
+      border-color: color-mix(in srgb, var(--fg) 84%, var(--bg));
+    }
   }
 
-  /* Text link with em-dash */
+  /* ───── Text links ───── */
+  /* The size of the text around it. */
   .dlink {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.45em;
-    font-size: var(--dlink-size);
+    position: relative;
+    display: inline-block;
+    font-size: 1em;
     font-weight: 500;
-    border-bottom: var(--rule) solid transparent;
-    transition: border-color 320ms var(--ease-kd-ui);
+    line-height: 1.4;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color 200ms var(--ease-kd-ui);
   }
-  .dlink .dash { transition: transform 320ms var(--ease-kd-out); }
+  .dlink:active { text-decoration-color: currentColor; }
+  /* « ↗» after an external link: inline-block, so the underline stops at the words. */
+  .dlink__ext { display: inline-block; margin-left: 0.3em; font-weight: 400; }
+  /* Touch: a 44px hit area at any text size, without moving the line. */
+  @media (pointer: coarse) {
+    .dlink::before { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }
+  }
+  /* A group of text links (a section's closing pair): one line when they fit, otherwise one under the
+     other. On touch the rows are 44px apart, so stacked hit areas never overlap. */
+  .dlinks { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; margin: 0; }
+  @media (pointer: coarse) {
+    .dlinks { row-gap: max(0.75rem, calc(44px - 1.4em)); }
+  }
   @media (hover: hover) and (pointer: fine) {
-    .dlink:hover { border-bottom-color: currentColor; }
-    .dlink:hover .dash { transform: translateX(-0.2em); }
+    .dlink:hover { text-decoration-color: currentColor; }
   }
-}
-
-/* ───────────────────────── Utilities ───────────────────────── */
-/* Regular octagon (the logo badge), pointy top, vertices at k·45°. */
-@utility octagon {
-  clip-path: polygon(50% 0%, 85.355% 14.645%, 100% 50%, 85.355% 85.355%, 50% 100%, 14.645% 85.355%, 0% 50%, 14.645% 14.645%);
-}
-@utility hide-scrollbar {
-  scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
 }
 
 /* ───────────────────────── City + motion switches (set by the head script) ───────────────────────── */
@@ -307,4 +334,3 @@ html[data-motion="reduced"] *::after {
   transition-duration: 1ms !important;
   scroll-behavior: auto !important;
 }
-

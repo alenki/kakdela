@@ -1,264 +1,170 @@
-/* ═════════════ BREAKFASTS «— Что на завтрак?»: a printed menu board ═════════════
-   The thin question asks; six heavy answers reply, each one a breakfast you can order.
-   Mobile: 2-up cards (3-up from 640px). Desktop (≥1024px), gutter to gutter on the 12-column grid:
-   the question and the ruled board own columns 1–7, the kicker and a sticky plate on lace own 8–12,
-   and the afterword closes both. Board type is sized off the board's own width (cqi), so the
-   question always spans it exactly and the rows keep their proportions from 1024 to 2560 (past
-   that, with the rem, the question and the rows stop growing: a 3440 ultrawide gets longer leaders
-   and air after the «?», and still shows three or four dishes a screen). */
+/* ═════════════ BREAKFASTS «Что на завтрак?»: a printed menu ═════════════
+   Six breakfasts named as answers to «как дела?», set as menu rows: name, dotted leader, price,
+   the description under them, 1px rules between. Mobile and tablet: every row carries its own photo.
+   Desktop (≥1024px): the price bar and the list own columns 1–7; a sticky photo of the hovered /
+   focused / read dish owns 9–12, under the lead, its top level with the bar's. */
 .bf {
-  overflow-x: clip;
-  /* The sticky plate's least distance from the header (and its reserve below). */
-  --bf-top: clamp(16px, 4vh, 3rem);
-  /* Plate → caption. */
-  --bf-cap-gap: clamp(12px, 2vh, 1.5rem);
+  /* The sticky photo's distance from the header. */
+  --bf-top: clamp(16px, 3vh, 2.5rem);
+  /* The row photo below 1024px: 96px on the smallest phones, then 27vw, 128px from 480px. It never
+     drops under 96px, so the stock-photo badge always fits on one line. */
+  --bf-thumb: clamp(96px, 27vw, 128px);
+  /* Between name, leader and price; the photo keeps 4px more. */
+  --bf-gap: 0.5rem;
+}
+@media (min-width: 480px) {
+  .bf { --bf-gap: 0.75rem; }
 }
 
-/* The team above is cream too: a tighter top, and a printed ink edge across the wrap, like the
-   head of a menu card, so the two sections read as two pages, not one long blank. */
-.bf.section-pad { padding-top: calc(var(--section-pad) * 0.55); }
-.bf > .wrap::before {
-  content: "";
-  display: block;
-  border-top: var(--rule) solid currentColor;
-  margin-bottom: clamp(32px, 3.4vw, 5.5rem);
-}
-
-/* ── Head ── */
-.bf__head {
-  display: grid;
-  gap: clamp(14px, 1.8vw, 24px);
-  margin-bottom: clamp(36px, 4.6vw, 7.5rem);
-}
-.bf__title { margin: 0; }
-.bf__title .dlg-q {
-  font-size: clamp(2.875rem, 1rem + 6vw, 7rem);
-  font-weight: 140;
-  letter-spacing: 0.08em;
-  line-height: 0.95;
-}
-@media (min-width: 640px) { .bf__title .dlg-q { letter-spacing: 0.1em; } }
-.bf__kicker { margin: 0; max-width: 24ch; }
-@media (min-width: 1024px) {
-  /* Same columns as the board below: the question over the list, the kicker over the plate. */
-  .bf__head {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-    align-items: end;
-  }
-  .bf__title { grid-column: 1 / 8; container-type: inline-size; }
-  /* «— ЧТО НА ЗАВТРАК?» sets 6.99em wide (plus 0.1em of trailing tracking, hung past the edge):
-     at 14.1cqi it spans the board, its «?» over the prices, up to 2560 (195px, where the rem stops). */
-  .bf__title .dlg-q { font-size: min(14.1cqi, 9.75rem); margin-right: -0.1em; }
-  /* The café's reply keeps pace with the question as the canvas widens (≈33px at 1440, 50px at 2560). */
-  .bf__kicker {
-    grid-column: 8 / 13;
-    max-width: 26ch;
-    padding-bottom: 0.2em;
-    font-size: clamp(1.25rem, 1rem + 1.2vw, 2.5625rem);
-  }
-}
-
-/* ── Board header: what's on, and whose prices ── */
-.bf-board__head {
+/* ── Bar: whose prices ── */
+.bf-bar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-  margin-bottom: clamp(14px, 1vw, 1.5rem);
+  gap: 12px;
+  margin-bottom: 1rem;
 }
-.bf-board__allday { margin: 0; color: var(--accent-ink); }
-.bf-board__city { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-.bf-board__note { margin: 0; color: var(--fg-soft); }
-/* No JS: the switch would be dead buttons, so it goes, and the note names the city whose prices show. */
-.bf-board__static { display: none; color: var(--fg); }
-html:not(.js) .bf-board__static { display: inline; }
-html:not(.js) .bf-board__switch { display: none; }
-@media (pointer: coarse) {
-  .bf-board__switch .city-switch__opt { min-height: 44px; }
-}
+.bf-bar .label { margin: 0; }
+/* No JS: the switch would be dead buttons, so it goes, and the label names the city whose prices show. */
+.bf-bar__static { display: none; }
+html:not(.js) .bf-bar__static { display: inline; }
+html:not(.js) .bf-bar__switch { display: none; }
 
-/* ── The list (mobile-first: cards) ── */
+/* ── The list (mobile-first: photo, then name …… price over the description) ── */
 .bf-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 40px 12px;
+  border-bottom: var(--rule) solid var(--line);
 }
-@media (min-width: 640px) {
-  .bf-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 24px; }
-}
-
 .bf-item {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0.75rem, 1fr) auto;
+  grid-template-columns: calc(var(--bf-thumb) + 4px) minmax(0, max-content) minmax(1rem, 1fr) auto;
+  grid-template-rows: auto auto 1fr;
   grid-template-areas:
-    "photo photo photo"
-    "no leader price"
-    "name name name"
-    "desc desc desc"
-    "kbju kbju kbju";
-  align-content: start;
+    "photo name leader price"
+    "photo desc desc desc"
+    "photo kbju kbju kbju";
   align-items: baseline;
-  column-gap: 6px;
-  min-width: 0;
-  padding-top: 16px;
-  container-type: inline-size;
+  column-gap: var(--bf-gap);
+  padding-block: 1rem;
+  border-top: var(--rule) solid var(--line);
 }
-/* A border, not a 1.5px-tall box: borders snap to whole device pixels, so every rule on the board
-   has the same weight (a box at a fractional offset paints 1px here and 2px there). */
-.bf-rule {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 0;
-  border-top: var(--rule) solid currentColor;
-  pointer-events: none;
+.bf-item__photo {
+  grid-area: photo;
+  align-self: start;
+  width: var(--bf-thumb);
 }
-
-.bf-item__photo { grid-area: photo; align-self: start; margin: 2px 5% 16px; }
-.bf-item__oct { transform: rotate(-2deg); }
-.bf-item:nth-child(even) .bf-item__oct { transform: rotate(1.5deg); }
-
-.bf-item__no {
-  grid-area: no;
-  font-size: 0.6875rem;
-  color: var(--fg-soft);
-  transition: color 320ms var(--ease-kd-ui);
+.bf-item__name {
+  grid-area: name;
+  margin: 0;
+  white-space: nowrap;
 }
-.bf-item__leader { grid-area: leader; }
+/* The whole row is the target; the accessible name stays the dish. It reaches a little into the
+   gutter, so the focus ring (between the rules) clears the type. */
+.bf-item__link::after { content: ""; position: absolute; inset: 0 -0.625rem; z-index: 1; }
+.bf-item__link:focus-visible { outline: none; }
+.bf-item__link:focus-visible::after { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 2px; }
+/* The track keeps at least 1rem of dots; the leader never spills past it into the price. */
+.bf-item__leader { grid-area: leader; min-width: 0; }
 .bf-item__price {
   grid-area: price;
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--fs-body);
   font-weight: 500;
+  white-space: nowrap;
   text-align: right;
-  transition: color 320ms var(--ease-kd-ui);
 }
-
-.bf-item__name {
-  grid-area: name;
-  margin: 10px 0 0;
-  /* ~1.6rem, but never wider than the card: the longest answer is ~6em with its dash. */
-  font-size: clamp(1.625rem, 1.1rem + 1.9vw, 2.25rem);
-  font-size: min(clamp(1.625rem, 1.1rem + 1.9vw, 2.25rem), 16cqi);
-  transition: color 320ms var(--ease-kd-ui);
-}
-.bf-item__link { display: flex; align-items: baseline; }
-/* The whole row / card is the target; the accessible name stays the dish. */
-.bf-item__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-.bf-item__link:focus-visible { outline: none; }
-.bf-item__link:focus-visible::after { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 2px; }
-.bf-item__dash { flex: none; display: inline-block; margin-right: 0.14em; }
-/* Line mask: clip-path (not overflow) so baselines stay put; tall enough for Й and Ё. */
-.bf-item__mask {
-  display: block;
-  min-width: 0;
-  clip-path: polygon(-4% -50%, 104% -50%, 104% calc(100% + 0.12em), -4% calc(100% + 0.12em));
-  transition: transform 420ms var(--ease-kd-out);
-}
-.bf-item__word { display: block; }
-
 .bf-item__desc {
   grid-area: desc;
-  margin: 8px 0 0;
-  font-size: 0.8125rem;
+  max-width: 60ch;
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--fg-soft);
-  hyphens: auto; /* html lang="ru"; short words («тёплый», «соусе») stay whole */
-  hyphenate-limit-chars: 8 4 3;
+  text-wrap: pretty;
 }
-.bf-item__kbju {
-  grid-area: kbju;
-  margin: 8px 0 0;
-  font-size: 0.6875rem;
-  font-stretch: 87.5%;
-  line-height: 1.6;
-  color: var(--fg-soft);
-}
-.bf-item__kbju-group { display: block; white-space: nowrap; }
-/* «Б 37,6 · Ж 36,8 · У 34,6» runs ~172px at 11px: on narrower cards (2-up, 360–390px) it sets narrower
-   (Martian Mono's wdth axis) and a hair tighter, ~156px. */
-@container (max-width: 179.98px) {
-  .bf-item__kbju { font-stretch: 75%; letter-spacing: -0.01em; }
+.bf-item__kbju { grid-area: kbju; margin: 0.375rem 0 0; }
+@media (min-width: 640px) {
+  .bf-item__desc { font-size: var(--fs-body); }
 }
 
-/* Under 360px two cards can't hold a line of type: one column, each breakfast a menu row with its
-   plate beside it. */
+/* Under 360px the longest name and its price can't share a line: the price goes under the name. */
 @media (max-width: 359.98px) {
-  .bf-list { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .bf-item {
-    grid-template-columns: clamp(96px, 36%, 120px) auto minmax(0.75rem, 1fr) auto;
+    grid-template-columns: calc(var(--bf-thumb) + 4px) minmax(0, 1fr);
     grid-template-rows: auto auto auto 1fr;
     grid-template-areas:
-      "photo no leader price"
-      "photo name name name"
-      "photo desc desc desc"
-      "photo kbju kbju kbju";
+      "photo name"
+      "photo price"
+      "photo desc"
+      "photo kbju";
   }
-  .bf-item__photo { margin: 2px 10px 0 0; }
-  /* The stock-photo flag, sized to a ~95px plate: centred, and narrower (Martian Mono's wdth axis). */
-  .bf-item__oct[data-placeholder]::after {
-    right: 50%;
-    translate: 50% 0;
-    font-size: 9px;
-    font-stretch: 75%;
-    letter-spacing: 0.04em;
-    padding-inline: 5px;
-  }
+  .bf-item__leader { display: none; }
+  .bf-item__price { margin-top: 0.25rem; text-align: left; }
 }
 
-/* Prices: both cities are in the markup; the active one rolls up after a real switch. */
-.bf-price { display: inline-flex; clip-path: inset(0); }
-.bf-price > span { display: inline-block; white-space: nowrap; }
-.bf-price > .bf-price__ask {
-  white-space: normal;
-  text-wrap: balance;
-  font-size: 0.85em;
+/* A city without a price: the price slot says to ask, quietly. Inline-flex, so when it takes two
+   lines on a narrow phone it sits on the row's baseline by its first line, not its last. */
+.bf-price__ask {
+  display: inline-flex;
+  font-size: var(--fs-label);
   font-weight: 400;
-  font-stretch: 87.5%;
   line-height: 1.3;
+  white-space: normal;
   color: var(--fg-soft);
+  text-wrap: balance;
 }
-.bf[data-roll] .bf-price > span {
-  animation: bf-roll 560ms var(--ease-kd-out) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
-}
-@keyframes bf-roll {
-  from { transform: translateY(110%); }
-  to { transform: none; }
+/* Below 390 it can't share a row's line in one piece: it takes two lines (typograf binds
+   «в кофейне»), shrink-wrapped, so the dots run right up to it. */
+@media (max-width: 389.98px) {
+  .bf-item .bf-price__ask { width: min-content; }
 }
 
-/* ── Desktop: the ruled board ── */
+/* ── Extras: secondary rows, name …… price on one line ── */
+.bf-extras { margin-top: clamp(2.5rem, 3.4vw, 4rem); }
+.bf-extras__title { margin: 0 0 0.75rem; }
+.bf-extras__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: var(--rule) solid var(--line);
+}
+/* Secondary rows (.menu-row): a name that wraps keeps the leader and the price on its last line. */
+.bf-extra {
+  padding-block: 0.75rem;
+  border-top: var(--rule) solid var(--line);
+  font-size: var(--fs-body);
+}
+
+/* ── Links (.dlinks) and the light-menu note ── */
+.bf-foot { display: grid; gap: 1rem; margin-top: var(--foot-gap); }
+.bf-note { margin: 0; max-width: 60ch; }
+
+/* ── Desktop: the list beside a sticky photo ── */
+.bf-preview { display: none; }
 @media (min-width: 1024px) {
   .bf__body {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto 1fr;
     column-gap: var(--grid-gap);
   }
-  .bf__main { grid-column: 1 / 8; min-width: 0; }
+  .bf-bar { grid-column: 1 / 8; grid-row: 1; }
+  .bf__main { grid-column: 1 / 8; grid-row: 2; min-width: 0; }
 
-  /* The board is the container: rows scale with columns 1–7, not with the viewport. */
-  .bf-list { display: block; container-type: inline-size; }
   .bf-item {
-    container-type: normal;
-    grid-template-columns: clamp(2.25rem, 5.9cqi, 4.125rem) minmax(0, max-content) minmax(2rem, 1fr) auto;
+    grid-template-columns: minmax(0, max-content) minmax(2rem, 1fr) auto;
+    grid-template-rows: auto;
     grid-template-areas:
-      "no name leader price"
-      ". desc desc desc";
-    column-gap: clamp(10px, 2cqi, 1.375rem);
-    padding: clamp(16px, 3.36cqi, 2.375rem) 0 clamp(18px, 3.9cqi, 2.75rem);
+      "name leader price"
+      "desc desc .";
+    column-gap: 1rem;
+    padding-block: clamp(1.25rem, 1.7vw, 2.25rem);
   }
   .bf-item__photo { display: none; }
-  .bf-item__no { font-size: 0.8125rem; }
-  /* The longest answer («— КАПИТАЛЬНЫЙ») is 6em: at 10.4cqi (the old 5.6vw, now per board) it still leaves the leader ~18% of the row. */
-  .bf-item__name { margin: 0; font-size: min(10.4cqi, 7.25rem); white-space: nowrap; }
-  .bf-item__price { font-size: clamp(0.9375rem, 2.2cqi, 1.5625rem); }
-  .bf-item__desc { margin-top: clamp(8px, 1.7cqi, 1.1875rem); font-size: 1rem; line-height: 1.5; max-width: 48ch; }
-  /* The plate shows КБЖУ on desktop; the row keeps it for screen readers. */
+  .bf-item__desc { margin-top: 0.625rem; }
+  /* The photo's caption shows КБЖУ on desktop; the row keeps it for screen readers. */
   .bf-item__kbju {
     position: absolute;
     width: 1px;
@@ -268,174 +174,45 @@ html:not(.js) .bf-board__switch { display: none; }
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  .bf-item[data-active] .bf-item__no { color: var(--accent-ink); }
-  /* The ring sits between the rules, a little wider than the row. */
-  .bf-item__link::after { inset: 0 -12px; }
-  .bf-item__link:focus-visible::after { outline-offset: -4px; }
-}
+  .bf-extra { padding-block: 0.875rem; }
 
-@media (hover: hover) and (pointer: fine) {
-  .bf-item:hover .bf-item__mask { transform: translateX(0.07em); }
+  /* From the bar's top to the end of the links, so the photo stays while the list is read.
+     A container, so the photo can know the column's width (100cqi). */
+  .bf-preview { display: block; grid-column: 9 / -1; grid-row: 1 / -1; min-width: 0; container-type: inline-size; }
 }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  /* Spotlight: while the pointer reads the board, the other answers step back. */
-  .bf[data-js] .bf-list:hover .bf-item:not([data-active]) :is(.bf-item__name, .bf-item__price) {
-    color: color-mix(in srgb, var(--fg) 30%, var(--bg));
-  }
-}
-
-/* ── Desktop: the sticky plate ──
-   The doily fills columns 8–12 (≈38vw: 385px at 1024, 545 at 1440, 730 at 1920, 970 at 2560),
-   unless the screen is too short to hold it, the caption and the header while it sticks. While it
-   sticks it sits centred in the screen under the header, so a tall screen (16:10, portrait) shares
-   the spare height above and below the plate instead of leaving it all as a blank under the caption. */
-.bf-preview { display: none; }
-@media (min-width: 1024px) {
-  /* A container, so the sticky offset can know the column's width (100cqi). */
-  .bf-preview { display: block; grid-column: 8 / 13; position: relative; min-width: 0; container-type: inline-size; }
+  /* While the pointer reads the list, the other dishes step back evenly (name, dots, price and
+     description; never the rules), so the row and the photo pair up. */
+  .bf[data-js] .bf-item > :not(.bf-item__photo) { transition: opacity 240ms var(--ease-kd-ui); }
+  .bf[data-js] .bf-list:hover .bf-item:not([data-active]):not(:focus-within) > :not(.bf-item__photo) { opacity: 0.45; }
 }
 .bf-preview__sticky {
-  /* 8rem: the caption (number, name, КБЖУ strip), which is rem-sized too. */
-  --bf-cap: calc(var(--bf-cap-gap) + 8rem);
-  --bf-stage: min(100cqi, calc(100svh - var(--header-h) - 2 * var(--bf-top) - var(--bf-cap)));
+  /* The caption under the photo: the name and one line of КБЖУ. */
+  --bf-cap: 4.5rem;
   position: sticky;
-  top: calc(var(--header-h) + max(var(--bf-top), (100svh - var(--header-h) - var(--bf-stage) - var(--bf-cap)) / 2));
-}
-.bf-preview__inner {
+  top: calc(var(--header-h) + var(--bf-top));
   display: grid;
-  justify-items: center;
-  gap: var(--bf-cap-gap);
+  gap: 1rem;
+  /* 4:5, as wide as the column unless the screen is too short to hold it, the caption and the header. */
+  width: min(100cqi, (100svh - var(--header-h) - 2 * var(--bf-top) - var(--bf-cap)) * 0.8);
 }
-.bf-stage {
-  position: relative;
-  width: var(--bf-stage);
-  aspect-ratio: 1;
-}
-.bf-stage__lace {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: var(--color-ink);
-  /* The printed offset grows with the doily. */
-  filter: drop-shadow(clamp(5px, 0.36vw, 10px) clamp(6px, 0.43vw, 12px) 0 rgb(20 18 16 / 0.07));
-}
-.bf-stage__plates { position: absolute; inset: 11%; }
-/* The stock-photo flag, in proportion to a plate that is up to ~760px wide. */
-@media (min-width: 1600px) {
-  .bf-slide .oct-photo[data-placeholder]::after { font-size: 0.6875rem; padding: 0.2em 0.7em; }
-}
+.bf-stage { position: relative; aspect-ratio: 4 / 5; }
+/* Crossfade: the new photo fades in on top; the old one waits under it, then drops. */
 .bf-slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transform: rotate(-2deg);
-  transition: opacity 300ms var(--ease-kd-out) 220ms;
+  transition: opacity 0s linear 420ms;
 }
 .bf-slide[data-active] {
-  opacity: 1;
   z-index: 1;
-  transition: none;
-}
-/* Keyed off data-swap (set on the first real swap), so the default plate never re-plays on hydration. */
-.bf[data-swap] .bf-slide[data-active] { animation: bf-plate 500ms var(--ease-kd-out) both; }
-.bf[data-swap] .bf-slide[data-active] .oct-photo__img { animation: bf-zoom 1200ms var(--ease-kd-out) both; }
-@keyframes bf-plate {
-  from { opacity: 0; transform: rotate(-9deg) scale(0.95); }
-  to { opacity: 1; transform: rotate(-2deg) scale(1); }
-}
-@keyframes bf-zoom {
-  from { transform: scale(1.1); }
-  to { transform: scale(1); }
+  opacity: 1;
+  transition: opacity 420ms var(--ease-kd-out);
 }
 
-/* Captions: stacked in one cell (height of the tallest), so swapping never shifts layout. */
-.bf-caps { display: grid; width: 100%; }
-.bf-cap {
-  grid-area: 1 / 1;
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  gap: 8px;
-  text-align: center;
-  visibility: hidden;
-  opacity: 0;
-}
-.bf-cap[data-active] { visibility: visible; opacity: 1; }
-.bf[data-swap] .bf-cap[data-active] { animation: bf-cap 500ms var(--ease-kd-out) both; }
-@keyframes bf-cap {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-.bf-cap__no { margin: 0; color: var(--fg-soft); }
-.bf-cap__name { margin: 0; font-size: clamp(1.5rem, 0.9rem + 1vw, 2.125rem); }
-.bf-cap__more { margin: 2px 0 0; color: var(--fg-soft); }
-.bf-kbju {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  margin: 4px 0 0;
-  border-block: var(--rule) solid currentColor;
-}
-.bf-kbju__cell {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 2px;
-  padding: 0.5rem clamp(10px, 1vw, 1.25rem);
-}
-.bf-kbju__cell + .bf-kbju__cell { border-left: 1px solid rgb(20 18 16 / 0.2); }
-.bf-kbju__value { margin: 0; font-size: 0.9375rem; font-weight: 500; }
-.bf-kbju__label {
-  font-size: 0.625rem; /* 10px (12.5px at 2560): the smallest type on the page, still legible */
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-stretch: 87.5%;
-  color: var(--fg-soft);
-}
-
-/* ── Afterword ── */
-.bf-foot {
-  position: relative;
-  display: grid;
-  gap: clamp(16px, 1.8vw, 24px);
-  margin-top: 44px;
-  padding-top: clamp(24px, 2.8vw, 3.5rem);
-}
-/* Desktop: the closing rule runs gutter to gutter, under the board and the plate alike; the reply
-   stays under the board (columns 1–7), the links and the note sit under the plate (8–12). */
-@media (min-width: 1024px) {
-  .bf-foot {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-    row-gap: clamp(14px, 1.2vw, 1.75rem);
-    align-content: start;
-    margin-top: 0;
-  }
-  .bf-foot > .bf-after-wrap { grid-column: 1 / 8; grid-row: 1 / span 2; }
-  .bf-foot > .bf-links { grid-column: 8 / 13; grid-row: 1; padding-top: 0.5em; }
-  .bf-foot > .bf-note { grid-column: 8 / 13; grid-row: 2; align-self: start; }
-}
-.bf-after-wrap { display: grid; gap: 10px; align-content: start; }
-.bf-after {
-  display: grid;
-  gap: 0.2em;
-  margin: 0;
-  font-size: clamp(1.375rem, 0.95rem + 1.3vw, 2.625rem);
-  max-width: 34ch;
-}
-@media (min-width: 1024px) { .bf-after { max-width: 40ch; } }
-/* The dash hangs: wrapped lines align under the words, not under it (dash + space = 1.064em). */
-.bf-after__line { display: block; padding-left: 1.064em; text-indent: -1.064em; }
-.bf-after__price {
-  font-style: normal;
-  font-size: 0.54em;
-  font-weight: 500;
-  letter-spacing: 0;
-  white-space: nowrap;
-  vertical-align: 0.14em;
-}
-.bf-links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
-.bf-links .dlink { position: relative; }
-/* ≥44px targets without moving the underline away from the words. */
-.bf-links .dlink::before { content: ""; position: absolute; inset: -12px -8px; }
-.bf-note { margin: 0; font-size: 0.75rem; line-height: 1.55; color: var(--fg-soft); max-width: 58ch; }
+/* Captions: stacked in one cell (height of the tallest), so swapping never shifts the layout. */
+.bf-caps { display: grid; }
+.bf-cap { grid-area: 1 / 1; display: grid; align-content: start; gap: 0.25rem; visibility: hidden; }
+.bf-cap[data-active] { visibility: visible; }
+.bf-cap p { margin: 0; }
+.bf-cap__name { font-weight: 500; }

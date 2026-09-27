@@ -16,14 +16,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ru_RU",
     siteName: "Как дела?",
-    title: "Как дела? — кофейни в Нальчике и Владикавказе",
+    title: "Как дела? Кофейни в Нальчике и Владикавказе",
     description: t.meta.description,
   },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#dce8f4",
+  themeColor: "#f3ebdc",
   viewportFit: "cover",
   width: "device-width",
   initialScale: 1,

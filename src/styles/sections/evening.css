@@ -1,518 +1,101 @@
-/* ═════════════ «ВЕЧЕР»: desserts and chess on oxblood, entered through lace ═════════════ */
-.evening {
-  /* Above the cream section, so the lace can hang over the seam. */
-  z-index: 1;
-  /* One stair of the dessert staircase. It grows with the canvas (no px cap): on a 2560 screen the
-     climb has to read across 2400px, not 1600. */
-  --step: clamp(36px, 6.5vw, 14rem);
-  --hair: rgb(255 248 238 / 0.2);
-}
+/* ═════════════ EVENING «Вечером»: three desserts and the pie, then the chess blitz, on ink ═════════════ */
 
-/* ── The lace seam: picots over cream, scallops over oxblood ──
-   Height in rem (38px up to 1600px, 47.5px at 2560) so the lace scales with the page; `top` is
-   SEAM_Y/H of it (17/38, see LaceSeam.tsx), which keeps the section edge on the ribbon line. */
-.ev-seam {
-  position: absolute;
-  left: 0;
-  top: -1.0625rem;
-  width: 100%;
-  height: 2.375rem;
-  pointer-events: none;
-}
-
-.ev-kicker {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin: 0 0 clamp(18px, 2.2vw, 3rem);
-  color: var(--fg-soft);
-}
-.ev-kicker::before {
-  content: "";
-  flex: none;
-  align-self: flex-start;
-  width: 1.75rem;
-  height: 1.5px;
-  margin-top: calc(0.7em - 0.75px); /* middle of the first line (line-height 1.4) */
-  background: var(--accent);
-}
-
-/* The desserts answer is the section's poster line: on one line it spans ≈ ¾ of the canvas at every
-   desktop width up to 2560 (the line is ≈ 8× its size), so «слаще» lands over the sweetest dessert.
-   There it stops with the rem, as Coffee's answer does (250px). */
-.ev-desserts__a { font-size: clamp(3rem, 0.6rem + 9.2vw, 12.5rem); }
-/* From 1280, two lines in the six-column conversation column («— Блиц.» / «До десяти минут.»).
-   The long line can't break (no-break spaces) and is ≈ 6.6× its size: this keeps it at ≈ 83% of
-   the column at every width, never close to the board. Where the board is height-capped (a screen
-   short for its width) the column is wider and the answer may run as one line across it. */
-.ev-chess__a { font-size: clamp(2.75rem, 0.4rem + 5.4vw, 7.375rem); }
-/* Phones: the answer leads at full voice and may break as «— Дальше — / слаще.» (the no-break
-   space keeps the dash on line 1); the chess answer steps down beneath it. */
-@media (max-width: 639.98px) {
-  .ev-desserts__a { font-size: clamp(3rem, 14.5vw, 4.25rem); }
-  .ev-chess__a { font-size: clamp(2.25rem, 11vw, 3rem); }
-}
-/* Tablets: one column, so the chess answer runs on one line; keep it under the desserts answer. */
-@media (min-width: 640px) and (max-width: 1023.98px) {
-  .ev-chess__a { font-size: clamp(2.75rem, 0.5rem + 5.6vw, 4rem); }
-}
-.ev-dlg .dlg-q { color: var(--fg-soft); }
-.ev-reply {
-  margin: clamp(14px, 1.8vw, 3rem) 0 0;
-  font-size: clamp(1.4rem, 1rem + 1.15vw, 2.5rem);
-  max-width: 26ch;
-  text-wrap: balance;
-  color: var(--fg);
-}
-
-/* ═════ A · Desserts ═════ */
-.ev-desserts__head { margin-bottom: clamp(28px, 4vw, 56px); }
-
-/* Phones and tablets: a swipe rail of cards with a counter. */
-.ev-rail-wrap { position: relative; min-width: 0; }
-.ev-rail {
-  position: relative;
-  display: flex;
-  gap: 14px;
-  margin: 0 calc(-1 * var(--gutter));
-  padding: 6px var(--gutter) 10px;
-  list-style: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  -webkit-overflow-scrolling: touch;
-}
-.ev-rail:focus-visible { outline-offset: -2px; }
-.ev-dessert {
-  flex: 0 0 min(76vw, 380px);
-  min-width: 0;
-  scroll-snap-align: start;
-}
-.ev-dessert__media { position: relative; }
-/* Ink hairline over the milk doily, as in the hero. */
-.evening .ev-dessert__photo { color: var(--color-ink); }
-/* Tilts and hovers are set with `transform`, never the individual rotate/scale properties: GSAP folds
-   those into its inline transform, and after a context revert (motion toggle) they applied twice. */
-.ev-dessert:nth-child(3n + 1) .ev-dessert__photo { transform: rotate(-2.5deg); }
-.ev-dessert:nth-child(3n + 2) .ev-dessert__photo { transform: rotate(1.5deg); }
-.ev-dessert:nth-child(3n + 3) .ev-dessert__photo { transform: rotate(-1deg); }
-
-.ev-chip {
-  position: absolute;
-  right: 0;
-  top: 7%;
-  transform: rotate(5deg);
-  padding: 0.64em 1.1em 0.55em;
-  border-radius: 999px;
-  background: var(--color-butter);
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-stretch: 87.5%;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  white-space: nowrap;
-  box-shadow: 0 3px 0 rgb(20 18 16 / 0.32);
-}
-
-.ev-dessert__text { margin-top: clamp(10px, 1.2vw, 2rem); }
-.ev-dessert__row { display: flex; align-items: baseline; gap: 0.625rem; }
-.ev-dessert__name {
-  margin: 0;
-  font-size: clamp(2rem, 1.35rem + 1.5vw, 3.3125rem);
-  line-height: 1.02;
-  white-space: nowrap;
-  text-wrap: nowrap;
-}
-.ev-dessert__price { font-size: 0.875rem; white-space: nowrap; }
-.ev-dessert__desc {
-  margin: 0.5rem 0 0;
-  max-width: 34ch;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  color: var(--fg-soft);
-}
-
-.ev-rail-meta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 14px 0 0;
-  font-size: 0.75rem;
-  color: var(--fg-soft);
-}
-.ev-rail-meta__num { display: inline-flex; gap: 0.5em; }
-.ev-rail-meta__num > :first-child { color: var(--fg); }
-.ev-rail-meta__sep { opacity: 0.5; }
-.ev-rail-meta__track {
-  position: relative;
-  flex: 0 0 72px;
-  height: 1.5px;
-  overflow: hidden;
-  background: var(--hair);
-}
-.ev-rail-meta__bar {
-  position: absolute;
-  inset: 0;
-  background: var(--fg);
-  transform-origin: 0 50%;
-  transition: transform 320ms var(--ease-kd-out);
-}
-
-.ev-desserts__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 32px;
-  margin-top: clamp(28px, 4vw, 64px);
-  padding-top: 14px;
-  border-top: var(--rule) solid var(--hair);
-}
-.ev-pie {
-  flex: 1 1 360px;
-  /* A receipt line, not a full-width rule: the leader stays about as long as the dessert rows'. */
-  max-width: 40rem;
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.6;
-}
-.ev-pie .leader { display: none; }
-.ev-pie__price { white-space: nowrap; }
-@media (min-width: 640px) {
-  .ev-pie { display: flex; align-items: baseline; gap: 10px; }
-  .ev-pie .leader { display: block; }
-  .ev-pie__dash { display: none; }
-}
-.ev-link { min-height: 44px; align-items: center; }
-
-@media (hover: hover) and (pointer: fine) {
-  /* The lace also takes the GSAP entrance; its clearProps hands the transform back to this rule. */
-  .ev-dessert .oct-photo__lace { transition: transform 1.4s var(--ease-kd-out); }
-  .ev-dessert:hover .oct-photo__lace { transform: rotate(18deg); }
-  .ev-dessert .oct-photo__img { transition: transform 1s var(--ease-kd-out); }
-  .ev-dessert:hover .oct-photo__img { transform: scale(1.05); }
-}
-
-/* Desktop: the staircase climbs with the price across all twelve columns — дальше, слаще.
-   Row 1 kicker, row 2 the answer across the canvas, row 3 the staircase band: Сан-Себастьян
-   (440 ₽) at the top right under «слаще», Брауни a step down, Медовик two steps down at the left.
-   The band's two empty corners are the copy's: the reply sits on the top-left landing above
-   Медовик, the cherry pie and «Все десерты» close the receipt in the bottom-right under
-   Сан-Себастьян. Two steps are always taller than the reply and the foot, so nothing collides. */
-@media (min-width: 1024px) {
-  .ev-desserts {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-  }
-  /* The header's lines join the section grid (it has no semantics of its own inside the section). */
-  .ev-desserts__head { display: contents; }
-  .ev-kicker { grid-column: 1 / -1; grid-row: 1; }
-  .ev-desserts .ev-dlg { grid-column: 1 / -1; grid-row: 2; }
-  .ev-reply {
-    position: relative;
-    z-index: 1;
-    grid-column: 1 / 5;
-    grid-row: 3;
-    align-self: start;
-    max-width: 20ch;
-  }
-  .ev-rail-wrap { grid-column: 1 / -1; grid-row: 3; margin-top: clamp(14px, 1.8vw, 3rem); }
-  .ev-rail {
-    display: grid;
-    /* Three equal tracks with the section gap sit exactly on the 12-column grid (4 + 4 + 4). */
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--grid-gap);
-    align-items: start;
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    scroll-snap-type: none;
-  }
-  .ev-dessert:nth-child(1) { margin-top: calc(var(--step) * 2); }
-  .ev-dessert:nth-child(2) { margin-top: var(--step); }
-  .ev-rail-meta { display: none; }
-
-  /* The sticker grows with its doily (11px at 1024 → 17px at 2560). */
-  .ev-chip { font-size: clamp(0.6875rem, 0.3rem + 0.45vw, 0.875rem); }
-  .ev-dessert__price { font-size: clamp(0.875rem, 0.7rem + 0.25vw, 1.0625rem); }
-  .ev-dessert__desc { font-size: clamp(0.9375rem, 0.75rem + 0.3vw, 1.125rem); }
-
-  /* The last receipt lines, in the corner the staircase leaves under Сан-Себастьян. */
-  .ev-desserts__foot {
-    grid-column: 9 / -1;
-    grid-row: 3;
-    align-self: end;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    gap: 0.25rem;
-    margin-top: 0;
-    padding-top: clamp(12px, 1vw, 1.25rem);
-  }
-  .ev-pie { flex: none; width: 100%; max-width: none; font-size: clamp(0.8125rem, 0.65rem + 0.25vw, 1rem); }
-}
-/* Four columns hold the receipt line with its leader only from 1600 (it needs ≈ 440px at 1440);
-   below that it is set as dialogue, «… мороженого — 350 ₽», and wraps where it has to. */
-@media (min-width: 1024px) and (max-width: 1599.98px) {
-  .ev-pie { display: block; }
-  .ev-pie .leader { display: none; }
-  .ev-pie__dash { display: inline; }
-}
-
-/* ═════ B · Chess ═════ */
-.ev-chess {
+/* ── Desserts: primary menu rows (name …… price, a line of description), a photo over each ──
+   Phones: one per row. From 640: three even columns (4 + 4 + 4 of the 12), the rows on one baseline. */
+.ev-desserts {
   display: grid;
-  /* One track that may shrink below its content: nothing inside can push the page wider at 320. */
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(24px, 3vw, 40px);
-  margin-top: clamp(88px, 9vw, 15rem);
-}
-.ev-chess__head { min-width: 0; }
-
-/* The score sheet: the move in mono caps, the dialogue line beside it. Sizes are set on the row, so
-   the move column, the padding and the underline grow with the line on wide screens. */
-.ev-notation {
+  gap: 2.5rem var(--grid-gap);
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--hair);
 }
-.ev-note {
-  display: grid;
-  grid-template-columns: 5.2em minmax(0, 1fr);
-  align-items: baseline;
-  gap: 0.65em;
-  padding: 0.7em 0 0.62em;
-  border-bottom: 1px solid var(--hair);
-  font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem);
+.ev-dessert { min-width: 0; }
+.ev-dessert__text { margin-top: 1rem; }
+.ev-dessert__line { display: flex; align-items: baseline; column-gap: 0.75rem; }
+.ev-dessert__name { margin: 0; white-space: nowrap; }
+.ev-dessert__price {
+  flex: none;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  white-space: nowrap;
 }
-.ev-note__move { font-size: max(0.8125rem, 0.68em); letter-spacing: 0.02em; color: var(--fg-soft); }
-.ev-note[data-side="b"] .ev-note__move { color: var(--color-butter); }
-.ev-note__line { font-size: 1em; line-height: 1.35; }
-.ev-note__text { position: relative; display: inline-block; padding-bottom: 0.26em; }
-.ev-note__ul {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1.5px;
-  background: var(--color-milk);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
+.ev-dessert__desc {
+  max-width: 60ch;
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--fg-soft);
 }
-.ev-note[data-side="b"] .ev-note__ul { background: var(--color-butter); }
-/* Static state (no JS, reduced motion, and the end of the replay): the invitation is underlined. */
-.ev-note[data-row="3"] .ev-note__ul { transform: scaleX(1); }
 
-/* The board: milk frame, milk-10% light squares, dark squares let the oxblood through.
-   It is as large as its column allows but never taller than the screen: the side is capped at the
-   viewport height minus the header and the files/caption rows, so the whole position — and the
-   replay — is always in view at once, from a 390 phone to a 3440 ultrawide. */
+@media (min-width: 640px) {
+  .ev-desserts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ev-dessert__text { margin-top: clamp(1rem, 1.4vw, 1.75rem); }
+  .ev-dessert__desc { font-size: var(--fs-body); }
+}
+/* Below 1200 a third of the canvas is too narrow for «Сан-Себастьян», its leader and its price on one
+   line: the price goes under the name, in every column alike. */
+@media (min-width: 640px) and (max-width: 1199.98px) {
+  .ev-dessert__line { flex-direction: column; align-items: flex-start; row-gap: 0.375rem; }
+  .ev-dessert__line .leader { display: none; }
+}
+@media (min-width: 1024px) {
+  .ev-dessert__desc { margin-top: 0.625rem; }
+}
+
+/* ── The cherry pie and the full menu ──
+   Below 1024 the link goes under the pie. From 1024 they keep the desserts' thirds: the pie spans the
+   first two, its price under Брауни's, and the link stands in the third, under Сан-Себастьян and the
+   lead. A little closer to the desserts than the hairline is: the row belongs to them. */
+.ev-more {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem var(--grid-gap);
+  margin-top: var(--foot-gap);
+}
+.ev-more__link { justify-self: start; }
+@media (min-width: 1024px) {
+  .ev-more { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: baseline; }
+  .ev-pie { grid-column: 1 / span 2; }
+}
+
+/* The pie is a secondary menu row (.menu-row, globals.css). */
+
+/* ── Chess: an event block below one hairline, the same pause on both sides of it ──
+   From 1024 it keeps the desserts' thirds: the place over the title, then the title, the facts and
+   the button on one baseline, like a row of the menu (below 1280 the button goes under the facts). */
 .ev-chess {
-  --ranks: 0.75rem; /* the rank-number column, shared with the note under the board */
-  /* The tallest board that fits the screen; never below 18rem, so a landscape phone still gets a
-     playable board rather than a stamp. */
-  --board-max: max(18rem, calc(100svh - var(--header-h) - 5.5rem));
-}
-.ev-board {
   display: grid;
-  grid-template-columns: var(--ranks) minmax(0, 1fr);
-  column-gap: 0.625rem;
-  row-gap: 0.5rem;
-  width: min(100%, var(--board-max));
-  margin: 0;
-  /* Rank and file letters keep pace with a board that can be 1250px wide. */
-  --coord-fs: clamp(0.6875rem, 0.2rem + 0.5vw, 1.125rem);
+  gap: 1.25rem var(--grid-gap);
+  margin-top: var(--head-gap);
+  padding-top: var(--head-gap);
 }
-.ev-board__ranks {
-  grid-column: 1;
-  grid-row: 1;
-  display: grid;
-  grid-template-rows: repeat(8, minmax(0, 1fr));
-  align-items: center;
-  font-size: var(--coord-fs);
-  line-height: 1;
-  color: var(--fg-soft);
-}
-.ev-board__grid {
-  --sq: rgb(255 248 238 / 0.1);
-  grid-column: 2;
-  grid-row: 1;
-  position: relative;
-  aspect-ratio: 1;
-  border: var(--rule) solid var(--color-milk);
-  background: conic-gradient(transparent 0 90deg, var(--sq) 0 180deg, transparent 0 270deg, var(--sq) 0) 0 0 / 25% 25%;
-}
-.ev-board__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.ev-board__files {
-  grid-column: 2;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  text-align: center;
-  font-size: var(--coord-fs);
-  line-height: 1;
-  color: var(--fg-soft);
-}
-.ev-board__caption { grid-column: 2; grid-row: 3; margin-top: 4px; color: var(--fg-soft); }
-.ev-board__move { text-transform: none; letter-spacing: 0.02em; color: var(--fg); }
-
-.ev-knight--w .ev-knight__body { fill: var(--color-milk); }
-.ev-knight--b .ev-knight__body { fill: var(--color-ink); stroke: var(--color-milk); stroke-width: 3; stroke-linejoin: round; }
-.ev-knight__mane { fill: none; stroke-width: 2.4; stroke-linecap: round; }
-.ev-knight--w .ev-knight__mane { stroke: var(--color-oxblood); opacity: 0.55; }
-.ev-knight--b .ev-knight__mane { stroke: var(--color-milk); opacity: 0.5; }
-.ev-knight--ghost.ev-knight--w .ev-knight__body { fill-opacity: 0.16; }
-.ev-knight--ghost.ev-knight--b .ev-knight__body { fill-opacity: 0.3; stroke-opacity: 0.3; stroke-width: 2.5; }
-
-.ev-arrow path { stroke-width: 6; }
-.ev-arrow--w path { stroke: var(--color-milk); }
-.ev-arrow--b path { stroke: var(--color-butter); }
-
-/* Hovering a line of the dialogue picks out its move on the board. */
-@media (hover: hover) and (pointer: fine) {
-  .ev-arrow { transition: opacity 320ms var(--ease-kd-ui); }
-  .ev-note { transition: color 320ms var(--ease-kd-ui); }
-  .ev-chess:has(.ev-note[data-row="0"]:hover) .ev-arrow:not([data-arrow="0"]),
-  .ev-chess:has(.ev-note[data-row="1"]:hover) .ev-arrow:not([data-arrow="1"]),
-  .ev-chess:has(.ev-note[data-row="2"]:hover) .ev-arrow:not([data-arrow="2"]),
-  .ev-chess:has(.ev-note[data-row="3"]:hover) .ev-arrow:not([data-arrow="3"]) { opacity: 0.18; }
-  /* 55% milk on oxblood ≈ 4.8:1, still AA while it steps back. */
-  .ev-notation:has(.ev-note:hover) .ev-note:not(:hover) { color: rgb(255 248 238 / 0.55); }
-}
-
-/* The event: milk paper, ink text, one hard shadow. */
-.ev-event {
-  --bg: var(--color-milk);
-  --fg: var(--color-ink);
-  --fg-soft: var(--color-graphite);
-  --accent: var(--color-tomato);
-  --focus: var(--color-tomato-ink);
-  display: grid;
-  gap: 0.75rem;
-  padding: clamp(20px, 2.2vw, 3.25rem);
-  border-radius: 2px;
-  background: var(--color-milk) url("/tex/grain-light.png") 0 0 / 128px 128px;
-  color: var(--color-ink);
-  box-shadow: 0 6px 0 rgb(20 18 16 / 0.25);
-  transform: rotate(-0.6deg);
-}
-.ev-event__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  color: var(--color-graphite);
-}
-.ev-event__top .label { margin: 0; }
-.ev-event__mark { flex: none; width: 1.875rem; height: auto; margin-top: -4px; color: var(--color-ink); }
-.ev-event__title { margin: 0; font-size: clamp(2.4rem, 1.5rem + 2.6vw, 4.875rem); }
-.ev-event__body { margin: 0; max-width: 42ch; font-size: 1rem; line-height: 1.5; }
-.ev-event__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px 20px;
-  margin-top: 0.375rem;
-  padding-top: 1rem;
-  border-top: var(--rule) dashed rgb(20 18 16 / 0.22);
-}
-.ev-event__when { margin: 0; font-size: 0.8125rem; }
-@media (max-width: 399.98px) {
-  .ev-event__cta { width: 100%; justify-content: center; padding-inline: 1em; }
-}
-/* The narrowest phones: the label may take two balanced lines instead of pushing the card wider. */
-@media (max-width: 359.98px) {
-  .ev-event__cta {
-    padding-block: 12px;
-    white-space: normal;
-    text-align: center;
-    text-wrap: balance;
-    line-height: 1.2;
-  }
-}
-
-.ev-kids {
-  display: flex;
-  gap: 0.7em;
-  max-width: 56ch;
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  color: var(--fg-soft);
-}
-
-/* Desktop: the conversation and the board answer each other across the canvas.
-   Left: the score sheet and the ticket. Right: the board, as big as its half of the canvas (six of
-   twelve columns: 50% less half a gap) and the screen height allow, with the family note beneath it
-   like a line written under the position. On screens that are short for their width (2560×1080,
-   3440×1440) the height cap wins: the board's track shrinks to the board and the conversation
-   widens into the rest, so no dead channel opens between them. The ticket spans the last two rows,
-   so whichever side runs longer, the note stays tucked under the board.
-   1024–1279: the answer runs one line across the top. From 1280 it takes the left column in two
-   lines («— Блиц.» / «До десяти минут.») and the board rises level with the question. */
+.ev-chess__head { display: grid; gap: 0.875rem; }
+.ev-chess__place,
+.ev-chess__title,
+.ev-chess__body { margin: 0; }
+.ev-chess__body { max-width: 44ch; line-height: 1.45; color: var(--fg-soft); }
+/* One sentence to a line; a long one wraps evenly. */
+.ev-chess__line { display: block; text-wrap: balance; }
+.ev-chess__actions { margin-top: 0.5rem; }
+.ev-chess__ext { font-weight: 400; }
 @media (min-width: 1024px) {
   .ev-chess {
-    grid-template-columns: minmax(0, 1fr) min(calc(50% - var(--grid-gap) / 2), calc(var(--board-max) + var(--grid-gap)));
-    grid-template-rows: auto auto auto 1fr;
-    column-gap: var(--grid-gap);
-    row-gap: clamp(28px, 2.6vw, 4.5rem);
-    align-items: start;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    row-gap: 0.875rem;
+    align-items: first baseline;
   }
-  .ev-chess__head { grid-column: 1 / -1; grid-row: 1; }
-  .ev-notation { grid-column: 1; grid-row: 2; }
-  .ev-event { grid-column: 1; grid-row: 3 / 5; }
-  .ev-chess__board {
-    grid-column: 2;
-    grid-row: 2 / 4;
-    display: flex;
-    justify-content: flex-end;
-    padding-left: var(--grid-gap);
-  }
-  /* Same width and edges as the board; the text starts on the board's a-file edge. */
-  .ev-kids {
-    grid-column: 2;
-    grid-row: 4;
-    max-width: none;
-    padding-left: calc(var(--grid-gap) + var(--ranks) + 0.625rem);
-  }
-  .ev-kids > span:last-child { max-width: 56ch; }
-  .ev-note { font-size: clamp(1.0625rem, 0.45rem + 1.2vw, 2rem); }
-  .ev-event__body { font-size: clamp(1rem, 0.85rem + 0.2vw, 1.125rem); }
+  /* Its two lines join the grid, so the title can share the row's baseline. */
+  .ev-chess__head { display: contents; }
+  .ev-chess__place { grid-column: 1 / span 4; grid-row: 1; }
+  .ev-chess__title { grid-column: 1 / span 4; grid-row: 2; }
+  .ev-chess__body { grid-column: 5 / span 4; grid-row: 2; }
+  .ev-chess__actions { grid-column: 9 / -1; grid-row: 2; margin-top: 0; }
 }
+/* Below 1280 a third is too narrow for a sentence to a line (five ragged lines at 1024): the facts
+   take the last two thirds and the button goes under them. */
 @media (min-width: 1024px) and (max-width: 1279.98px) {
-  .ev-chess__a { font-size: clamp(2.75rem, 0.5rem + 6.6vw, 6rem); }
-}
-@media (min-width: 1280px) {
-  .ev-chess__head { grid-column: 1; }
-  .ev-chess__board { grid-row: 1 / 4; }
-}
-
-/* Wide screens: the ticket (the conversation column, six columns or wider) gets a stub. The title runs across; below it the details sit
-   on the left, and the date line and the vote button are torn off behind a dashed perforation. */
-@media (min-width: 1600px) {
-  .ev-event {
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 0;
-  }
-  .ev-event__top,
-  .ev-event__title { grid-column: 1 / -1; }
-  .ev-event__body { grid-column: 1; grid-row: 3; align-self: start; padding-right: clamp(24px, 2vw, 3rem); }
-  .ev-event__foot {
-    grid-column: 2;
-    grid-row: 3;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0;
-    padding: 0.25rem 0 0.25rem clamp(24px, 2vw, 3rem);
-    border-top: 0;
-    border-left: var(--rule) dashed rgb(20 18 16 / 0.22);
-  }
+  .ev-chess__body { grid-column: 5 / -1; }
+  .ev-chess__actions { grid-column: 5 / -1; grid-row: 3; margin-top: 0.75rem; }
 }

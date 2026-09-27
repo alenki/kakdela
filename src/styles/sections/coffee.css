@@ -1,383 +1,77 @@
-/* ═════════════ COFFEE «— А кофе?»: the cobalt cup on the tomato field ═════════════ */
-.coffee { overflow-x: clip; }
-/* Desktop: a poster light falls on the red wall behind the cup and deepens toward the far corner.
-   Phones keep the field flat so the sticky badge band sits on it seamlessly. */
-@media (min-width: 1024px) {
-  .coffee {
-    background-image:
-      radial-gradient(40% 56% at 17% 60%, rgb(255 138 110 / 0.16), transparent 72%),
-      radial-gradient(60% 50% at 102% 104%, rgb(98 14 10 / 0.24), transparent 74%);
-  }
-}
+/* ═════════════ COFFEE «Кофе»: one drink photo beside the house list ═════════════ */
 
-/* Desktop composition, gutter to gutter on the 12 columns:
-   the answer runs as one line across the whole field; under it the cup stands in its sticky
-   column on the left while the reply, the links and the menu card fill the rest.
-   1024–1599: cup 1–5, card 6–12 (one column of drinks).
-   ≥1600:     cup 1–4, card 5–12 (two columns of drinks, read left to right). */
-.coffee__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+/* Below 1024 (where the section head stacks too): photo, list title, list, links, one under another,
+   the photo inside the gutters. 4:5 on a phone, the source's own 3:2 from 480.
+   From 1024 the photo and the list stand side by side on the 12 columns, one empty column between
+   them; the photo runs out to the left edge of the screen and spans the list from its first rule to
+   its last, and the list title sits above that first rule:
+   1024–1279: photo 1–6, list 8–12 (the names need five columns at this size).
+   ≥1280:     photo 1–7, list 9–12, the lead's column, so the list continues it. */
+.coffee__body { display: grid; }
+.coffee__photo { margin: 0 0 2rem; }
+@media (min-width: 480px) and (max-width: 1023.98px) {
+  .coffee__photo .photo { aspect-ratio: 3 / 2; }
+}
 @media (min-width: 1024px) {
-  .coffee__grid {
-    container-type: inline-size;
+  .coffee__body {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: auto auto 1fr auto;
     column-gap: var(--grid-gap);
   }
-  .coffee__head { grid-column: 1 / -1; grid-row: 1; }
-  .coffee__cupcol { grid-column: 1 / 6; grid-row: 2 / 5; }
-  .coffee__lead { grid-column: 6 / 13; grid-row: 2; }
-  .coffee__menu { grid-column: 6 / 13; grid-row: 3; }
-  .coffee__links { grid-column: 6 / 13; grid-row: 4; }
+  /* The bleed: out through the left gutter to the screen edge. */
+  .coffee__photo { grid-column: 1 / span 6; grid-row: 2; margin: 0 0 0 calc(-1 * var(--gutter)); }
+  .coffee__label { grid-column: 8 / -1; grid-row: 1; }
+  .coffee__list { grid-column: 8 / -1; grid-row: 2; align-self: start; }
+  .coffee__links { grid-column: 8 / -1; grid-row: 3; }
+
+  /* As tall as the list: about 3:4 at 1024, 3:2 (the source) at 2560; capped at 2:3 and 2:1. */
+  .coffee__photo { container-type: inline-size; }
+  .coffee__photo .photo {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 50cqi;
+    max-height: 150cqi;
+    /* Square where it meets the screen edge. */
+    border-radius: 0 2px 2px 0;
+  }
+  /* A frame flatter than the 3:2 source crops top and bottom: keep the whole glass, base included. */
+  .coffee__photo .photo__img { object-position: 50% 65%; }
 }
-/* From 1280 the two links stand beside the reply, level with its last line. */
 @media (min-width: 1280px) {
-  .coffee__lead { grid-column: 6 / 10; }
-  .coffee__links { grid-column: 10 / 13; grid-row: 2; align-self: end; }
-}
-@media (min-width: 1600px) {
-  .coffee__cupcol { grid-column: 1 / 5; }
-  .coffee__lead { grid-column: 5 / 10; }
-  .coffee__menu { grid-column: 5 / 13; }
+  .coffee__photo { grid-column: 1 / span 7; }
+  .coffee__label,
+  .coffee__list,
+  .coffee__links { grid-column: 9 / -1; }
 }
 
-/* ── The exchange ── */
-.coffee__head { margin: 0; }
-/* The clover behind the cup reaches up behind the answer: the words print over it. */
-@media (min-width: 1024px) { .coffee__head { position: relative; z-index: 2; } }
-/* Milk hairlines on red lose more to antialiasing than ink on sky: the question voice takes the top
-   of its thin range here (its size is the shared --dlg-q-size). */
-.coffee__head .dlg-q { font-weight: 200; }
-/* Phones and tablets: two balanced lines; the longer («мы не шутим.», 5.17em) runs ~88% of the row. */
-.coffee__answer { font-size: clamp(3.25rem, 0.2rem + 15.5vw, 9rem); }
-/* Desktop: one line, gutter to gutter. The answer sets 9.14em wide, so 1/9.45 of the row's width
-   lands it just inside the right gutter at every width up to 2560 (it only wraps, balanced, if a
-   font is off). There it stops with the rem (255px): an ultrawide gets air after «шутим.». */
-@media (min-width: 1024px) {
-  .coffee__answer { font-size: min(100cqi / 9.45, 12.75rem); }
-}
-.coffee__lead {
-  margin: clamp(18px, 3vh, 34px) 0 0;
-  max-width: 27ch;
-  font-size: clamp(1.375rem, 1.05rem + 1.1vw, 2.125rem);
-  color: var(--fg);
-}
-@media (min-width: 1024px) { .coffee__lead { margin-top: clamp(32px, 6vh, 88px); } }
-@media (min-width: 1600px) {
-  .coffee__lead { max-width: 34ch; font-size: clamp(2.125rem, 0.9rem + 1.1vw, 2.3125rem); }
-}
-
-/* ── Desktop: the cup column (sticky; ScrollTrigger reads the rows, never this) ── */
-.coffee__cupcol { display: none; position: relative; }
-@media (min-width: 1024px) { .coffee__cupcol { display: block; container-type: inline-size; } }
-.coffee__sticky {
-  /* The cup is as tall as the screen allows and never wider than 82% of its column. */
-  --cup-h: min(70vh, 126cqi);
-  --cup-pad: 3vh;
-  position: sticky;
-  top: max(10vh, var(--header-h) + 12px);
-  height: calc(var(--cup-h) * 1.12 + var(--cup-pad));
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  padding-bottom: var(--cup-pad);
-}
-/* The logo clover in crayon hatch, printed tone-on-tone on the red wall behind the cup. */
-.coffee__halo {
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  width: var(--cup-h);
-  translate: -50% -50%;
-  rotate: -14deg;
-  color: #a4251a;
-  opacity: 0.6;
-  pointer-events: none;
-}
-.coffee__clover { width: 100%; height: auto; overflow: visible; }
-.coffee__cupwrap {
-  position: relative;
-  z-index: 1;
-  height: var(--cup-h);
-  aspect-ratio: 300 / 460;
-}
-.coffee__cup {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  /* A flat poster shadow cast to the lower right, in proportion to the cup. */
-  filter: drop-shadow(calc(var(--cup-h) * 0.034) calc(var(--cup-h) * 0.022) 0 rgb(98 14 10 / 0.28));
-}
-/* The counter the cup stands on, at the cup's floor line (y 448 of 460), run out to the page edge. */
-.coffee__counter {
-  position: absolute;
-  left: calc(-1 * var(--gutter));
-  right: 0;
-  bottom: calc(var(--cup-pad) + var(--cup-h) * 12 / 460);
-  height: var(--rule);
-  background: rgb(255 248 238 / 0.5);
-}
-
-/* The note on the sleeve: Neucha, ink, drawn by the island. */
-.cup-note { color: var(--color-ink); }
-.cup-note text { font-family: var(--font-hand); fill: currentColor; }
-
-/* ── The card ── */
-/* The mat below takes the header's height in flow, so the lead→card gap is clamp(40px, 7vh, 80px). */
-.coffee__menu { position: relative; margin-top: max(0px, clamp(40px, 7vh, 80px) - var(--header-h)); }
-
-/* The header is transparent and, over this field, milk. Where the card column passes under it, a
-   tomato mat sticks behind the header and follows it: when the header tucks away (--header-offset 0)
-   the mat slides up out of view with it. Not stuck, it is just more red field above the card. */
-.coffee__mat {
-  position: sticky;
-  top: calc(var(--header-offset) - var(--header-h));
-  z-index: 4;
-  height: var(--header-h);
-  margin-inline: calc(-1 * var(--gutter));
-  background-color: var(--color-tomato);
-  isolation: isolate;
-  pointer-events: none;
-  transition: top 350ms var(--ease-kd-out);
-}
-.coffee__mat::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: url("/tex/grain-dark.png") 0 0 / 128px 128px;
-  opacity: 0.5;
-}
-/* Wider screens: the card's width plus its flat shadow; the red field shows either side anyway. */
-@media (min-width: 640px) { .coffee__mat { margin-inline: 0 calc(-0.625rem - 2px); } }
-
-.coffee__card {
-  --fg: var(--color-ink);
-  --fg-soft: var(--color-graphite);
-  --accent: var(--color-tomato);
-  --accent-ink: var(--color-tomato-ink);
-  --focus: var(--color-tomato-ink);
-  position: relative;
-  color: var(--fg);
-  background: var(--color-milk) url("/tex/grain-light.png") 0 0 / 128px 128px;
-  border: var(--rule) solid var(--color-ink);
-  border-radius: 2px;
-  box-shadow: 0.625rem 0.625rem 0 rgb(98 14 10 / 0.3);
-}
-.coffee__card-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 2px 28px;
-  padding: 14px 16px 12px;
-  border-bottom: var(--rule) solid currentColor;
-}
-/* «Цены — Владикавказ» is long: on the narrowest phones it drops to its own line, still flush right. */
-.coffee__card-city { margin-left: auto; color: var(--fg-soft); }
-@media (min-width: 1024px) { .coffee__card-head { padding: 1.125rem 2rem 1rem 3.5rem; } }
-
-.coffee__list { list-style: none; margin: 0; padding: 0; }
-.drink {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 16px 22px;
-}
-.drink + .drink { border-top: 1px solid rgb(20 18 16 / 0.16); }
-@media (min-width: 640px) { .drink { gap: 24px; padding-inline: 24px; } }
-@media (min-width: 1024px) {
-  .drink {
-    gap: clamp(1.5rem, 2.6vw, 2.75rem);
-    min-height: clamp(13rem, 26vh, 17rem);
-    padding: 1.75rem 2rem 1.75rem 3.5rem;
-  }
-}
-.drink__main { min-width: 0; container-type: inline-size; }
-.drink__line { position: relative; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; }
-.drink__name {
-  margin: 0;
-  font-size: clamp(1.75rem, 0.95rem + 2.3vw, 3.25rem);
-  line-height: 0.9;
-  transition: color 320ms var(--ease-kd-ui);
-}
-.drink__line .leader { min-width: 1.25rem; }
-/* Narrow rows in the one-column card (phones, and the 1024–1200 desktop column): name, then price,
-   then description — never a dangling leader. */
-@media (max-width: 1599.98px) {
-  @container (max-width: 400px) {
-    .drink__line { flex-direction: column; align-items: flex-start; }
-    .drink__line .leader { display: none; }
-    .drink__price { margin-top: 8px; }
-  }
-}
-.drink__price {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-@media (min-width: 1024px) { .drink__price { font-size: 1rem; } }
+/* ── The list: name, dotted leader, price; the description under them; 1px rules between ── */
+.coffee__label { margin: 0 0 0.75rem; }
+.coffee__list { margin: 0; padding: 0; list-style: none; border-bottom: var(--rule) solid var(--line); }
+.drink { padding-block: 1rem; border-top: var(--rule) solid var(--line); }
+/* 0.75rem either side of the leader: at 1280 the longest name and its price fit the four columns with
+   about 10px to spare. */
+.drink__line { display: flex; align-items: last baseline; column-gap: 0.75rem; }
+/* Should a name ever take two lines, the leader and the price stay on its last one. */
+.drink__line .leader { align-self: last baseline; }
+.drink__name { margin: 0; min-width: 0; }
+.drink__price { flex: none; margin: 0; font-weight: 500; white-space: nowrap; }
 .drink__desc {
-  margin: 8px 0 0;
-  max-width: 38ch;
-  font-size: 0.9375rem;
+  max-width: 60ch;
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--fg-soft);
+  /* One or two short lines: even, never a word left on its own. */
+  text-wrap: balance;
 }
-@media (min-width: 1024px) { .drink__desc { margin-top: 0.75rem; font-size: 1rem; } }
-.drink__note {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2em 0.55em;
-  margin: 10px 0 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  color: var(--color-tomato-ink);
+@media (min-width: 640px) {
+  .drink__desc { font-size: var(--fs-body); }
 }
-/* The arrow travels with its answer: on a narrow row «→ дальше слаще 350» wraps as one piece. */
-.drink__note-a { display: inline-flex; align-items: center; gap: 0.55em; min-width: 0; }
-.drink__arrow { width: 1.5em; height: auto; flex: none; }
-/* With JS and full motion the note lives on the cup; without either, each row keeps its own. */
-html.js[data-motion="full"] .drink__note { display: none; }
+@media (min-width: 1024px) {
+  .drink { padding-block: clamp(1.25rem, 1.7vw, 2.25rem); }
+  .drink__desc { margin-top: 0.625rem; }
+}
+/* A city without a price: the price slot says to ask, quietly. */
+.drink__ask { font-size: var(--fs-label); font-weight: 400; color: var(--fg-soft); white-space: normal; }
 
-.drink__thumb {
-  width: 84px;
-  transition: transform 600ms var(--ease-kd-out);
-}
-@media (min-width: 640px) { .drink__thumb { width: clamp(84px, 11vw, 112px); } }
-@media (min-width: 1024px) { .drink__thumb { width: clamp(120px, 11vw, 168px); } }
-.drink__badge { width: 100%; height: auto; color: var(--color-ink); }
-.drink__badge [data-part="clover"] { color: var(--color-tomato); }
-
-/* ≥1600: a two-column menu board. Each drink is a receipt entry — the name, then the dotted leader
-   to its price — and the note is still written one drink at a time, left to right, row by row. */
-@media (min-width: 1600px) {
-  .coffee__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* Names and photos share a top line across the board, like a printed menu. */
-  .drink {
-    align-items: start;
-    gap: 2rem;
-    min-height: 0;
-    padding: 2rem 2.25rem 2rem 3.5rem;
-  }
-  .drink + .drink { border-top: 0; }
-  .drink:nth-child(n + 3) { border-top: 1px solid rgb(20 18 16 / 0.16); }
-  .drink:nth-child(even) { border-left: 1px solid rgb(20 18 16 / 0.16); }
-  /* The longest name («Дальше слаще») sets 6.42em: 14.5cqi keeps every name on one line. Names and
-     thumbs stop at their 2560 size, with the rem (the cells just gain leader past that). */
-  .drink__name { flex: 1 0 100%; font-size: clamp(2rem, 14.5cqi, 3.125rem); }
-  .drink__line { row-gap: 0.625rem; }
-  .drink__thumb { width: clamp(8rem, 8vw, 10.25rem); }
-}
-
-/* The drink currently written on the cup: a tomato dash opens its line, like the dialogue. */
-.drink__name { position: relative; }
-.drink__name::before {
-  content: "";
-  position: absolute;
-  right: calc(100% + 0.625rem);
-  top: 50%;
-  width: 1.375rem;
-  height: 3px;
-  margin-top: -2px;
-  background: var(--color-tomato);
-  transform: scaleX(0);
-  transform-origin: 100% 50%;
-  transition: transform 420ms var(--ease-kd-out);
-}
-.drink[data-current] .drink__name::before { transform: scaleX(1); }
-.drink[data-current] .drink__name { color: var(--color-tomato-ink); }
-.drink[data-current] .drink__thumb { transform: rotate(-6deg); }
-@media (max-width: 1023.98px) { .drink__name::before { display: none; } }
-
-/* ── Phones and tablets: the small sticky cup badge ── */
-.coffee__badge {
-  position: sticky;
-  top: var(--header-offset);
-  z-index: 3;
-  margin: 0 calc(-1 * var(--gutter)) 14px;
-  transition: top 350ms var(--ease-kd-out);
-}
-.coffee__badge-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px var(--gutter) 12px;
-  background-color: var(--color-tomato);
-  isolation: isolate;
-  transition: box-shadow 320ms var(--ease-kd-ui);
-}
-.coffee__badge-inner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: url("/tex/grain-dark.png") 0 0 / 128px 128px;
-  opacity: 0.5;
-  pointer-events: none;
-}
-/* While stuck, a hairline shadow sets the band off the card sliding beneath it (progressive). */
-@supports (container-type: scroll-state) {
-  .coffee__badge { container-type: scroll-state; }
-  @container scroll-state(stuck: top) {
-    .coffee__badge-inner { box-shadow: 0 var(--rule) 0 rgb(98 14 10 / 0.35); }
-  }
-}
-/* Tablets: the band is the card's width plus its flat shadow (like the mat), so the shadow never
-   runs up beside the stuck band while the card slides beneath it. */
-@media (min-width: 640px) and (max-width: 1023.98px) {
-  .coffee__badge { margin-inline: 0 calc(-0.625rem - 2px); }
-  .coffee__badge-inner { padding-inline: 0; }
-}
-@media (min-width: 1024px) { .coffee__badge { display: none; } }
-/* Without JS or with reduced motion the note never changes, so the badge doesn't claim the screen:
-   it stays in place as a small illustration and every row carries its own note. */
-html:not(.js) .coffee__badge,
-html[data-motion="reduced"] .coffee__badge { position: relative; top: auto; }
-
-.coffee__badge-cup {
-  flex: none;
-  height: 110px;
-  width: auto;
-  overflow: visible;
-  filter: drop-shadow(6px 4px 0 rgb(98 14 10 / 0.28));
-}
-.coffee__badge-note {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  min-width: 0;
-  font-family: var(--font-hand);
-  font-size: 1.5rem;
-  line-height: 1.2;
-  color: var(--color-milk);
-}
-.coffee__badge-l1,
-.coffee__badge-l2 { display: block; width: fit-content; max-width: 100%; padding-block: 0.08em; }
-.coffee__badge-l2 { display: flex; align-items: center; gap: 0.3em; font-size: 0.92em; }
-.coffee__badge-l2[hidden] { display: none; }
-.coffee__badge-arrow { width: 1.05em; height: auto; flex: none; }
-
-/* ── Links ── */
-.coffee__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 28px;
-  margin: clamp(24px, 4vh, 44px) 0 0;
-}
-/* Beside the reply the two links stack, one per line, like the next two lines of the exchange. */
-@media (min-width: 1280px) {
-  .coffee__links { flex-direction: column; align-items: flex-start; margin: 0; }
-}
-.coffee__links .dlink { min-height: 44px; align-items: center; border-bottom: 0; }
-@media (hover: hover) and (pointer: fine) {
-  .coffee__links .dlink:hover .coffee__link-label {
-    text-decoration: underline;
-    text-decoration-thickness: var(--rule);
-    text-underline-offset: 0.3em;
-  }
-}
+/* ── Links (.dlinks): on one line when they fit, otherwise one under the other ── */
+.coffee__links { margin-top: var(--foot-gap); }

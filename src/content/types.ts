@@ -31,15 +31,14 @@ export type Answer = {
   /** What the guest tears off, e.g. «Лучше всех». */
   label: string;
   mood: Mood;
-  /** Visual posture the answer lands in (transform-only, CLS-free). */
-  posture: { weight: number; skewX: number; scaleY: number };
   item: {
     kind: "breakfast" | "drink" | "dish";
     /** How the item is named on the receipt line, e.g. «Завтрак «Лучше всех»». */
     name: string;
     price: Price;
     photo: Photo;
-    href: string;
+    /** The dish's anchor on the menu page: `<RouteLink to="menu" hash={anchor}>`. */
+    anchor: string;
   };
   /** The café's reply, Cormorant italic. */
   reply: string;
@@ -61,8 +60,6 @@ export type Drink = {
   name: string;
   desc?: string;
   price: Price | { sizes: [number, number] };
-  /** Barista note written on the cup when this drink passes. */
-  cupNote?: string;
   lang?: "en";
 };
 
@@ -71,7 +68,6 @@ export type Dessert = {
   name: string;
   desc: string;
   price: Price;
-  tag?: string;
   photo: Photo;
   verify: Verify;
 };
@@ -101,8 +97,6 @@ export type Review = {
   text: string;
   cafeId: string;
   sourceUrl: string;
-  /** Answer ids mentioned by name in the quote. */
-  mentions?: AnswerId[];
   permission: boolean;
 };
 

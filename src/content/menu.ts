@@ -62,14 +62,14 @@ export const extras = {
   pancakes: { name: "Мини-панкейки", price: p(410, null) },
 };
 
-// The coffee card: house signatures, each with the note the barista writes on the cup.
+// The coffee card: the house signatures.
 export const signatureDrinks: Drink[] = [
-  { id: "kapuchino", name: "Капучино", price: { sizes: [240, 270] }, cupNote: "классика? → капучино 240" },
-  { id: "klever", name: "«Клевер»", desc: "альтернативное заваривание", price: p(280), cupNote: "новенького? → клевер 280" },
-  { id: "v60", name: "Воронка V60", desc: "ручное заваривание на одну чашку", price: p(280), cupNote: "не спеша? → V60 280" },
-  { id: "stanciya-mir", name: "«Станция Мир»", desc: "фильтр, сироп из горных трав собственного приготовления", price: p(280), cupNote: "в горы? → станция мир 280" },
-  { id: "dalshe-slashe", name: "«Дальше слаще»", desc: "авторский, с грейпфрутом", price: p(350), cupNote: "сладкого? → дальше слаще 350" },
-  { id: "espresso-tonik", name: "Эспрессо-тоник", desc: "эспрессо, тоник, лёд, цитрус", price: p(290), cupNote: "жарко? → эспрессо-тоник 290" },
+  { id: "kapuchino", name: "Капучино", price: { sizes: [240, 270] } },
+  { id: "klever", name: "«Клевер»", desc: "Альтернативное заваривание.", price: p(280) },
+  { id: "v60", name: "Воронка V60", desc: "Ручное заваривание на одну чашку.", price: p(280) },
+  { id: "stanciya-mir", name: "«Станция Мир»", desc: "Фильтр, сироп из горных трав собственного приготовления.", price: p(280) },
+  { id: "dalshe-slashe", name: "«Дальше слаще»", desc: "Авторский, с грейпфрутом.", price: p(350) },
+  { id: "espresso-tonik", name: "Эспрессо-тоник", desc: "Эспрессо, тоник, лёд, цитрус.", price: p(290) },
 ];
 
 export const desserts: Dessert[] = [
@@ -86,7 +86,6 @@ export const desserts: Dessert[] = [
     name: "Брауни",
     desc: "Тёмный шоколад и пекан.",
     price: p(360),
-    tag: "гости пишут: лучший брауни",
     photo: photos.brauni,
     verify: { verified: true },
   },

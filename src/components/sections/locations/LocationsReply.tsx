@@ -2,6 +2,7 @@
 
 import { answerById } from "@/content/answers";
 import { useKd } from "@/lib/store";
+import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 
 /**
@@ -10,5 +11,5 @@ import { t } from "@/i18n";
  */
 export function LocationsReply({ className }: { className?: string }) {
   const mood = useKd((s) => (s.answer && !s.guessed ? answerById[s.answer].mood : "none"));
-  return <p className={className}>{t.locations.reply[mood]}</p>;
+  return <p className={className}>{typograf(t.locations.reply[mood])}</p>;
 }

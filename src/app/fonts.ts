@@ -1,6 +1,6 @@
-import { Cormorant_Garamond, Martian_Mono, Neucha, Onest, Sofia_Sans_Extra_Condensed } from "next/font/google";
+import { Cormorant_Garamond, Onest, Sofia_Sans_Extra_Condensed } from "next/font/google";
 
-// Both "voices" of the logo: thin tracked caps ask, heavy condensed caps answer.
+// Three families, no more. Display: heavy condensed caps for titles, dish names and big numbers.
 // Requires <html lang="ru"> so Д/Л render in their Russian (not Bulgarian) forms.
 export const display = Sofia_Sans_Extra_Condensed({
   subsets: ["cyrillic", "latin"],
@@ -8,35 +8,21 @@ export const display = Sofia_Sans_Extra_Condensed({
   display: "swap",
 });
 
-// The café's replies: true cursive Russian italic.
+// The café's voice, used sparingly and only in italic: the team statement, review quotes, the hero's
+// reply. No upright face is loaded (an upright request falls back to this italic).
 export const serif = Cormorant_Garamond({
   subsets: ["cyrillic", "latin"],
-  style: ["italic", "normal"],
+  style: "italic",
   variable: "--nf-serif",
   display: "swap",
 });
 
+// Everything else: body, UI, labels, and every price, hour and phone (with tabular figures).
+// latin-ext carries ₽.
 export const sans = Onest({
-  subsets: ["cyrillic", "latin"],
+  subsets: ["cyrillic", "latin", "latin-ext"],
   variable: "--nf-sans",
   display: "swap",
 });
 
-// Every price, hour and label. latin-ext carries ₽.
-export const mono = Martian_Mono({
-  subsets: ["cyrillic", "latin", "latin-ext"],
-  axes: ["wdth"],
-  variable: "--nf-mono",
-  display: "swap",
-});
-
-// Placeholder barista handwriting on the cup, until real notes are vectorised.
-export const hand = Neucha({
-  weight: "400",
-  subsets: ["cyrillic", "latin"],
-  variable: "--nf-hand",
-  display: "swap",
-  preload: false,
-});
-
-export const fontVariables = [display, serif, sans, mono, hand].map((f) => f.variable).join(" ");
+export const fontVariables = [display, serif, sans].map((f) => f.variable).join(" ");

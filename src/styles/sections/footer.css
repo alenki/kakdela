@@ -1,448 +1,117 @@
-/* ═════════════ FOOTER «— Спокойной ночи»: the conversation closes, the doors shut ═════════════
-   Full width at every size: the exchange is set across the whole field (question left, the café's
-   reply right), the service doors run edge to edge, the contacts sit on the thirds of the 12-column
-   grid, the small print spans gutter to gutter, and the wordmark closes the page at the gutters. */
+/* ═════════════ FOOTER: the café at night ═════════════
+   Ink, like the evening before it, and set like the «Разделы» dialog: the four places in display type,
+   the services in the text face, the city's phone with the socials and the café facts. Then one line of
+   small print and the full wordmark in milk, gutter to gutter, with its tomato clover: the one moment.
+     phone      one column
+     640–1023   places | services, the contacts under the places
+     ≥1024      the thirds of the grid, as in the evening above: places, services, contacts (the dialog's
+                city band sits on the same last third); the small print sits on the same lines */
 .ft {
-  --hair: rgb(255 248 238 / 0.34);
-  /* Milk at 80% on cobalt is only 4.0:1; the footer's small print needs AA, so soft text is 90% (4.7:1). */
-  --fg-soft: rgb(255 248 238 / 0.9);
-  /* Width of n columns of the 12-column grid (inside .wrap), for flex items that must land on it. */
-  --ft-col: calc((100% - 11 * var(--grid-gap)) / 12);
+  /* One gap between the three bands: the columns, the small print, the wordmark. */
+  --ft-gap: clamp(56px, 7vw, 9rem);
+  --ft-row: max(44px, calc(var(--h3) * 0.95));
   padding-top: var(--section-pad);
   overflow: clip;
+  /* Ink after ink: one hairline across the gutters, as between the cream sections. */
+  background-image: linear-gradient(var(--line), var(--line));
+  background-size: calc(100% - 2 * var(--gutter)) 1px;
+  background-position: var(--gutter) 0;
+  background-repeat: no-repeat;
 }
-.ft ::selection { background: var(--color-milk); color: var(--color-cobalt); }
 .ft-nobr { white-space: nowrap; }
 
-/* ── The closing exchange ── */
-.ft-talk { display: grid; grid-template-columns: minmax(0, 1fr); }
-.ft-kicker {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0 0 clamp(22px, 3.2vw, 7rem);
-  color: var(--fg-soft);
-}
-.ft-kicker::before { content: ""; width: 1.75rem; height: 1.5px; background: var(--accent); flex: none; }
-
-.ft-exchange { display: grid; grid-template-columns: minmax(0, 1fr); }
-.ft-dlg { gap: 0.2em; min-width: 0; }
-.ft-dlg .dlg-q { font-size: clamp(2rem, 6vw, 6rem); }
-.ft-answer {
-  font-size: clamp(3rem, 11vw, 11rem);
-  line-height: 0.88;
-  /* Room for Ё/Й above the tight line box (and Д's feet on the question line). */
-  padding-top: 0.14em;
-  padding-bottom: 0.05em;
-}
-.ft-answer .dash { font-weight: 700; }
-.ft-word {
-  display: inline-block;
-  font-weight: var(--w, 930);
-  transform: skewX(var(--skew, 0deg)) scaleY(var(--sy, 1));
-  transform-origin: 0% 100%;
-}
-/* No answer yet: a thin pause (Russian dialogue «— …»), never heavy «typing dots». */
-.ft-word[data-empty] { font-weight: 140; letter-spacing: 0.22em; opacity: 0.78; }
-.ft-answer:has(.ft-word[data-empty]) .dash { font-weight: 200; opacity: 0.78; }
-/* The pause speaks at the question's size: a quiet beat, not a giant row of dots. */
-.ft-answer:has(.ft-word[data-empty]) { font-size: clamp(2rem, 6vw, 6rem); padding-top: 0; }
-
-.ft-reply {
-  display: grid;
-  gap: clamp(12px, 1.4vw, 2rem);
-  justify-items: start;
-  align-content: end;
-  min-width: 0;
-  margin-top: clamp(28px, 4.4vw, 72px);
-}
-.ft-night {
-  margin: 0;
-  font-size: clamp(1.625rem, 1rem + 2.3vw, 3.25rem);
-  line-height: 1.08;
-  max-width: 24ch;
-  text-wrap: balance;
-}
-.ft-night .dash { font-style: normal; }
-.ft-signoff {
-  display: flex;
-  align-items: center;
-  gap: 0.55em;
-  margin: 0;
-  font-size: clamp(1.125rem, 0.95rem + 0.55vw, 1.5rem);
-  color: var(--fg-soft);
-}
-.ft-signoff__clover { width: 1.05em; height: 1.05em; flex: none; color: var(--fg); }
-.ft-status {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  gap: 0.625rem;
-  margin: clamp(18px, 2vw, 24px) 0 0;
-  min-height: 1.4em;
-}
-.ft-status .mono { font-size: inherit; letter-spacing: inherit; }
-.ft-status__dot {
-  position: relative;
-  width: 0.5rem;
-  height: 0.5rem;
-  flex: none;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-}
-.ft-status__dot[data-state="closed"] { opacity: 0.7; }
-.ft-status__dot[data-state="open"] { background: var(--color-butter); border-color: var(--color-butter); }
-.ft-status__dot[data-state="open"]::after {
-  content: "";
-  position: absolute;
-  inset: -1.5px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-butter);
-  animation: kd-pulse 2.4s var(--ease-kd-out) infinite;
-}
-
-@media (min-width: 640px) {
-  .ft-dlg .dlg-q,
-  .ft-answer:has(.ft-word[data-empty]) { font-size: clamp(2rem, 7.4vw, 6rem); }
-  /* The clock line: the hour on the left, the city's live status at the far right. */
-  .ft-talk { grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--grid-gap); }
-  .ft-kicker { grid-column: 1; grid-row: 1; }
-  .ft-status { grid-column: 2; grid-row: 1; justify-self: end; align-self: start; margin: 0; }
-  .ft-exchange { grid-column: 1 / -1; grid-row: 2; }
-
-  /* The exchange across the whole field: the question and the guest's answer on the left, the
-     café's reply on the right, bottom-aligned with the last line. A long answer takes the full
-     width and the reply steps down under it, still on the right. */
-  .ft-exchange {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    column-gap: var(--grid-gap);
-    row-gap: clamp(28px, 4.4vw, 7rem);
-  }
-  .ft-dlg { flex: 0 1 auto; }
-  /* One line from here up (the longest, «— Как в сказке.», is ≈5.5em: about two thirds of the
-     width), so the dash never parts from the word, even mid-entrance while the word gains weight. */
-  .ft-answer { white-space: nowrap; }
-  /* Eight columns on small tablets (it steps down under the question), six from 768, five from 1024. */
-  .ft-reply {
-    flex: 0 0 calc(8 * var(--ft-col) + 7 * var(--grid-gap));
-    margin: 0 0 0 auto;
-  }
-  /* Align the reply's last line with the pause «— …» (its box keeps a little room under the dots). */
-  .ft-exchange:has(.ft-word[data-empty]) .ft-reply { padding-bottom: 0.1em; }
-}
-@media (min-width: 768px) {
-  .ft-reply { flex-basis: calc(6 * var(--ft-col) + 5 * var(--grid-gap)); }
-}
-
-/* The closing exchange grows with the canvas up to 2560 and stops there with the rem, so on an
-   ultrawide the reply and the small print keep their proportion to it. */
-@media (min-width: 1024px) {
-  .ft-dlg .dlg-q { font-size: clamp(4rem, 8.4vw, 10.75rem); }
-  .ft-answer { font-size: clamp(3rem, 12vw, 15.375rem); }
-  .ft-answer:has(.ft-word[data-empty]) { font-size: clamp(4rem, 8.4vw, 10.75rem); }
-  /* Five columns, starting on column 8: the same line the contacts' last third starts near. */
-  .ft-reply { flex-basis: calc(5 * var(--ft-col) + 4 * var(--grid-gap)); }
-  .ft-night { font-size: clamp(2rem, 0.4rem + 2.6vw, 3.75rem); }
-  .ft-signoff { font-size: clamp(1.125rem, 0.55rem + 0.8vw, 1.5625rem); }
-}
-
-/* ── Service doors ── */
-.ft-doors { display: block; margin-top: clamp(72px, 11vw, 15rem); }
-.ft-rule { display: block; height: var(--rule); background: currentColor; }
-.ft-doors__list { display: grid; margin: 0; padding: 0; list-style: none; }
-.ft-doors__item { min-width: 0; }
-.ft-doors__item + .ft-doors__item { border-top: var(--rule) solid var(--hair); }
-
-.ft-door {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 16px;
-  row-gap: 4px;
-  min-height: 92px;
-  padding-block: 16px 18px;
-  color: inherit;
-  transition: color 420ms var(--ease-kd-ui);
-}
-.ft-door__q {
-  grid-column: 1;
-  font-size: clamp(1.0625rem, 0.95rem + 0.35vw, 1.3125rem);
-  color: var(--fg-soft);
-  transition: color 420ms var(--ease-kd-ui);
-}
-.ft-door__label {
-  grid-column: 1;
-  font-size: clamp(1.875rem, 1.2rem + 1.05vw, 2.25rem);
-  line-height: 0.92;
-  text-wrap: balance;
-}
-.ft-door__label .dash { display: inline-block; margin-right: 0.14em; transition: color 420ms var(--ease-kd-ui); }
-.ft-door__arrow {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  width: 24px;
-  height: 24px;
-  transition: transform 420ms var(--ease-kd-out);
-}
-/* Keyboard focus opens the door as hover does: the milk panel, with a cobalt ring inside it. The
-   ring is drawn on the panel, not the link, so on the outer doors (whose panel opens out to the
-   screen edge from 1024) it follows the panel instead of cutting a box out of it. The link keeps a
-   transparent outline, which forced-colors mode paints in the system colour. */
-.ft-door:focus-visible { outline-color: transparent; outline-offset: -6px; color: var(--color-cobalt); }
-.ft-door:focus-visible::before {
-  clip-path: inset(0 0 0 0);
-  outline: 2px solid var(--color-cobalt);
-  outline-offset: -6px;
-}
-.ft-door:focus-visible .ft-door__q { color: var(--color-cobalt-deep); }
-.ft-door:focus-visible .ft-door__label .dash { color: var(--color-tomato); }
-/* The door panel: milk rises from the threshold on hover. */
-.ft-door::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--color-milk);
-  clip-path: inset(100% 0 0 0);
-  transition: clip-path 560ms var(--ease-kd-out);
-}
-@media (max-width: 1023.98px) {
-  /* One door per row, its text on the gutter: the panel opens out to the screen edges, so the
-     focus ring runs around the words instead of through the dashes and the arrow. */
-  .ft-door::before { left: calc(-1 * var(--gutter)); right: calc(-1 * var(--gutter)); }
-}
-
-@media (min-width: 1024px) {
-  /* The doors are the threshold of the page: the frame runs from edge to edge of the screen, the
-     five doors share the width between the gutters, and the outer doors open to the edges. */
-  .ft-doors { margin-inline: calc(-1 * var(--gutter)); }
-  .ft-doors__list { grid-template-columns: repeat(5, minmax(0, 1fr)); padding-inline: var(--gutter); }
-  .ft-doors__item + .ft-doors__item { border-top: 0; border-left: var(--rule) solid var(--hair); }
-  .ft-doors__item:first-child .ft-door::before { left: calc(-1 * var(--gutter)); }
-  .ft-doors__item:last-child .ft-door::before { right: calc(-1 * var(--gutter)); }
-  .ft-door {
-    grid-template-rows: 1fr auto;
-    align-items: start;
-    column-gap: 1rem;
-    height: 100%;
-    min-height: clamp(188px, 14vw, 18rem);
-    padding: clamp(20px, 1.5vw, 1.9375rem) clamp(14px, 1.3vw, 1.6875rem) clamp(22px, 1.7vw, 2.1875rem);
-  }
-  .ft-door__q { grid-row: 1; padding-right: 0.5rem; font-size: clamp(1.0625rem, 0.5rem + 0.72vw, 1.4375rem); }
-  /* Scales with the door width: «— Бонусная карта» (≈6.8em, the longest) nearly fills its door,
-     and every label holds one line at every width from 1024 up. The door, its type and its arrow
-     stop at their 2560 size with the rem; wider doors just gain air. */
-  .ft-door__label {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    align-self: end;
-    font-size: clamp(1.375rem, 2.25vw, 2.875rem);
-    white-space: nowrap;
-  }
-  .ft-door__arrow { grid-column: 2; grid-row: 1; width: clamp(22px, 1.4vw, 1.8rem); height: clamp(22px, 1.4vw, 1.8rem); }
-}
-@media (hover: hover) and (pointer: fine) {
-  .ft-door:hover { color: var(--color-cobalt); }
-  .ft-door:hover::before { clip-path: inset(0 0 0 0); }
-  .ft-door:hover .ft-door__q { color: var(--color-cobalt-deep); }
-  .ft-door:hover .ft-door__label .dash { color: var(--color-tomato); }
-  .ft-door:hover .ft-door__arrow { transform: translateX(0.25rem); }
-}
-
-/* ── Contacts ── */
-.ft-info {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 36px var(--grid-gap);
-  margin-top: clamp(48px, 6vw, 10rem);
-}
-@media (min-width: 640px) {
-  .ft-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ft-col--nav { grid-column: 1 / -1; }
-}
-@media (min-width: 1024px) {
-  /* The thirds of the grid: where to find us, how to call, where to go. */
-  .ft-info { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .ft-col--social { grid-column: 1 / 5; }
-  .ft-col--phone { grid-column: 5 / 9; }
-  .ft-col--nav { grid-column: 9 / 13; }
-}
+/* ── The columns ── */
+.ft-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px var(--grid-gap); }
 .ft-col { min-width: 0; }
-.ft-col__label { margin: 0 0 0.625rem; color: var(--fg-soft); }
+/* Enough room under the label for the first link's focus ring (its box reaches up by --ft-pad). */
+.ft-label { margin-bottom: 1.25rem; }
+@media (min-width: 640px) {
+  .ft-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 56px; }
+}
+@media (min-width: 1024px) {
+  /* Three equal columns with the grid gap are exactly the 4/4/4 thirds of the 12-column grid. */
+  .ft-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
-.ft-social-list { display: grid; gap: 6px var(--grid-gap); margin: 0; padding: 0; list-style: none; }
-.ft-social { display: inline-grid; gap: 2px; padding-block: 6px; min-height: 44px; }
-.ft-social__name {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  font-weight: 500;
-  font-size: 1.125rem;
+/* Every link is one row of --ft-row: the display places set solid (0.95em), never under 44px on any
+   pointer, and the same pitch for every list, so the rows of the three columns line up. A link's box is
+   trimmed to its caps and padded evenly, so the word sits optically centred in its target, and the list
+   is pulled up by that padding: every cap line lands on the shared row grid under the labels, whatever
+   the type size. (--ft-pad resolves against the list's font, which the links inherit.) */
+.ft-list {
+  --ft-pad: calc((var(--ft-row) - 1cap) / 2);
+  display: grid;
+  justify-items: start;
+  margin-top: calc(-1 * var(--ft-pad));
+  font-size: var(--lead);
   line-height: 1.3;
 }
-.ft-social__note { font-size: 0.9375rem; color: var(--fg-soft); line-height: 1.35; }
-.ft-social__note.mono { font-size: 0.8125rem; letter-spacing: 0.02em; }
-.ft-social__note .reply { font-size: 1.125rem; }
-.ft-social__en { font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.02em; }
-.ft-ext { width: 0.62em; height: 0.62em; transition: transform 320ms var(--ease-kd-out); }
-
-.ft-phone {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  border-bottom: var(--rule) solid transparent;
-  transition: border-color 320ms var(--ease-kd-ui);
+.ft-list:not(.display) { font-weight: 500; }
+.ft-list--places { font-size: var(--h3); line-height: 0.9; }
+.ft-link {
+  display: block;
+  padding-block: var(--ft-pad);
+  text-box: trim-both cap alphabetic;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: color 200ms var(--ease-kd-ui), opacity 150ms var(--ease-kd-ui);
 }
-@media (min-width: 1024px) {
-  /* Tied to the width of its third (the number is ≈12.8em), so it fills the column at every
-     width up to 2560 and never runs into the nav; there it stops with the rem. */
-  .ft-phone { font-size: min(2.2vw, 2.8125rem); }
+/* Without text-box the link's box is its line, so pad the line to the row: the same pitch, the cap lines
+   a pixel or two apart. */
+@supports not (text-box: trim-both cap alphabetic) {
+  .ft-list { --ft-pad: max(0px, calc((var(--ft-row) - 1lh) / 2)); }
 }
-
-.ft-nav {
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  column-gap: clamp(32px, 4vw, 48px);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ft-nav__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  min-height: 44px;
-  font-weight: 500;
-  font-size: 1.0625rem;
-}
-.ft-nav__link .dash { transition: transform 320ms var(--ease-kd-out); }
-@media (min-width: 640px) and (max-width: 1023.98px) {
-  .ft-nav { grid-template-columns: repeat(4, max-content); }
-}
-@media (min-width: 1024px) {
-  /* Two grid columns each, so the links land on the same lines as the columns above. */
-  .ft-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
-  .ft-nav__link { font-size: 1.125rem; }
-}
+.ft-link:active { opacity: 0.6; }
 @media (hover: hover) and (pointer: fine) {
-  .ft-social:hover .ft-social__name { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.22em; }
-  .ft-social:hover .ft-ext { transform: translate(2px, -2px); }
-  .ft-phone:hover { border-bottom-color: currentColor; }
-  .ft-nav__link:hover .dash { transform: translateX(-0.2em); }
-  .ft-nav__link:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.22em; }
+  .ft-list--places .ft-link:hover { color: var(--accent-ink); }
+  .ft-list:not(.ft-list--places) .ft-link:hover { text-decoration-line: underline; }
 }
 
-/* ── Small print ── */
-.ft-print { margin-top: clamp(48px, 6vw, 10rem); }
-.ft-utility {
-  margin: 0;
-  padding-block: 0.875rem;
-  border-block: var(--rule) solid var(--hair);
-  color: var(--fg);
-}
-/* At 320 «Халяль и намазхана во всех кофейнях» is wider than the column: let that phrase wrap. */
+.ft-address { font-style: normal; }
+/* A lone number, not a column: proportional figures, as in the dialog. */
+.ft-phone { white-space: nowrap; font-variant-numeric: proportional-nums; }
+.ft-social { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; min-height: var(--ft-row); }
+.ft-note { max-width: 44ch; margin-top: 1rem; }
+/* On the narrowest phones «Халяль и намазхана во всех кофейнях» may be wider than the column: only
+   that phrase may wrap. */
 @media (max-width: 359.98px) {
-  .ft-utility .ft-nobr { white-space: normal; }
+  .ft-note .ft-nobr:first-child { white-space: normal; }
 }
-@media (min-width: 1024px) {
-  /* The facts strip runs gutter to gutter: the four phrases spread out, flush with both gutters.
-     The width between them is the separator now, so the «·» stay for screen readers only (spread
-     apart they'd float as stray specks, hundreds of pixels from any word, on wide screens). */
-  .ft-utility { position: relative; display: flex; justify-content: space-between; align-items: baseline; gap: 0 3em; }
-  .ft-utility .ft-sep {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-@media (min-width: 1280px) {
-  /* On the lines of the contacts above, like the © row under it: halal under «На связи», Wi‑Fi
-     under the phone, the English menu under «— Меню», the hours under «— Кофейни». (The «·» are
-     out of flow, so the phrases are children 1, 3, 5 and 7.) */
-  .ft-utility { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0 var(--grid-gap); }
-  .ft-utility > :nth-child(1) { grid-column: 1 / 5; }
-  .ft-utility > :nth-child(3) { grid-column: 5 / 9; }
-  .ft-utility > :nth-child(5) { grid-column: 9 / 11; }
-  .ft-utility > :nth-child(7) { grid-column: 11 / 13; }
-}
+
+/* ── Small print: © · the photo credit · the motion switch, under one hairline ── */
 .ft-legal {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 28px;
-  padding-top: 10px;
-  color: var(--fg-soft);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-top: var(--ft-gap);
+  padding-top: 1rem;
+  /* The row is set in --fg-soft: the hairline takes the text colour, like every other rule. */
+  border-top: 1px solid color-mix(in srgb, var(--fg) 16%, transparent);
 }
-.ft-legal p { margin: 0; }
-@media (min-width: 1024px) and (max-width: 1279.98px) {
-  .ft-legal { justify-content: space-between; }
-  .ft-legal p:first-child { flex: 1 1 auto; }
+/* Phones: the switch gets its own line, clear of the credit, so its 44px touch area covers only itself. */
+.ft-legal > .ft-motion { margin-top: 0.75rem; }
+@media (min-width: 640px) {
+  .ft-legal { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 1.5rem; }
+  .ft-legal > .ft-motion { margin-top: 0; }
 }
-@media (min-width: 1280px) {
-  /* On the thirds, under the contacts: © under «На связи», the credit under the phone, the
-     motion switch under the sections. */
-  .ft-legal { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0 var(--grid-gap); padding-top: 0.5rem; }
-  .ft-legal > :nth-child(1) { grid-column: 1 / 5; }
-  .ft-legal > :nth-child(2) { grid-column: 5 / 9; }
-  .ft-legal > :nth-child(3) { grid-column: 9 / 13; justify-self: start; }
+@media (min-width: 1024px) {
+  /* Under the columns: © under the places, the credit under the services, the switch under the contacts. */
+  .ft-legal { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--grid-gap); }
+  .ft-legal > .ft-motion { justify-self: start; }
 }
 
 .ft-motion {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  min-height: 44px;
   padding: 0;
   border: 0;
   background: none;
   color: var(--fg);
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
+  font-family: inherit;
   cursor: pointer;
-}
-.ft-motion__icon {
-  width: 1.75rem;
-  height: 0.75rem;
-  overflow: visible;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-}
-.ft-motion__wave,
-.ft-motion__flat { transition: opacity 320ms var(--ease-kd-ui); }
-.ft-motion[data-mode="full"] .ft-motion__flat,
-.ft-motion[data-mode="reduced"] .ft-motion__wave { opacity: 0; }
-@media (hover: hover) and (pointer: fine) {
-  .ft-motion:hover span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.3em; }
 }
 .ft-motion[hidden] { display: none; }
 
-/* ── The sign: the giant milk wordmark, anchored to the page bottom ── */
-.ft-sign {
-  display: flex;
-  justify-content: center;
-  overflow: clip;
-  padding-inline: var(--gutter);
-  padding-top: clamp(40px, 6vw, 10rem);
-  padding-bottom: calc(clamp(14px, 2.2vw, 4rem) + env(safe-area-inset-bottom));
-}
-/* Gutter to gutter at every width: its edges line up with the columns above. */
-.ft-mark {
-  width: 100%;
-  max-width: none;
-  height: auto;
-  overflow: visible;
-  color: var(--color-milk);
-}
+/* ── The sign: the full wordmark, framed by the gutters on three sides ── */
+.ft-sign { padding-block: var(--ft-gap) calc(var(--gutter) + env(safe-area-inset-bottom)); }
+.ft-mark { width: 100%; height: auto; overflow: visible; color: var(--fg); }
+.ft-mark__clover { fill: var(--accent); }

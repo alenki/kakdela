@@ -79,6 +79,8 @@ export const kd = {
     const s = current();
     const torn = s.torn.includes(id) ? s.torn : [...s.torn, id];
     document.documentElement.dataset.answer = id;
+    // A tear is an answer: /menu marks it (a preview never is).
+    document.documentElement.dataset.said = id;
     delete document.documentElement.dataset.guess;
     const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Moscow" }).format(new Date());
     safe(() => localStorage.setItem("kd-last", JSON.stringify({ id, day })));

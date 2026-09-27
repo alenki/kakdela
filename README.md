@@ -1,7 +1,7 @@
 # kakdela
 
 The website for **«Как дела?»**, a chain of specialty-coffee and breakfast cafés in Nalchik and Vladikavkaz.
-Phase 1 is the homepage. The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404 until their phase ships.
+Phase 1 is the homepage and the menu (`/menu`). The other routes (`/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404 until their phase ships.
 
 ## Concept: «Разговор»
 The brand name is a question, and the menu already answers it: the breakfasts are called «Лучше всех», «Как в сказке», «Шик» and «10 из 10». The homepage is one conversation:
@@ -9,6 +9,7 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 - **Hero.** A paper notice whose headline is the real logo asks «Как дела?». The guest tears off an answer tab.
 - **The answer is the order.** The heavy answer lands, the dish with that name appears with its price, and the café replies.
 - **The page remembers.** The answer comes back in the locations reply, and the next day as «Вчера было «…». А сегодня?».
+- **The menu answers back.** `/menu` is the waiter's side: «Что будете?». Its cover lists the eight answers, each beside its dish; the dish carries the hero's dialogue («Как дела? Сонно.»), and the answer word turns red where the guest lands or what they tore today.
 
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase), Motion 13 (`m.*` under `LazyMotion`), Lenis.
@@ -35,10 +36,11 @@ npm run assets:grain   # grain textures in public/tex
 ## Where things live
 | Path | What |
 |---|---|
-| `src/content/*` | Typed data: answers, menu, cafés (real coordinates, phones and Yandex ids), reviews, team, routes and photos |
+| `src/content/*` | Typed data: answers, menu, the full menu (`full-menu.ts`, from the client's site), cafés (real coordinates, phones and Yandex ids), reviews, team, routes and photos |
 | `src/i18n/ru.ts` | Every UI string (Russian-first; EN will mirror its shape) |
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
+| `src/components/menu/*` | The `/menu` page: cover, running head, chapters and rows, with client islands in `islands/` |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
 | `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup |
 | `src/styles/*` | Chrome, brand and hero styles, plus one CSS file per section |

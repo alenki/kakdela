@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { RouteLink } from "./RouteLink";
+import { CurrentLink } from "./CurrentLink";
 import { MenuDialog } from "./MenuDialog";
 import { HeaderBehavior } from "./HeaderBehavior";
 import { t } from "@/i18n";
@@ -24,9 +24,9 @@ export function Header() {
             <Wordmark variant="badge" className="site-header__mark site-header__mark--badge" cloverClassName="site-header__clover" />
           </Link>
           <nav className="site-header__nav" aria-label={t.a11y.mainNav}>
-            <RouteLink to="menu" className="hdr-link">
+            <CurrentLink to="menu" className="hdr-link">
               {t.nav.menu}
-            </RouteLink>
+            </CurrentLink>
             <MenuDialog />
           </nav>
         </div>

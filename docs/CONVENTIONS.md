@@ -10,6 +10,7 @@ The site reads like a well-set printed café menu: warm paper, black ink, one re
 
 ## Files and ownership
 - `src/app/page.tsx` composes the page: hero, team, breakfasts, coffee, locations, reviews, evening inside `<main>`, then the footer (the contentinfo landmark).
+- `src/app/menu/page.tsx` composes the menu the same way: its server components live in `src/components/menu/`, its client islands in `src/components/menu/islands/`, its stylesheet is `src/styles/sections/menu.css`, and its data is `src/content/full-menu.ts` (the full menu from the client's site; the dishes shown on the homepage are referenced from `menu.ts`, never copied).
 - Each section:
   - is `src/components/sections/<Name>.tsx`, a **server component** that renders all copy;
   - may add client islands next to it as `src/components/sections/<name>/<Island>.tsx` (motion, measurement, state);
@@ -107,7 +108,7 @@ Headings get `text-wrap: balance`, paragraphs `pretty`. Keep «ёлочки».
 - react-hooks v7 lint: no `Math.random()` or `Date.now()` in render (use `mulberry32` from `@/lib/seed`); never read or write `ref.current` during render.
 
 ## Accessibility
-- One `h1` (the hero), an `h2` per section via `DialogueHeading`, real lists and landmarks. Alt text comes from `photos.ts`.
+- One `h1` per page (the hero on `/`, the cover on `/menu` via `DialogueHeading as="h1"`), an `h2` per section via `DialogueHeading`, real lists and landmarks. Alt text comes from `photos.ts`.
 - Visible focus is global: a 2px `--focus` ring with a 3px offset. Never remove it; inside anything that clips, or on the screen edge, use a negative `outline-offset`.
 - Touch targets are at least 44px. Decorative SVG and leaders are `aria-hidden`.
 - External links get `target="_blank" rel="noreferrer"` and the sr-only «(откроется в новой вкладке)».

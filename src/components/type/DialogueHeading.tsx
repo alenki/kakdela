@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/format";
 
 type Props = {
-  as?: "h2" | "h3";
+  /** h1 only for a page's masthead (the /menu page); sections use h2. */
+  as?: "h1" | "h2" | "h3";
   /** The small label above the title: the section's plain name («Кофе»). */
   q: string;
   /** The title, in display type («А с кофе мы не шутим.»). Without it (and without children), `q` is the title. */

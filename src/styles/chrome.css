@@ -108,6 +108,8 @@ html:not(.js) .hdr-burger { display: none; }
 }
 .hdr-link, .hdr-burger__label, .menu-dialog__close { text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 :is(.hdr-link, .hdr-burger, .menu-dialog__close):active { opacity: 0.6; }
+/* The page on show (/menu): its link stays underlined. */
+.hdr-link[aria-current="page"] { text-decoration-line: underline; }
 /* «Меню» is narrower than 44px: widen the hit area without moving the word. */
 .hdr-link::before { content: ""; position: absolute; inset: 0 -8px; }
 @media (hover: hover) and (pointer: fine) {

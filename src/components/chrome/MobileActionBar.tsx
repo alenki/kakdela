@@ -7,8 +7,9 @@ import { RouteLink } from "./RouteLink";
 import { t } from "@/i18n";
 
 /**
- * Thumb-zone actions on phones and tablets: shown after the hero, hidden over the footer and the dialog.
- * Like the header, it takes the theme of the section beneath it.
+ * Thumb-zone actions on phones and tablets: shown after the hero (on other pages, after the block marked
+ * data-actionbar-after), hidden over the footer and the dialog. Like the header, it takes the theme of the
+ * section beneath it.
  */
 export function MobileActionBar() {
   const [heroGone, setHeroGone] = useState(false);
@@ -17,7 +18,7 @@ export function MobileActionBar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const hero = document.getElementById("hero");
+    const hero = document.getElementById("hero") ?? document.querySelector<HTMLElement>("[data-actionbar-after]");
     const footer = document.getElementById("footer");
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
@@ -58,6 +59,8 @@ export function MobileActionBar() {
   }, [pathname]); // re-observe the new page's sections after navigation
 
   const visible = heroGone && !footerIn;
+  const home = pathname === "/";
+  const onMenu = pathname === "/menu";
   return (
     <AnimatePresence>
       {visible && (
@@ -70,8 +73,17 @@ export function MobileActionBar() {
           exit={{ y: "100%" }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          <RouteLink to="menu" className="action-bar__btn">{t.actionBar.menu}</RouteLink>
-          <a href="#gde" className="action-bar__btn">{t.actionBar.nearest}</a>
+          {/* On /menu, «Меню» goes back to its contents; «Кофейни» is a section of the homepage. */}
+          {onMenu ? (
+            <a href="#soderzhanie" className="action-bar__btn" aria-current="page">{t.actionBar.menu}</a>
+          ) : (
+            <RouteLink to="menu" className="action-bar__btn">{t.actionBar.menu}</RouteLink>
+          )}
+          {home ? (
+            <a href="#gde" className="action-bar__btn">{t.actionBar.nearest}</a>
+          ) : (
+            <RouteLink to="home" hash="gde" className="action-bar__btn">{t.actionBar.nearest}</RouteLink>
+          )}
           <RouteLink to="delivery" className="action-bar__btn">{t.actionBar.delivery}</RouteLink>
         </m.nav>
       )}

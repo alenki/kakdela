@@ -72,6 +72,73 @@ export type Dessert = {
   verify: Verify;
 };
 
+// ── The full menu (/menu). Curated dishes above are referenced, never copied (src/content/full-menu.ts). ──
+
+/** Калории, белки, жиры, углеводы per serving. b/zh/u are missing only where the source gives calories alone. */
+export type Kbju = { k: number; b?: number; zh?: number; u?: number };
+
+export type Nutrition = {
+  kbju: Kbju;
+  /** Alternative values for the same dish (e.g. by sauce). Kept for the client check, never rendered. */
+  variants?: { label?: string; kbju: Kbju }[];
+  verified: boolean;
+  /** Only in these cities (e.g. «Капитальный»: the Нальчик recipe). */
+  cities?: City[];
+  note?: string;
+};
+
+/** Serving volume: one size, or the two cup sizes that go with a `{ sizes }` price. */
+export type Volume = { ml: number } | { sizes: [number, number] };
+
+/** Per-city rubles, or two cup sizes (the same in both cities): Drink["price"]. */
+export type MenuPrice = Price | { sizes: [number, number] };
+
+export type MenuItem = {
+  /** Stable Latin slug, unique on the page: the item's anchor (/menu#id). */
+  id: string;
+  name: string;
+  lang?: "en";
+  desc?: string;
+  /** A city's own recipe: rendered next to `desc`, each with data-city-only. */
+  descByCity?: Partial<Record<City, string>>;
+  price: MenuPrice;
+  volume?: Volume;
+  nutrition?: Nutrition;
+  photo?: Photo;
+  /** Served only in these cities. Omitted: both (a null price there reads «уточняйте в кофейне»). */
+  cities?: City[];
+  /** A signature row: set large, as on the homepage. */
+  signature?: true;
+  /** Comes from src/content/menu.ts, so the homepage shows the same name, price and copy. */
+  curated?: true;
+  /** Provenance for the client check, never rendered. */
+  oldName?: string;
+  seenAt?: string[];
+  draftNote?: string;
+  verify?: Verify;
+};
+
+export type MenuCategory = {
+  /** Latin slug: the category's anchor (/menu#id). */
+  id: string;
+  title: string;
+  /** The whole category is served only in these cities. */
+  cities?: City[];
+  /** The chapter's signature block (set large, as on the homepage). */
+  signature?: true;
+  items: MenuItem[];
+};
+
+export type MenuChapterId = "kuhnya" | "bar" | "deserty";
+
+export type MenuChapter = {
+  id: MenuChapterId;
+  title: string;
+  /** "full-kitchen": only the cafés with kitchen: "full"; "every-cafe": all nine. */
+  servedAt: "full-kitchen" | "every-cafe";
+  categories: MenuCategory[];
+};
+
 export type Cafe = {
   id: string;
   city: City;

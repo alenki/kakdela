@@ -5,6 +5,7 @@
 //   data-motion     full | reduced                   (kd-motion, else prefers-reduced-motion)
 //   data-answer     today's answer, or a time-of-day guess
 //   data-guess="1"  the answer is only a guess
+//   data-said       today's torn answer only (never a guess or an arrow-key preview); read by /menu
 //   data-yesterday  the answer from a previous day
 //   .intro          first visit this session → the hero's tabs sway once and settle
 // Stored ids are whitelisted: a renamed answer or tampered storage must never reach the page.
@@ -26,7 +27,7 @@ var guess=t<11?'sonno':t<16?'luchshe-vseh':'vsyo-shik';
 var ids=${IDS},last=null,yd='';try{last=JSON.parse(g('localStorage','kd-last')||'null')}catch(e){}
 if(!last||typeof last!=='object'||ids.indexOf(last.id)<0)last=null;
 try{yd=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow'}).format(new Date(Date.now()-864e5))}catch(e){}
-if(last&&last.day===day){ds.answer=last.id}else{if(last&&yd&&last.day===yd)ds.yesterday=last.id;ds.answer=guess;ds.guess='1'}
+if(last&&last.day===day){ds.answer=last.id;ds.said=last.id}else{if(last&&yd&&last.day===yd)ds.yesterday=last.id;ds.answer=guess;ds.guess='1'}
 if(ds.motion==='full'&&!location.hash&&!g('sessionStorage','kd-intro'))d.classList.add('intro');
 setTimeout(function(){d.classList.remove('intro')},2600);
 })();`;

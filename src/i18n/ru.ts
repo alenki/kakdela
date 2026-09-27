@@ -94,7 +94,7 @@ export const ru = {
     links: { menu: "Всё меню, с КБЖУ", delivery: "Заказать домой" },
     lightNote: "В некоторых кофейнях меню лёгкое: уточняйте на странице кофейни.",
     /** One line under the photo (numbers come formatted). Each figure keeps its name: it wraps only after a «·». */
-    kbju: (kcal: number, b: string, zh: string, u: string) =>
+    kbju: (kcal: number | string, b: string, zh: string, u: string) =>
       `${kcal}${NBSP}ккал · белки${NBSP}${b}${NBSP}г · жиры${NBSP}${zh}${NBSP}г · углеводы${NBSP}${u}${NBSP}г`,
   },
   coffee: {
@@ -169,6 +169,57 @@ export const ru = {
     copyright: "© 2026 «Как дела?» · Нальчик · Владикавказ",
     photoCredit: "Часть фото временные (CC0)",
     utility: "Халяль и намазхана во всех кофейнях · Wi‑Fi · меню на английском · каждый день с 07:30",
+  },
+  // The /menu page: the waiter's side of the conversation.
+  menu: {
+    meta: {
+      title: "Меню кофеен «Как дела?»: завтраки весь день, кофе и десерты",
+      description:
+        "Всё меню «Как дела?» в Нальчике и Владикавказе: завтраки весь день, кофе, чай, лимонады и десерты. Цены для вашего города, объёмы и КБЖУ.",
+    },
+    q: "Меню",
+    a: "Что будете?",
+    lead: "Всё, что мы готовим и варим, с ценами вашего города, объёмами и КБЖУ.",
+    // The answers index: its accessible name (the visible label is t.hero.q, or t.hero.yesterday).
+    answersNav: "Блюда по ответам",
+    // Under today's torn answer in the index. Never red.
+    today: "ваш ответ сегодня",
+    contents: "Содержание",
+    runNav: "Разделы меню",
+    count: {
+      kuhnya: (n: number) => `${n} ${plural(n, "блюдо", "блюда", "блюд")}`,
+      bar: (n: number) => `${n} ${plural(n, "напиток", "напитка", "напитков")}`,
+      deserty: (n: number) => `${n} ${plural(n, "десерт", "десерта", "десертов")}`,
+    },
+    everywhere: "во всех кофейнях",
+    // «в 3 из 7 кофеен»: after «из N» always the genitive plural.
+    kitchenShare: (n: number, total: number) => `в ${n} из ${total} кофеен`,
+    cityGen: { nalchik: "Нальчика", vladikavkaz: "Владикавказа" },
+    chapters: {
+      kuhnya: {
+        q: "Кухня",
+        a: "С чего начнём?",
+        lead: (n: number, total: number, cityGen: string) =>
+          `Завтраки подаём весь день. Полная кухня есть в ${n} из ${total} кофеен ${cityGen}, в остальных меню лёгкое.`,
+      },
+      bar: {
+        q: "Бар",
+        a: "Как обычно?",
+        lead: "Эспрессо, фильтр и авторские напитки, матча, чаи, лимонады и фреши. Во всех кофейнях по одной цене.",
+      },
+      deserty: {
+        q: "Десерты",
+        a: "К кофе что-нибудь?",
+        lead: (n: number) =>
+          `${n} ${plural(n, "десерт", "десерта", "десертов")} к любому кофе, есть без сахара и без глютена. Во всех кофейнях по одной цене.`,
+      },
+    },
+    fullKitchen: "Полная кухня",
+    ml: (n: string) => `${n}${NBSP}мл`,
+    kcal: (k: string) => `${k}${NBSP}ккал`,
+    // Screen-reader form of a two-size price: «200 мл за 240 ₽, 300 мл за 270 ₽» (prices come from rub()).
+    sizesSpoken: (ml1: number, p1: string, ml2: number, p2: string) => `${ml1}${NBSP}мл за ${p1}, ${ml2}${NBSP}мл за ${p2}`,
+    note: "Состав, КБЖУ и цены иногда меняются: уточняйте в кофейне.",
   },
   notFound: {
     label: "Ошибка 404",

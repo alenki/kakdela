@@ -9,6 +9,7 @@ import { cafes } from "@/content/cafes";
 import { answers } from "@/content/answers";
 import { breakfasts } from "@/content/menu";
 import { ru } from "@/i18n/ru";
+import { HEAD_SCRIPT } from "./head-script";
 
 const midnightClose = { open: "07:30", close: "00:00" as const };
 const elevenClose = { open: "07:30", close: "23:00" as const };
@@ -201,5 +202,36 @@ describe("content integrity", () => {
     expect(cafes.filter((c) => c.city === "nalchik")).toHaveLength(7);
     expect(cafes.filter((c) => c.city === "vladikavkaz")).toHaveLength(2);
     for (const c of cafes) expect(c.phone).toMatch(/^\+7\d{10}$/);
+  });
+});
+
+describe("head script: today's tear", () => {
+  // Runs HEAD_SCRIPT against a minimal document and storage: data-said is today's tear only.
+  function run(stored: unknown) {
+    const dataset: Record<string, string> = {};
+    const store: Record<string, string | null> = { "kd-last": stored == null ? null : JSON.stringify(stored) };
+    const env = {
+      document: { documentElement: { dataset, classList: { add() {}, remove() {} } } },
+      localStorage: { getItem: (k: string) => store[k] ?? null },
+      sessionStorage: { getItem: () => "1" },
+      matchMedia: () => ({ matches: false }),
+      location: { hash: "" },
+      setTimeout: () => 0,
+    };
+    const fn = new Function("window", "document", "localStorage", "sessionStorage", "matchMedia", "location", "setTimeout", HEAD_SCRIPT);
+    fn(env, env.document, env.localStorage, env.sessionStorage, env.matchMedia, env.location, env.setTimeout);
+    return dataset;
+  }
+  const day = (offset: number) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Moscow" }).format(new Date(Date.now() + offset));
+  it("marks a tear made today", () => {
+    const d = run({ id: "sonno", day: day(0) });
+    expect(d.said).toBe("sonno");
+    expect(d.answer).toBe("sonno");
+    expect(d.guess).toBeUndefined();
+  });
+  it("never marks yesterday's tear, a guess or tampered storage", () => {
+    expect(run({ id: "sonno", day: day(-864e5) }).said).toBeUndefined();
+    expect(run(null).said).toBeUndefined();
+    expect(run({ id: "<img>", day: day(0) }).said).toBeUndefined();
   });
 });

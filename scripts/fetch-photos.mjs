@@ -10,7 +10,7 @@ const OUT = "src/assets/photos";
 const OLD = "https://www.kakdelacoffee.ru/images/";
 const force = process.argv.includes("--force");
 
-/** @type {{slug:string,url:string,placeholder:boolean,credit?:string,alt:string}[]} */
+/** @type {{slug:string,url:string,source?:string,placeholder?:boolean,credit?:string,crop?:{aspect:string,position:string},alt:string}[]} */
 const PHOTOS = [
   // Breakfasts (client)
   { slug: "luchshe-vseh", url: OLD + "food/Food-Name-68b438a4b974a.JPG", alt: "Завтрак «Лучше всех»: глазунья, домашние колбаски, овощи и грибной соус" },
@@ -42,12 +42,14 @@ const PHOTOS = [
   { slug: "cafe-lermontova-4", url: OLD + "shops/Coffee_shop_694e728f9f1db.png", alt: "Кофейня «Как дела?» на улице Лермонтова, 4" },
   { slug: "cafe-kujbysheva-3", url: OLD + "shops/Coffee_shop_687a07414e683.jpg", alt: "Кофейня «Как дела?» на улице Куйбышева, 3 во Владикавказе" },
   { slug: "cafe-plieva-32", url: OLD + "shops/Coffee_shop_654f565f14c95.jpg", alt: "Кофейня «Как дела?» на улице Генерала Плиева, 32 во Владикавказе" },
+  // Published by the café itself: Instagram @kakdela.coffee and its own uploads to the Yandex Maps
+  // cards. Instagram CDN links are signed and expire, so re-fetch those from `source`.
+  { slug: "cafe-shogencukova-19", url: "https://scontent-ord5-2.cdninstagram.com/v/t51.82787-15/708655129_18080918939546950_3796303180084814034_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=100&ig_cache_key=MzkwNzY3MDE5NjMwNTMyNDU2OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMzA3Mi5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=cB2X8SnX138Q7kNvwEPJiJH&_nc_oc=Adr8tVXeknxhxgNls5AcNLsjjC_iPkgal9tA4AJzgXk2JQIXDuisBjTzt7D8Zhjk40c&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&_nc_gid=9gzpnAiqDok1Y799FY8pWA&_nc_ss=7a22e&oh=00_AQIqOBav1lSltuPK8LWptO465Wzq0G_V486Xfyv6xUlFaQ&oe=6ABF6584", source: "https://www.instagram.com/p/DY61WcOCptc/?img_index=16", crop: { aspect: "3/2", position: "north" }, alt: "Кофейня «Как дела?» на проспекте Шогенцукова, 19" },
+  { slug: "team-1", url: "https://scontent-ord5-2.cdninstagram.com/v/t51.82787-15/670417487_18087281900253304_5204291435224539217_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=104&ig_cache_key=MzUwMTIwMDgxMzM0NDQyODM4MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=D_vybKhF55oQ7kNvwGwDMqQ&_nc_oc=AdpiuCdqmSgggJJgZTJmhiZtGnFI45PnPFqThDji2tLQ-o9Ab_P0R1_SZR4c1rUaZdM&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&_nc_gid=f4_wRHeJWmsl11KCv--qmw&_nc_ss=7a22e&oh=00_AQJzuWDcSpvizLJWJWkCu9vUsvtgpz8h1MMLke443bVFBw&oe=6ABF45A9", source: "https://www.instagram.com/p/DCYhR-jtTet/?img_index=6", alt: "Бариста наливает фильтр-кофе из термоса в фирменную кружку" },
+  { slug: "team-4", url: "https://avatars.mds.yandex.net/get-altay/18150755/2a0000019b4a4bb9d7a424d2830c1c8aef4b/orig", source: "https://yandex.ru/maps/org/kak_dela_/205101204327/gallery/?photos%5Bbusiness%5D=205101204327&photos%5Bid%5D=urn%3Ayandex%3Asprav%3Aphoto%3A2a0000019b4a4bb9d7a424d2830c1c8aef4b", alt: "Гость в зелёном свитере держит фирменный стакан «Как дела?»" },
   // CC0 placeholders (Openverse → rawpixel / StockSnap), to be replaced with client photography
-  { slug: "team-1", placeholder: true, credit: "Burst, StockSnap, CC0", url: "https://cdn.stocksnap.io/img-thumbs/960w/DTKOOFPC06.jpg", alt: "Бариста рисует латте-арт (временное фото)" },
   { slug: "team-2", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbnMzNzU0LWltYWdlLWt3eXJ4dGxxLmpwZw.jpg", alt: "Бариста наливает кофе в стакан с собой (временное фото)" },
   { slug: "team-3", placeholder: true, credit: "Malidate Van, StockSnap, CC0", url: "https://cdn.stocksnap.io/img-thumbs/960w/ZCW5B7GXFY.jpg", alt: "Руки бариста у эспрессо-машины (временное фото)" },
-  { slug: "team-4", placeholder: true, credit: "Burst, StockSnap, CC0", url: "https://cdn.stocksnap.io/img-thumbs/960w/ERHOTDPNMV.jpg", alt: "Гость держит чашку с латте-артом (временное фото)" },
-  { slug: "cafe-shogencukova-19", placeholder: true, credit: "rawpixel, CC0", url: "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODIyMDY5LXdpa2ltZWRpYS1pbWFnZS1rb3dreDY3aC5qcGc.jpg", alt: "Кофейня на проспекте Шогенцукова, 19 (временное фото)" },
 ];
 
 mkdirSync(OUT, { recursive: true });
@@ -66,10 +68,22 @@ for (const p of PHOTOS) {
     continue;
   }
   const buf = Buffer.from(await res.arrayBuffer());
+  let resize = { width: 2000, height: 2000, fit: "inside", withoutEnlargement: true };
+  if (p.crop) {
+    // The site crops to its frame around the centre; a photo whose subject sits elsewhere is
+    // pre-cropped here to the frame's aspect, anchored at `crop.position` (a sharp gravity).
+    const m = await sharp(buf).metadata();
+    const [w, h] = (m.orientation ?? 1) >= 5 ? [m.height, m.width] : [m.width, m.height];
+    const [aw, ah] = p.crop.aspect.split("/").map(Number);
+    const bw = Math.min(w, (h * aw) / ah);
+    const bh = (bw * ah) / aw;
+    const k = Math.min(1, 2000 / Math.max(bw, bh));
+    resize = { width: Math.round(bw * k), height: Math.round(bh * k), fit: "cover", position: p.crop.position };
+  }
   const info = await sharp(buf)
     .rotate()
     .flatten({ background: "#141210" })
-    .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
+    .resize(resize)
     .jpeg({ quality: 86, mozjpeg: true })
     .toFile(file);
   manifest.push({ ...p, file, width: info.width, height: info.height });

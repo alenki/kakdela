@@ -26,7 +26,7 @@ export const cafes: Cafe[] = [
     phone: "+79380773525", phoneDisplay: "+7 (938) 077-35-25",
     rating: 5.0, ratingsCount: 48, yandexOrgId: "93920355406",
     tags: ["шахматный блиц", "летняя веранда", "лёгкое меню"], kitchen: "light",
-    photo: photos.cafeShogencukova19, verify: { verified: false, note: "Фото нужно; закрытие 23:00 или 00:00" },
+    photo: photos.cafeShogencukova19, verify: { verified: false, note: "Закрытие 23:00 или 00:00 (на двери на фото открытия: 7:30–00:00)" },
   },
   {
     id: "lermontova-59", city: "nalchik", address: "ул. Лермонтова, 59",

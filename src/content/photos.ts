@@ -1,6 +1,6 @@
 // Static imports so next/image knows intrinsic sizes and generates blur placeholders.
-// Client photos come from kakdelacoffee.ru; `placeholder: true` marks CC0 stand-ins
-// (see src/assets/photos/manifest.json for credits).
+// Client photos come from kakdelacoffee.ru, the café's Instagram and its own Yandex Maps uploads;
+// `placeholder: true` marks CC0 stand-ins (see src/assets/photos/manifest.json for credits).
 import type { Photo } from "./types";
 
 import luchsheVseh from "@/assets/photos/luchshe-vseh.jpg";
@@ -62,9 +62,9 @@ export const photos = {
   kakVSkazke: { src: kakVSkazke, alt: "Завтрак «Как в сказке»: скрэмбл с креветками и зелёным горошком, киноа, брокколи и черри" },
   shik: { src: shik, alt: "Завтрак «Шик»: бурый и дикий рис, цыплёнок в сливочном соусе, свежие овощи и ржаной хлеб" },
   shakshuka: { src: shakshuka, alt: "Шакшука: яйца в томатах с перцем, креметте и тосты" },
-  team1: { src: team1, alt: "Бариста рисует латте-арт (временное фото)", placeholder: true },
+  team1: { src: team1, alt: "Бариста наливает фильтр-кофе из термоса в фирменную кружку" },
   team2: { src: team2, alt: "Бариста наливает капучино в бумажный стаканчик (временное фото)", placeholder: true },
   team3: { src: team3, alt: "Руки бариста у эспрессо-машины (временное фото)", placeholder: true },
-  team4: { src: team4, alt: "Гость держит чашку с латте-артом (временное фото)", placeholder: true },
-  cafeShogencukova19: { src: cafeShogencukova19, alt: "Кофейня на проспекте Шогенцукова, 19 (временное фото)", placeholder: true },
+  team4: { src: team4, alt: "Гость в зелёном свитере держит фирменный стакан «Как дела?»" },
+  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19" },
 } satisfies Record<string, Photo>;

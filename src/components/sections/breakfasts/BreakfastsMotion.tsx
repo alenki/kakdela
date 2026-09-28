@@ -5,7 +5,7 @@ import { useMotionMode } from "@/lib/motion";
 
 /**
  * Entrances for the breakfasts: the heading, then each block (the bar, every menu row, the photo,
- * the extras, the links) rises in once as it arrives. Everything is server-rendered and visible;
+ * the links) rises in once as it arrives. Everything is server-rendered and visible;
  * this only runs after mount in full motion, so reduced motion and no-JS keep the final state.
  */
 export function BreakfastsMotion() {

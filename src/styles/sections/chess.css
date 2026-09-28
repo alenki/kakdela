@@ -1,0 +1,219 @@
+/* ═════════════ CHESS «Задача недели.»: a mate in two on a big board, then the blitz, on ink ═════════════
+   Phones: the title and lead, the board edge to edge, the transcript, the button, the blitz.
+   From 1024: the title, the transcript and the blitz in columns 1–5 (the blitz on the board's bottom
+   edge), the board in 6–12, held under the header while the column beside it scrolls. */
+
+.chess {
+  --air: clamp(16px, 3vh, 40px);
+}
+.chess__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.chess__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+/* The island's wrapper: its board, transcript and button sit on the section's grid. */
+.chess__play { display: contents; }
+.chess__head { margin-bottom: var(--head-gap); }
+.chess__head .lead { margin: 1.25rem 0 0; }
+
+/* The room the board may take: the screen under the header (and the action bar below 1024), with air. */
+.chess__board { --room: calc(100svh - var(--header-h) - 56px - 2 * var(--air)); }
+@media (max-width: 639.98px) {
+  .chess__board { margin-inline: calc(-1 * var(--gutter)); }
+}
+
+@media (min-width: 1024px) {
+  .chess__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto auto auto 1fr;
+    column-gap: var(--grid-gap);
+  }
+  .chess__head,
+  .chess__log,
+  .chess__controls,
+  .chess__event { grid-column: 1 / span 5; }
+  .chess__head { grid-row: 1; margin-bottom: 0; }
+  .chess__log { grid-row: 2; }
+  .chess__controls { grid-row: 3; }
+  .chess__event { grid-row: 4; align-self: end; margin-bottom: clamp(2.5rem, 7vh, 5rem); }
+  .chess__board {
+    --room: calc(100svh - var(--header-h) - 2 * var(--air));
+    grid-column: 6 / -1;
+    grid-row: 1 / -1;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--air));
+  }
+}
+
+/* ── The board ──
+   Layers, bottom to top: the checker (its background: a8 light), the marks, the coordinates, the
+   pieces, the café's arrow, the grid of squares that takes the input. Every layer places its squares
+   with --f (file) and --r (row from the top). */
+.board {
+  --light: color-mix(in srgb, var(--fg) 10%, transparent);
+  position: relative;
+  width: min(100%, var(--room));
+  margin-inline: auto;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  background: conic-gradient(transparent 0 25%, var(--light) 0 50%, transparent 0 75%, var(--light) 0) 0 0 / 25% 25%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+@media (min-width: 1024px) {
+  .board { margin-inline: auto 0; }
+}
+.board__marks,
+.board__coords,
+.board__pieces { position: absolute; inset: 0; pointer-events: none; }
+.mark,
+.coord,
+.piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  translate: calc(var(--f) * 100%) calc(var(--r) * 100%);
+}
+
+/* Marks: milk tints under the pieces. The hint is a dashed ring, never mistaken for the focus ring. */
+.mark--last { background: color-mix(in srgb, var(--fg) 11%, transparent); }
+.mark--sel { background: color-mix(in srgb, var(--fg) 22%, transparent); }
+.mark--dot::after,
+.mark--ring::after,
+.mark--hint::after { content: ""; position: absolute; border-radius: 50%; }
+.mark--dot::after { inset: 37%; background: color-mix(in srgb, var(--fg) 38%, transparent); }
+.mark--ring::after { inset: 5%; border: max(2px, 0.55cqi) solid color-mix(in srgb, var(--fg) 38%, transparent); }
+.mark--hint::after { inset: 3%; border: max(2px, 0.4cqi) dashed color-mix(in srgb, var(--fg) 85%, transparent); }
+
+/* Coordinates inside the edge squares: the ranks top left in the a-file, the files bottom right on rank 1. */
+.coord {
+  display: flex;
+  padding: 0.35em 0.45em;
+  font-size: clamp(9px, 1.45cqi, 15px);
+  font-weight: 500;
+  line-height: 1;
+  color: color-mix(in srgb, var(--fg) 45%, transparent);
+}
+.coord--file { align-items: flex-end; justify-content: flex-end; }
+
+/* Pieces: one silhouette each, in its colour, the seams in the other (views.tsx). They slide from square
+   to square on `translate`; a drag moves them with `transform` (Game.tsx), so the two never fight. */
+.piece {
+  --pc-w: 2.4;
+  transition: translate 280ms var(--ease-kd-ui), transform 220ms var(--ease-kd-ui), opacity 200ms var(--ease-kd-ui);
+}
+.piece svg { width: 88%; height: 88%; margin: 6%; overflow: visible; }
+.piece--w { --pc-body: var(--color-milk); --pc-line: var(--color-ink); }
+.piece--b { --pc-body: var(--color-ink); --pc-line: var(--color-milk); --pc-w: 2.6; }
+.piece[data-drag] { z-index: 2; transition: translate 280ms var(--ease-kd-ui); }
+/* A piece that comes back when a wrong move is taken back fades in (only once the game is live). */
+@starting-style {
+  .board[data-live] .piece { opacity: 0; }
+}
+
+/* The café's latest move: a tomato arc, the section's one accent. */
+.board__arrow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 240ms var(--ease-kd-ui);
+}
+@starting-style {
+  .board[data-live] .board__arrow { opacity: 0; }
+}
+
+/* The squares that take the input: transparent buttons, their focus ring inside the square. */
+.board__grid { position: absolute; inset: 0; display: grid; grid-template-rows: repeat(8, minmax(0, 1fr)); }
+.board__row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.board__cell { display: grid; }
+.board__sq {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.board[data-phase="play"] .board__sq { cursor: pointer; }
+.board[data-dragging] .board__sq { cursor: grabbing; }
+.board__sq:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; border-radius: 0; }
+
+/* ── The transcript: the notation and the café's lines, between hairlines ── */
+.chess__log { margin-top: clamp(1.5rem, 3vh, 2.5rem); }
+@media (min-width: 1024px) {
+  .chess__log { margin-top: var(--head-gap); }
+}
+.log { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.log__row {
+  display: grid;
+  grid-template-columns: 2.1em auto auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 0.55em;
+  padding: 0.55em 0;
+  border-bottom: 1px solid var(--line);
+  font-size: clamp(1.25rem, 0.9rem + 0.95vw, 2rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.log__n { color: var(--fg-soft); }
+.log__w,
+.log__b { white-space: nowrap; }
+.log__note {
+  align-self: center;
+  justify-self: end;
+  padding-left: 1em;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-text);
+  color: var(--fg-soft);
+  text-align: right;
+}
+/* A try that was taken back: set back, its line still readable. */
+.log__row--try { color: var(--fg-soft); }
+.log__row--try .log__n { color: color-mix(in srgb, var(--fg) 45%, transparent); }
+
+.chess__controls { margin: 1.25rem 0 0; }
+.chess__help {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+/* Before the game loads the button only holds its place; without JS there is no button at all. */
+.chess__controls[data-static] { visibility: hidden; }
+html:not(.js) .chess__controls { display: none; }
+
+/* ── The payoff: the grade lands as the hero's torn tab (Slip, brand.css) ── */
+.chess__payoff { display: grid; justify-items: start; margin-top: clamp(1.5rem, 3vh, 2.5rem); }
+.chess__slip { margin: 0.15em 0 0.3em; font-size: min(calc(var(--h3) * 1.25), 14cqi); }
+.chess__log { container-type: inline-size; }
+/* It lands from a little above, a touch larger, and settles (the hero's kd.settle). */
+.chess__landing[data-live] { animation: chess-land 600ms cubic-bezier(0.18, 0.9, 0.32, 1.04) both; }
+@keyframes chess-land {
+  from { opacity: 0; transform: translateY(-26px) scale(1.04); }
+}
+
+/* ── The blitz ── */
+.chess__event { display: grid; justify-items: start; gap: 0.875rem; margin-top: var(--head-gap); }
+.chess__invite,
+.chess__facts,
+.chess__cta { margin: 0; }
+.chess__facts { max-width: 44ch; line-height: 1.45; color: var(--fg-soft); }
+.chess__cta { margin-top: 0.5rem; }
+.chess__ext { font-weight: var(--fw-text); }

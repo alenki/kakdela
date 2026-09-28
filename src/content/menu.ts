@@ -1,5 +1,5 @@
 import { photos } from "./photos";
-import type { Breakfast, Dessert, Drink, Photo, Price } from "./types";
+import type { Breakfast, Dessert, Drink, Price } from "./types";
 
 const p = (nalchik: number | null, vladikavkaz: number | null = nalchik): Price => ({ nalchik, vladikavkaz });
 
@@ -56,20 +56,49 @@ export const breakfasts: Breakfast[] = [
   },
 ];
 
-export const extras = {
-  shakshuka: { name: "Шакшука", price: p(550, null), photo: photos.shakshuka as Photo },
-  syrniki: { name: "Сырники", price: p(380, null) },
-  pancakes: { name: "Мини-панкейки", price: p(410, null) },
-};
-
-// The coffee card: the house signatures.
+// The coffee card: the house signatures, each with the note the barista writes on the cup.
 export const signatureDrinks: Drink[] = [
-  { id: "kapuchino", name: "Капучино", price: { sizes: [240, 270] } },
-  { id: "klever", name: "«Клевер»", desc: "Альтернативное заваривание.", price: p(280) },
-  { id: "v60", name: "Воронка V60", desc: "Ручное заваривание на одну чашку.", price: p(280) },
-  { id: "stanciya-mir", name: "«Станция Мир»", desc: "Фильтр, сироп из горных трав собственного приготовления.", price: p(280) },
-  { id: "dalshe-slashe", name: "«Дальше слаще»", desc: "Авторский, с грейпфрутом.", price: p(350) },
-  { id: "espresso-tonik", name: "Эспрессо-тоник", desc: "Эспрессо, тоник, лёд, цитрус.", price: p(290) },
+  {
+    id: "kapuchino",
+    name: "Капучино",
+    price: { sizes: [240, 270] },
+    cupNote: { ask: "классика?", say: "капучино" },
+  },
+  {
+    id: "klever",
+    name: "«Клевер»",
+    desc: "Альтернативное заваривание.",
+    price: p(280),
+    cupNote: { ask: "новенького?", say: "клевер" },
+  },
+  {
+    id: "v60",
+    name: "Воронка V60",
+    desc: "Ручное заваривание на одну чашку.",
+    price: p(280),
+    cupNote: { ask: "не спеша?", say: "V60" },
+  },
+  {
+    id: "stanciya-mir",
+    name: "«Станция Мир»",
+    desc: "Фильтр, сироп из горных трав собственного приготовления.",
+    price: p(280),
+    cupNote: { ask: "в горы?", say: "станция мир" },
+  },
+  {
+    id: "dalshe-slashe",
+    name: "«Дальше слаще»",
+    desc: "Авторский, с грейпфрутом.",
+    price: p(350),
+    cupNote: { ask: "сладкого?", say: "дальше слаще" },
+  },
+  {
+    id: "espresso-tonik",
+    name: "Эспрессо-тоник",
+    desc: "Эспрессо, тоник, лёд, цитрус.",
+    price: p(290),
+    cupNote: { ask: "жарко?", say: "эспрессо-тоник" },
+  },
 ];
 
 export const desserts: Dessert[] = [
@@ -98,8 +127,6 @@ export const desserts: Dessert[] = [
     verify: { verified: true },
   },
 ];
-
-export const cherryPie = { name: "Вишнёвый пирог с шариком мороженого", price: p(350), photo: photos.vishnevyjPirog };
 
 /** Seasonal slot. Summer 2026 «Прекрасное далёко!» has ended; keep inactive until the autumn menu is confirmed. */
 export const season = {

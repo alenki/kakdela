@@ -3,12 +3,14 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger, CustomEase);
+gsap.registerPlugin(useGSAP, ScrollTrigger, CustomEase, DrawSVGPlugin);
 
 // kd.out: entrances. kd.inOut: a list row moving to its new place. kd.peel: the old answer leaving.
-// kd.settle: the new answer landing, and the tabs' first-visit sway.
+// kd.settle: the new answer landing, and the tabs' first-visit sway. DrawSVG is for the coffee poster
+// (the barista's pen, the steam, the hatched clover).
 CustomEase.create("kd.out", "0.16,1,0.3,1");
 CustomEase.create("kd.inOut", "0.65,0,0.35,1");
 CustomEase.create("kd.peel", "0.32,0,0.67,0");

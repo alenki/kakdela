@@ -49,8 +49,14 @@ export function MenuDialog() {
 
   return (
     <>
-      <button type="button" className="hdr-burger" aria-haspopup="dialog" aria-expanded={open} onClick={show}>
-        <span className="hdr-burger__label">{t.nav.sections}</span>
+      <button
+        type="button"
+        className="hdr-burger"
+        aria-label={t.nav.sections}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={show}
+      >
         <span className="hdr-burger__lines" aria-hidden="true">
           <span />
           <span />
@@ -65,7 +71,6 @@ export function MenuDialog() {
       >
         <div className="menu-dialog__inner wrap">
           <div className="menu-dialog__top">
-            <span className="label">{t.nav.sections}</span>
             <button type="button" className="menu-dialog__close" onClick={hide}>
               {t.nav.close}
               <span className="menu-dialog__x" aria-hidden="true" />
@@ -95,14 +100,21 @@ export function MenuDialog() {
 
           <aside className="menu-dialog__side">
             <CitySwitch className="menu-dialog__city" />
-            <ul className="menu-dialog__cafes" role="list">
-              {cafes.map((c) => (
-                <li key={c.id} data-city-only={c.city}>
-                  <span className="menu-dialog__addr">{typograf(c.address)}</span>
-                  <CafeStatus cafe={c} />
-                </li>
+            {/* Both cities' lists share one cell, so the longer one holds the height and the contacts stay put. */}
+            <div className="menu-dialog__places">
+              {CITIES.map((city) => (
+                <ul key={city} className="menu-dialog__cafes" role="list" data-city-hold={city}>
+                  {cafes
+                    .filter((c) => c.city === city)
+                    .map((c) => (
+                      <li key={c.id}>
+                        <span className="menu-dialog__addr">{typograf(c.address)}</span>
+                        <CafeStatus cafe={c} />
+                      </li>
+                    ))}
+                </ul>
               ))}
-            </ul>
+            </div>
             <div className="menu-dialog__contacts">
               {CITIES.map((city) => (
                 <a key={city} className="mono menu-dialog__phone" href={`tel:${flagship[city].phone}`} data-city-only={city}>

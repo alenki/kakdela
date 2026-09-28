@@ -1,7 +1,6 @@
 import { cafes, cafesByCity } from "@/content/cafes";
-import { yandexOrg, yandexRoute } from "@/content/routes";
+import { yandexRoute } from "@/content/routes";
 import type { Cafe, City } from "@/content/types";
-import { Photo } from "@/components/brand/Photo";
 import { CitySwitch } from "@/components/chrome/CitySwitch";
 import { CafeStatus } from "@/components/chrome/CafeStatus";
 import { RouteLink } from "@/components/chrome/RouteLink";
@@ -9,7 +8,6 @@ import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { LocationsController } from "./locations/LocationsController";
-import { LocationsReply } from "./locations/LocationsReply";
 import { NearestButton, type NearPoint } from "./locations/NearestButton";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
@@ -37,72 +35,35 @@ function External({ href, children, className }: { href: string; children: strin
 }
 
 /*
- * One café, one row. The head (address, live status, toggle) is always visible; the body (features,
- * phone, route) folds away on phones and lies open in the row from 1024px; the photo, the full hours
- * and the rating fold away everywhere. The status is the row's one statement of time.
+ * One café, one row: the address and what it has, the live status (the row's one statement of time),
+ * and the two ways there. Phones stack them; from 1024px they sit in the section's columns.
  */
 function CafeRow({ cafe: c }: { cafe: Cafe }) {
   const { pre, rest } = splitAddress(c.address);
-  const bodyId = `gde-${c.id}-body`;
-  const moreId = `gde-${c.id}-more`;
   return (
     <li className="cafe" data-cafe={c.id}>
-      <div className="cafe__head">
-        <div className="cafe__name">
-          <h3 className="cafe__addr display item-title">
-            {/* NBSP, not a space: Chrome drops a span's trailing space from the heading's accessible name («ул.Байсултанова»). */}
-            {pre && <span className="cafe__pre">{pre}{NBSP}</span>}
-            {rest}
-          </h3>
-          {c.alias && <span className="cafe__note">{c.alias}</span>}
-        </div>
-        <p className="cafe__when">
-          <CafeStatus cafe={c} />
-          <span className="cafe__near label" data-near hidden />
-        </p>
-        <button type="button" className="cafe__toggle" aria-expanded="false" aria-controls={`${bodyId} ${moreId}`} data-cafe-toggle>
-          <span className="sr-only">
-            {t.locations.more}: {c.address}
-          </span>
-          <span className="cafe__plus" aria-hidden="true" />
-        </button>
+      <div className="cafe__name">
+        <h3 className="cafe__addr display item-title">
+          {/* NBSP, not a space: Chrome drops a span's trailing space from the heading's accessible name («ул.Байсултанова»). */}
+          {pre && <span className="cafe__pre">{pre}{NBSP}</span>}
+          {rest}
+        </h3>
+        {c.alias && <span className="cafe__note">{c.alias}</span>}
       </div>
-
-      <div className="cafe__body" id={bodyId}>
-        <div className="cafe__fold">
-          <div className="cafe__body-pad">
-            <p className="cafe__feat label">{features(c.tags)}</p>
-            <a className="dlink mono cafe__tel" href={`tel:${c.phone}`}>
-              <span className="sr-only">{t.locations.call}: </span>
-              {c.phoneDisplay}
-            </a>
-            <External className="cafe__route" href={yandexRoute(c.coords.lat, c.coords.lon)}>
-              {t.locations.route}
-            </External>
-          </div>
-        </div>
-      </div>
-
-      <div className="cafe__more" id={moreId}>
-        <div className="cafe__fold">
-          <div className="cafe__more-pad">
-            <Photo
-              photo={c.photo}
-              aspect="3/2"
-              sizes="(min-width: 1024px) 38vw, (min-width: 640px) 45vw, calc(100vw - 32px)"
-              loading="lazy"
-              className="cafe__photo"
-            />
-            <p className="cafe__hours mono">{typograf(t.locations.hours(c.open, c.close))}</p>
-            <p className="cafe__rating mono">
-              {t.locations.rating(c.rating, c.ratingsCount)}{" "}
-              <External className="cafe__org" href={yandexOrg(c.yandexOrgId)}>
-                {t.locations.onMaps}
-              </External>
-            </p>
-          </div>
-        </div>
-      </div>
+      <p className="cafe__when">
+        <CafeStatus cafe={c} />
+        <span className="cafe__near label" data-near hidden />
+      </p>
+      <p className="cafe__feat label">{features(c.tags)}</p>
+      <p className="cafe__ways">
+        <a className="dlink mono cafe__tel" href={`tel:${c.phone}`}>
+          <span className="sr-only">{t.locations.call}: </span>
+          {c.phoneDisplay}
+        </a>
+        <External className="cafe__route" href={yandexRoute(c.coords.lat, c.coords.lon)}>
+          {t.locations.route}
+        </External>
+      </p>
     </li>
   );
 }
@@ -116,7 +77,6 @@ export function LocationsSection() {
       <div className="wrap">
         <header className="section-head" data-loc-head>
           <DialogueHeading id="gde-title" q={t.locations.q} a={t.locations.a} />
-          <LocationsReply className="lead" />
         </header>
 
         <div className="loc-tools" data-loc-tools>

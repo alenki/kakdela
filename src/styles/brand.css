@@ -11,30 +11,40 @@
   background: color-mix(in srgb, var(--fg) 8%, transparent);
 }
 .photo__img { object-fit: cover; }
-/* Stock stand-ins say so, quietly. The alt text already says «(временное фото)»: the badge is for
-   sighted guests only. Its plate keeps the 11px text at 4.5:1 even over a white tablecloth. */
-.photo[data-placeholder]::after {
-  content: "Фото временное";
-  content: "Фото временное" / "";
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  padding: 0.1875rem 0.4375rem;
-  border-radius: 2px;
-  background: rgb(20 18 16 / 0.64);
-  color: var(--color-milk);
-  font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1.3;
-  white-space: nowrap;
-  pointer-events: none;
+
+/* ───── Slip: a torn-off tab lying on its side ───── */
+/* The notice's paper, edge and shadow, a little askew (--tilt, seeded per answer by Slip.tsx; it rises on
+   a good day and droops on a sleepy one). The scissor cut on the left, the tab's own tear on the right
+   (--tear, tear.ts: its jags stay within 0.45em of the end, inside the 0.62em of padding). Where it lies
+   and how big it is belong to the caller's class (.panel__slip, .team-card__slip). The tilt is `rotate`,
+   never a transform: GSAP folds it into its own transform while a landing tweens, and hands it back on
+   clearProps. */
+.slip {
+  position: relative;
+  justify-self: start;
+  rotate: var(--tilt);
+  transform-origin: 30% 60%;
+  /* On the wrapper, so the shadow follows the torn outline. */
+  filter: drop-shadow(var(--paper-shadow));
 }
-/* Thumbnails (about 96–128px wide, e.g. the breakfasts rows): the same badge, cut down so
-   «Фото временное» stays on one line. */
-.photo--sm[data-placeholder]::after {
-  left: 4px;
-  bottom: 4px;
-  padding: 0.125rem 0.25rem;
-  font-size: 0.625rem;
+/* The lighter, ragged fringe of the rip (--fibres), just proud of the paper's torn edge. */
+.slip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper), #fff 65%);
+  clip-path: var(--fibres);
+}
+/* Sofia Sans Extra Condensed at line-height 0.9: its caps start 0.09em under the line's top and its
+   baseline is 0.15em over the bottom, so 0.06em more padding on top centres the word (0.31em of paper
+   over the caps and under them). */
+.slip__paper {
+  display: block;
+  padding: 0.22em 0.62em 0.16em 0.34em;
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  clip-path: var(--tear);
+  color: var(--color-ink);
+  white-space: nowrap;
 }

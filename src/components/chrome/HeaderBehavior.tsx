@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import { ScrollTrigger } from "@/lib/gsap";
 
 /**
- * The header takes the theme (data-theme) of the section beneath it, gets a solid plate once the page
- * scrolls, and tucks away on scroll down once past the hero.
+ * The header takes the theme (data-theme) of the section beneath it and gets a solid plate once the page
+ * scrolls. It stays on screen the whole way down; data-end marks the footer's sign in view, where the
+ * homepage's logo steps aside (chrome.css).
  */
 export function HeaderBehavior() {
   // The header lives in the persistent layout: re-bind to each page's sections after navigation.
@@ -17,12 +18,11 @@ export function HeaderBehavior() {
     if (!header) return;
     // The footer sits after <main> (it is the contentinfo landmark), so it is listed on its own.
     const fields = Array.from(document.querySelectorAll<HTMLElement>("main [data-theme], #footer[data-theme]"));
+    const sign = document.querySelector<HTMLElement>("#footer [data-ft-sign]");
 
-    let last = window.scrollY;
     let frame = 0;
     const update = () => {
       frame = 0;
-      const y = window.scrollY;
       // The theme is the field under the header's middle line, read from the live layout. Enter/leave
       // callbacks miss jumps (anchors, a restored scroll, a boundary landing exactly on the line) and
       // would leave the colours of a section that is no longer there.
@@ -35,13 +35,9 @@ export function HeaderBehavior() {
       if (theme && header.dataset.theme !== theme) header.dataset.theme = theme;
       // As soon as anything can pass under it, the header gets a solid plate in the field colour, so it
       // never prints onto content.
-      header.toggleAttribute("data-solid", y > 2);
-      const past = y > window.innerHeight * 0.75;
-      const down = y > last + 4;
-      const up = y < last - 4;
-      if (past && down && !header.matches(":focus-within")) header.dataset.hidden = "";
-      else if (up || !past) delete header.dataset.hidden;
-      last = y;
+      header.toggleAttribute("data-solid", window.scrollY > 2);
+      // The big wordmark takes over from the logo on the line where it starts to rise (FooterMotion).
+      header.toggleAttribute("data-end", !!sign && sign.getBoundingClientRect().top < window.innerHeight * 0.92);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -58,7 +54,7 @@ export function HeaderBehavior() {
       ScrollTrigger.removeEventListener("refresh", schedule);
       header.dataset.theme = "cream";
       header.removeAttribute("data-solid");
-      delete header.dataset.hidden;
+      header.removeAttribute("data-end");
     };
   }, [pathname]);
 

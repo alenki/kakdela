@@ -1,11 +1,11 @@
-import { breakfasts, extras } from "@/content/menu";
+import { breakfasts } from "@/content/menu";
 import type { Breakfast, City, Price } from "@/content/types";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { Photo } from "@/components/brand/Photo";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { CitySwitch } from "@/components/chrome/CitySwitch";
 import { rub } from "@/lib/format";
-import { typograf, WJ } from "@/lib/typograf";
+import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { BreakfastsPreview } from "./breakfasts/BreakfastsPreview";
 import { BreakfastsMotion } from "./breakfasts/BreakfastsMotion";
@@ -32,7 +32,6 @@ export function BreakfastsSection() {
       <div className="wrap">
         <header className="section-head" data-bf-head>
           <DialogueHeading id="zavtraki-title" q={t.breakfasts.q} a={typograf(t.breakfasts.a)} />
-          <p className="lead">{typograf(t.breakfasts.lead)}</p>
         </header>
 
         <div className="bf__body">
@@ -63,7 +62,6 @@ export function BreakfastsSection() {
                       {typograf(b.name)}
                     </RouteLink>
                   </h3>
-                  <span className="leader bf-item__leader" aria-hidden="true" />
                   <p className="bf-item__price mono">
                     <CityPrice price={b.price} />
                   </p>
@@ -73,36 +71,12 @@ export function BreakfastsSection() {
               ))}
             </ol>
 
-            <div className="bf-extras" data-bf-rise>
-              <h3 className="label bf-extras__title">{t.breakfasts.extras}</h3>
-              <ul className="bf-extras__list">
-                {Object.values(extras).map((x) => (
-                  <li key={x.name} className="menu-row bf-extra">
-                    <span className="menu-row__name">
-                      {typograf(x.name)}
-                      <span className="menu-row__lead" aria-hidden="true">
-                        {WJ}
-                        <span className="leader menu-row__dots" />
-                      </span>
-                    </span>
-                    <span className="menu-row__price mono">
-                      <CityPrice price={x.price} />
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
             <div className="bf-foot" data-bf-rise>
               <p className="dlinks">
                 <RouteLink to="menu" className="dlink">
                   {typograf(t.breakfasts.links.menu)}
                 </RouteLink>
-                <RouteLink to="delivery" className="dlink">
-                  {typograf(t.breakfasts.links.delivery)}
-                </RouteLink>
               </p>
-              <p className="label bf-note">{typograf(t.breakfasts.lightNote)}</p>
             </div>
           </div>
 

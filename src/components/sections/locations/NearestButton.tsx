@@ -2,13 +2,13 @@
 
 import { useRef, useState } from "react";
 import type { City } from "@/content/types";
+import { BtnLabel } from "@/components/chrome/BtnLabel";
 import { haversineKm } from "@/lib/geo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { kd } from "@/lib/store";
 import { groupDigits, km } from "@/lib/format";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { setCafeOpen } from "./LocationsController";
 
 export type NearPoint = { id: string; city: City; lat: number; lon: number; address: string };
 type Ranked = NearPoint & { d: number };
@@ -44,7 +44,6 @@ function applyRanking(ranked: Ranked[]) {
   const first = new Map(all.map((r) => [r, r.getBoundingClientRect().top]));
 
   const rank: Record<City, number> = { nalchik: 0, vladikavkaz: 0 };
-  let nearestRow: HTMLElement | undefined;
   for (const p of ranked) {
     const row = rows.get(p.id);
     if (!row) continue;
@@ -56,7 +55,6 @@ function applyRanking(ranked: Ranked[]) {
       tag.hidden = false;
       tag.textContent = r === 0 ? nearestTag(p.d) : typograf(t.locations.away(dist(p.d)));
     }
-    if (p === ranked[0]) nearestRow = row;
   }
 
   const switching = ranked[0].city !== kd.get().city;
@@ -68,12 +66,7 @@ function applyRanking(ranked: Ranked[]) {
       if (Math.abs(dy) > 1) gsap.fromTo(row, { y: dy }, { y: 0, duration: 0.8, ease: "kd.inOut", overwrite: "auto", clearProps: "transform" });
     }
   }
-  const open = () => {
-    if (nearestRow) setCafeOpen(nearestRow, true);
-    ScrollTrigger.refresh();
-  };
-  if (reduced || switching) open();
-  else gsap.delayedCall(0.55, open);
+  ScrollTrigger.refresh();
 }
 
 /** «Какая ближе ко мне?»: geolocation is asked for only on this click. */
@@ -128,7 +121,7 @@ export function NearestButton({ points }: { points: NearPoint[] }) {
         aria-describedby="gde-near-msg"
         data-busy={busy ? "" : undefined}
       >
-        {t.locations.nearest}
+        <BtnLabel>{t.locations.nearest}</BtnLabel>
       </button>
       <p id="gde-near-msg" className="loc-near__msg" role="status" data-state={state.kind}>
         {state.kind === "locating" ? t.locations.locating : state.kind === "error" ? typograf(t.locations.denied) : state.kind === "done" ? typograf(state.text) : ""}

@@ -27,13 +27,14 @@ export const reviews: Review[] = [
   },
 ];
 
-// PLACEHOLDER team answers and photos: to be replaced with the real team's own words.
+// PLACEHOLDER team answers and photos: to be replaced with the real team's own words. An answer that is
+// one of the notice's tabs is its `answerId` (the word comes from answers.ts); anything else is `answer`.
 export const team: TeamMember[] = [
   {
     id: "barista-1",
     name: "Бариста",
     role: "Байсултанова, 1",
-    answer: "Лучше всех",
+    answerId: "luchshe-vseh",
     line: "Сегодня на фильтре новая Эфиопия. Заходите, налью попробовать.",
     photo: photos.team1,
     placeholder: true,
@@ -42,7 +43,7 @@ export const team: TeamMember[] = [
     id: "barista-2",
     name: "Бариста",
     role: "Шогенцукова, 19",
-    answer: "Как в сказке",
+    answerId: "kak-v-skazke",
     line: "Первый капучино в 7:30, первая партия в блиц вечером.",
     photo: photos.team2,
     placeholder: true,
@@ -51,7 +52,7 @@ export const team: TeamMember[] = [
     id: "trainer",
     name: "Бариста-тренер",
     role: "вся сеть",
-    answer: "Всё шик",
+    answerId: "vsyo-shik",
     line: "Учим каждого бариста так, чтобы чашка была одинаково вкусной в любой из девяти кофеен.",
     photo: photos.team3,
     placeholder: true,
@@ -60,7 +61,7 @@ export const team: TeamMember[] = [
     id: "guest",
     name: "Постоянный гость",
     role: "с 2023 года",
-    answer: "10 из 10",
+    answerId: "10-iz-10",
     line: "Здесь помнят, какой кофе я пью, и спрашивают, как дела. По-настоящему.",
     photo: photos.team4,
     placeholder: true,
@@ -68,8 +69,6 @@ export const team: TeamMember[] = [
 ];
 
 export const chessEvent = {
-  title: "Шахматный блиц",
-  where: "пр. Шогенцукова, 19",
   body: "Несколько туров, партия до десяти минут. Победитель получает сертификат на 5 000 ₽.",
   when: "Даты объявляем в Telegram",
 };

@@ -5,6 +5,8 @@ import { CoffeeSection } from "@/components/sections/Coffee";
 import { LocationsSection } from "@/components/sections/Locations";
 import { ReviewsSection } from "@/components/sections/Reviews";
 import { EveningSection } from "@/components/sections/Evening";
+import { ChessSection } from "@/components/sections/Chess";
+import { GameSection } from "@/components/sections/Game";
 import { SiteFooter } from "@/components/sections/SiteFooter";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -20,6 +22,8 @@ export default function HomePage() {
         <LocationsSection />
         <ReviewsSection />
         <EveningSection />
+        <ChessSection />
+        <GameSection />
       </main>
       {/* Outside <main>: the footer is the page's contentinfo landmark. */}
       <SiteFooter />

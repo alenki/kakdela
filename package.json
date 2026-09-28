@@ -12,7 +12,9 @@
     "assets:logo": "node scripts/trace-logo.mjs",
     "assets:photos": "node scripts/fetch-photos.mjs",
     "assets:icons": "node scripts/make-icons.mjs",
+    "assets:paper": "node scripts/make-paper.mjs",
     "assets:grain": "node scripts/make-grain.mjs",
+    "assets:puzzles": "node --no-warnings scripts/fetch-puzzles.mjs",
     "shot": "node scripts/shot.mjs",
     "perf": "node scripts/perf.mjs"
   },

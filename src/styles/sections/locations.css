@@ -54,19 +54,16 @@ html:not(.js) .loc-city__cap { position: static; width: auto; height: auto; over
   /* «Какая ближе ко мне?» re-orders rows with `order`; keep Tab and screen-reader order in step. */
   reading-flow: flex-visual;
 }
-.cafe { position: relative; min-width: 0; border-top: 1px solid var(--line); }
-
-/* Phones: address and status on the left, the toggle on the right; the whole head opens the row. */
-.cafe__head {
+/* Phones: address, status, features, then the two ways there. */
+.cafe {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 2.75rem;
-  column-gap: 12px;
   row-gap: 8px;
-  padding-block: 18px;
+  min-width: 0;
+  padding-block: 18px 20px;
+  border-top: 1px solid var(--line);
 }
 .cafe__name {
-  grid-column: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -79,7 +76,6 @@ html:not(.js) .loc-city__cap { position: static; width: auto; height: auto; over
 .cafe__note { font-size: var(--fs-small); color: var(--fg-soft); }
 
 .cafe__when {
-  grid-column: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -91,161 +87,46 @@ html:not(.js) .loc-city__cap { position: static; width: auto; height: auto; over
 .cafe__near[hidden] { display: none; }
 .cafe[data-nearest] .cafe__near { color: var(--accent-ink); }
 
-/* The toggle: a thin plus that settles into a minus, on the row's end; its hit area hangs into the gutter. */
-.cafe__toggle {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
-  justify-self: end;
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  margin-right: -0.9375rem;
-  padding: 0;
-  border: 0;
-  border-radius: 2px;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 200ms var(--ease-kd-ui);
-}
-.cafe__toggle:focus-visible { outline-offset: -2px; }
-.cafe__plus { position: relative; width: 0.875rem; height: 0.875rem; }
-.cafe__plus::before,
-.cafe__plus::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1.5px;
-  margin-top: -0.75px;
-  background: currentColor;
-  transition: transform 320ms var(--ease-kd-out);
-}
-.cafe__plus::after { transform: rotate(90deg); }
-.cafe[data-open] .cafe__plus::after { transform: rotate(0deg); }
-@media (max-width: 1023.98px) {
-  .cafe__toggle::after { content: ""; position: absolute; inset: 0; }
-}
-@media (hover: hover) and (pointer: fine) {
-  .cafe__toggle:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
-}
-html:not(.js) .cafe__toggle { display: none; }
-
-/* Folds: grid rows 0fr → 1fr; what is folded away leaves the tab order. */
-.cafe__body,
-.cafe__more {
-  display: grid;
-  grid-template-rows: 0fr;
-  visibility: hidden;
-  transition: grid-template-rows 420ms var(--ease-kd-out), visibility 0s linear 420ms;
-}
-.cafe[data-open] :is(.cafe__body, .cafe__more) {
-  grid-template-rows: 1fr;
-  visibility: visible;
-  transition: grid-template-rows 420ms var(--ease-kd-out), visibility 0s;
-}
-html:not(.js) :is(.cafe__body, .cafe__more) { grid-template-rows: 1fr; visibility: visible; }
-.cafe__fold { min-height: 0; overflow: clip; overflow-clip-margin: 6px; }
-
-/* Phones: the features, then the two ways there; under them the photo, captioned by the hours and rating. */
-.cafe__body-pad {
+.cafe__feat { margin: 4px 0 0; }
+.cafe__ways {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 8px 1.5rem;
-  padding-bottom: 20px;
+  margin: 0;
 }
-.cafe__feat { flex-basis: 100%; margin: 0; }
 .cafe__tel,
 .cafe__route { font-size: var(--fs-small); }
 
-.cafe__more-pad {
-  display: grid;
-  justify-items: start;
-  row-gap: 4px;
-  padding-bottom: 22px;
-}
-.cafe__photo { justify-self: stretch; margin-bottom: 8px; }
-.cafe__hours,
-.cafe__rating { margin: 0; font-size: var(--fs-small); color: var(--fg-soft); }
-.cafe__org { color: var(--fg); }
-/* Without JS every row lies open: a timetable, not a gallery. The idle status only repeats the hours. */
-html:not(.js) .cafe__photo { display: none; }
-html:not(.js) .cafe__when { display: none; }
-html:not(.js) .cafe__body-pad { padding-bottom: 12px; }
-
-/* Tablets: address, status and toggle on one line; opened, the photo beside its rating. */
+/* Tablets: address and status on one line, the features and the ways under them. */
 @media (min-width: 640px) and (max-width: 1023.98px) {
-  .cafe__head { grid-template-columns: minmax(0, 1fr) auto 2.75rem; column-gap: 20px; align-items: center; }
-  .cafe__name { grid-row: 1; }
-  .cafe__when { grid-column: 2; grid-row: 1; flex-direction: column; align-items: flex-end; }
-  .cafe__toggle { grid-column: 3; grid-row: 1; }
-  .cafe__more-pad {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: auto 1fr;
-    align-items: start;
-    column-gap: var(--grid-gap);
-    row-gap: 6px;
-  }
-  .cafe__photo { grid-row: 1 / 3; margin: 0; }
-  .cafe__hours,
-  .cafe__rating { grid-column: 2; }
-  .cafe__hours { margin-top: -0.2em; }
+  .cafe { grid-template-columns: minmax(0, 1fr) auto; column-gap: 20px; }
+  .cafe__name { grid-column: 1; grid-row: 1; align-self: center; }
+  .cafe__when { grid-column: 2; grid-row: 1; align-self: center; flex-direction: column; align-items: flex-end; }
+  .cafe__feat,
+  .cafe__ways { grid-column: 1 / -1; }
 }
 
 /*
- * Desktop: a timetable on the section's 12 columns, two lines in every row.
+ * Desktop: a timetable on the section's 12 columns.
  *   address, note / features       1–5
  *   status / distance              6–8
- *   phone / route                  9–11   (the lead above starts on the same line)
- *   toggle                         12
- * Opened, the photo drops in under the address; the full hours and the rating hang from its top edge,
- * in the status and phone columns.
+ *   phone / route                  9–12, flush right
+ * The status and the ways are centred on the row, not hung from the address's baseline.
  */
 @media (min-width: 1024px) {
   .cafe {
-    display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--grid-gap);
-    align-items: baseline;
+    align-items: center;
     padding-block: clamp(20px, 1.5vw, 2rem);
   }
-  .cafe__head,
-  .cafe__when,
-  .cafe__body,
-  .cafe__body > .cafe__fold,
-  .cafe__body-pad { display: contents; }
-  .cafe__body { visibility: visible; }
-
   .cafe__name { grid-column: 1 / 6; grid-row: 1; }
-  .cafe .status { grid-column: 6 / 9; grid-row: 1; justify-self: start; }
-  .cafe__tel { grid-column: 9 / 12; grid-row: 1; justify-self: start; }
-  .cafe__toggle { grid-column: 12; grid-row: 1 / span 2; }
-
-  .cafe__feat { grid-column: 1 / 6; grid-row: 2; margin-top: 8px; }
-  .cafe__near { grid-column: 6 / 9; grid-row: 2; justify-self: start; margin-top: 8px; }
-  .cafe__route { grid-column: 9 / 12; grid-row: 2; justify-self: start; margin-top: 8px; }
-
-  .cafe__more { grid-column: 1 / -1; grid-row: 3; grid-template-columns: subgrid; }
-  .cafe__more > .cafe__fold { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
-  /* The hours and the rating hang from the photo's top edge, not its foot. */
-  .cafe__more-pad {
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: start;
-    padding: clamp(20px, 1.6vw, 2rem) 0 4px;
-  }
-  .cafe__photo { grid-column: 1 / 6; grid-row: 1; margin: 0; }
-  .cafe__hours { grid-column: 6 / 9; grid-row: 1; margin-top: -0.2em; }
-  .cafe__rating { grid-column: 9 / -1; grid-row: 1; margin-top: -0.2em; }
-
-  /* Without JS (no photo, no live status): the hours take the status line, the rating the line under it. */
-  html:not(.js) :is(.cafe__more, .cafe__more > .cafe__fold, .cafe__more-pad) { display: contents; }
-  html:not(.js) .cafe__hours { grid-row: 1; margin-top: 0; }
-  html:not(.js) .cafe__rating { grid-column: 6 / 9; grid-row: 2; margin-top: 8px; }
+  .cafe__feat { grid-column: 1 / 6; grid-row: 2; margin: 0; }
+  .cafe__when,
+  .cafe__ways { grid-row: 1 / 3; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cafe__when { grid-column: 6 / 9; }
+  .cafe__ways { grid-column: 9 / -1; align-items: flex-end; }
 }
 
 /* ── Said once: what every café shares, and the way to all of them ── */
@@ -259,5 +140,5 @@ html:not(.js) .cafe__body-pad { padding-bottom: 12px; }
 @media (min-width: 1024px) {
   .loc-foot { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: baseline; }
   .loc-foot__common { grid-column: 1 / 9; }
-  .loc-foot__all { grid-column: 9 / -1; }
+  .loc-foot__all { grid-column: 9 / -1; justify-self: end; }
 }

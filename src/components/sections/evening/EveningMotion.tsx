@@ -6,8 +6,8 @@ import { useMotionMode } from "@/lib/motion";
 const ONCE = "play none none none";
 
 /**
- * One quiet rise per block as it comes into view: the heading, the desserts in turn, the pie row,
- * the chess block. The section is server-rendered and visible before this runs; reduced motion
+ * One quiet rise per block as it comes into view: the heading, the desserts in turn, the pie row.
+ * The section is server-rendered and visible before this runs; reduced motion
  * returns early, so nothing is ever hidden. A block already on screen at mount (a deep link to
  * #vecher, motion switched back on near the bottom) stays as rendered.
  */

@@ -5,9 +5,9 @@
  */
 
 // Built from their code points so they stay visible and unambiguous in source.
-/** No-break space (U+00A0). Also the digit-group separator in «2 709» and «5 000»: Onest's word space is
- *  already narrow (≈ 0.27em), and its narrow no-break space (U+202F) is half that, too thin to read at
- *  label size («2709»). */
+/** No-break space (U+00A0). Also the digit-group separator in «2 709» and «5 000»: Montserrat's word
+ *  space is already narrow (≈ 0.27em), and its narrow no-break space (U+202F) is half that, too thin to
+ *  read at label size («2709»). */
 export const NBSP = String.fromCharCode(0xa0);
 /** Word joiner (U+2060): no break at this point, and nothing printed. */
 export const WJ = String.fromCharCode(0x2060);
@@ -73,3 +73,10 @@ export const keepWhole = (s: string) =>
   s
     .replace(/(?<=\p{L})-(?=\p{L})/gu, `-${WJ}`)
     .replace(/«[^«»]{1,32}»/gu, (m) => m.replace(/\s/gu, NBSP));
+
+/**
+ * A guest's words as a quotation: «…» around them, and a «…» inside (a dish's name) becomes „…“, as
+ * Russian nests quotes. Apply it last, after `keepWhole()` and `bindLastWord()`: `keepWhole()` would
+ * take the outer «…» of a short quotation for a name and hold the whole line together.
+ */
+export const quote = (s: string) => `«${s.replace(/«/gu, "„").replace(/»/gu, "“")}»`;

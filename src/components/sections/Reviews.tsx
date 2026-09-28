@@ -1,10 +1,15 @@
+import type { CSSProperties } from "react";
 import { reviews } from "@/content/people";
-import { cafes, ratingsTotal } from "@/content/cafes";
+import { cafes } from "@/content/cafes";
 import { external } from "@/content/routes";
 import type { City } from "@/content/types";
+import { Slip } from "@/components/brand/Slip";
+import { BtnLabel } from "@/components/chrome/BtnLabel";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
-import { bindLastWord, keepWhole, typograf } from "@/lib/typograf";
+import { tornSheet } from "@/lib/tear";
+import { bindLastWord, keepWhole, quote, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { ReviewsPile } from "./reviews/ReviewsPile";
 import { ReviewsMotion } from "./reviews/ReviewsMotion";
 
 /** Every review of the chain, on the map of the guest's own city (both rendered; CSS shows one). */
@@ -13,19 +18,23 @@ const allReviews: { city: City; href: string }[] = [
   { city: "vladikavkaz", href: external.yandexVladikavkaz },
 ];
 
-/** «ул. Байсултанова, 1» → «Байсултанова, 1», as the figures name it. */
+/** «ул. Байсултанова, 1» → «Байсултанова, 1». */
 const streetName = (address: string) => address.replace(/^(ул\.|пр\.)\s+/, "");
 
 /** 5 → «5,0». */
 const score = (n: number) => n.toFixed(1).replace(".", ",");
 
-/** The most-rated café: its score is the big «5,0» (static; never counts up), the figures say whose it is. */
+/** The most-rated café: its score is the 5,0 on the slip, and the screen reader's line says whose it is. */
 const flagship = cafes.reduce((a, b) => (b.ratingsCount > a.ratingsCount ? b : a));
-const figures = [
-  t.reviews.figures.flagship(streetName(flagship.address), flagship.ratingsCount),
-  t.reviews.figures.range(score(ratingsTotal.min), score(ratingsTotal.max)),
-  t.reviews.figures.total(ratingsTotal.ratings),
-];
+
+/** A guest's words: dish names whole, no lone last word, then «…» around it all (quote() goes last). */
+const said = (text: string) => quote(bindLastWord(keepWhole(typograf(text))));
+
+/** Each note's own rip along its top and its own small lean, seeded by the review. */
+const sheets = reviews.map((r) => {
+  const { clip, fibres, lean } = tornSheet(r.id);
+  return { "--rip": clip, "--fibres": fibres, "--lean": `${lean}deg` } as CSSProperties;
+});
 
 /** « ↗» and the screen-reader note after an external link. */
 function NewTab() {
@@ -39,47 +48,85 @@ function NewTab() {
   );
 }
 
-export function ReviewsSection() {
+/** A thin line arrow pointing left; the next arrow is the same one turned round (reviews.css). */
+function Arrow() {
   return (
-    <section id="otzyvy" className="field section-pad rv" data-theme="cream" aria-labelledby="otzyvy-title">
+    <svg className="rv-arrow__icon" viewBox="0 0 48 16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M47 8H1M8 1 1 8l7 7" stroke="currentColor" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+}
+
+/**
+ * The café asks in the title, and the flagship's 5,0 answers beside it on the notice's paper. Under it
+ * the guests answer, verbatim, on notes of the same paper lying in a pile: one on top, the others under
+ * it. Every note is server-rendered in its place (data-pos, 0 on top); ReviewsPile throws the top one
+ * aside and brings the others up, and without JS the first note stays on top.
+ */
+export function ReviewsSection() {
+  const n = reviews.length;
+  const many = n > 1;
+  return (
+    <section id="otzyvy" className="field section-pad rv" data-theme="cream" aria-label={t.reviews.q}>
       <div className="wrap">
-        <header className="section-head">
+        <header className="rv-head">
           <DialogueHeading id="otzyvy-title" q={t.reviews.q} a={typograf(t.reviews.a)} />
-          {/* The guests' answer, in the lead's place: the 5,0 on the title's baseline, and where it comes from. */}
-          <div className="rv-score" data-rv-reveal>
-            <p className="rv-score__num display">{score(flagship.rating)}</p>
-            <ul className="rv-score__figs label" role="list">
-              {figures.map((f) => (
-                <li key={f}>{typograf(f)}</li>
-              ))}
-            </ul>
-          </div>
+          <Slip seed={flagship.id} label={score(flagship.rating)} className="rv-slip" aria-hidden="true" data-rv-slip />
+          <p className="sr-only">{typograf(t.reviews.rating(streetName(flagship.address), score(flagship.rating)))}</p>
         </header>
 
-        {/* Guests, verbatim. */}
-        <ul className="rv-quotes" role="list">
-          {reviews.map((r) => {
-            const cafe = cafes.find((c) => c.id === r.cafeId);
-            return (
-              <li key={r.id} data-rv-reveal>
-                <figure className="rv-q" data-permission={r.permission ? undefined : "pending"}>
-                  {/* A dish named in a quote never breaks: «Как в сказке» stays on one line. */}
-                  <blockquote className="rv-q__quote" cite={r.sourceUrl}>
-                    <p className="rv-q__text reply">{bindLastWord(keepWhole(typograf(r.text)))}</p>
-                  </blockquote>
-                  <figcaption className="rv-q__cap label">
-                    {/* «Байсултанова, 1 ·», then the source as the link. */}
-                    {cafe && <>{typograf(`${streetName(cafe.address)} ·`)} </>}
-                    <a className="dlink" href={r.sourceUrl} target="_blank" rel="noreferrer">
-                      {t.reviews.source}
-                      <NewTab />
-                    </a>
-                  </figcaption>
-                </figure>
+        <div className="rv-pile">
+          {/* All the notes in one cell, so the longest quote sets the pile's size. */}
+          <ul className="rv-notes" id="rv-notes">
+            {reviews.map((r, i) => (
+              <li
+                key={r.id}
+                className="rv-note"
+                data-pos={i}
+                data-rv-say={t.reviews.shown(i + 1, n, r.text)}
+                data-permission={r.permission ? undefined : "pending"}
+                style={sheets[i]}
+              >
+                {/* One motion per wrapper: the landing (ReviewsMotion), then the throw (ReviewsPile). */}
+                <div className="rv-note__land">
+                  <div className="rv-note__fly">
+                    <div className="rv-note__paper">
+                      <blockquote className="rv-note__sheet" cite={r.sourceUrl}>
+                        <p className="rv-quote reply">{said(r.text)}</p>
+                      </blockquote>
+                    </div>
+                  </div>
+                </div>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+          {many && (
+            <div className="rv-ctrl" data-rv-reveal>
+              <button
+                type="button"
+                className="btn rv-arrow rv-arrow--prev"
+                aria-label={t.reviews.prev}
+                aria-controls="rv-notes"
+                data-rv-prev
+              >
+                <BtnLabel>
+                  <Arrow />
+                </BtnLabel>
+              </button>
+              <button
+                type="button"
+                className="btn rv-arrow rv-arrow--next"
+                aria-label={t.reviews.next}
+                aria-controls="rv-notes"
+                data-rv-next
+              >
+                <BtnLabel>
+                  <Arrow />
+                </BtnLabel>
+              </button>
+            </div>
+          )}
+        </div>
 
         <p className="rv-all" data-rv-reveal>
           {allReviews.map(({ city, href }) => (
@@ -90,6 +137,9 @@ export function ReviewsSection() {
           ))}
         </p>
       </div>
+      {/* «Отзыв 2 из 3: …», written by ReviewsPile when the note on top changes. */}
+      <p className="sr-only" aria-live="polite" aria-atomic="true" data-rv-live />
+      {many && <ReviewsPile />}
       <ReviewsMotion />
     </section>
   );

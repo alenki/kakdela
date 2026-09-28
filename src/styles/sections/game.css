@@ -1,0 +1,81 @@
+/* ═════════════ GAME «Игра со стаканчиком.»: the runner, on ink after the evening; also on the 404 ═════════════
+   The stage is the full grid width; its height follows a fixed ratio (12/5 on phones, 3/1 from 640,
+   4/1 from 1024), never taller than the screen allows. Under it, the note and the buttons. */
+
+/* Without JS the game can't start: no dead block (as the header's «Разделы»). */
+html:not(.js) :is(.game, .not-found__game) { display: none; }
+
+/* The room the frame may take: the screen under the header, with a little air. A short window (a phone
+   on its side) narrows the frame at the same ratio, so the stage keeps its proportions. */
+.runner { --runner-room: calc(100svh - var(--header-h) - 1.5rem); }
+.runner__frame { position: relative; max-width: calc(var(--runner-room) * 12 / 5); }
+.runner__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 12 / 5;
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (min-width: 640px) {
+  .runner__frame { max-width: calc(var(--runner-room) * 3); }
+  .runner__stage { aspect-ratio: 3 / 1; }
+}
+@media (min-width: 1024px) {
+  .runner__frame { max-width: calc(var(--runner-room) * 4); }
+  .runner__stage { aspect-ratio: 4 / 1; }
+}
+/* While a run is on, the stage takes every touch (tap to jump, hold low to duck); otherwise the page scrolls. */
+.runner[data-state="running"] .runner__stage { touch-action: none; cursor: default; }
+
+/* High contrast can't recolour a canvas: the stage keeps its theme's own ink and paper, like a picture,
+   so the poster and the running game look the same. */
+@media (forced-colors: active) {
+  .runner__stage { forced-color-adjust: none; background-color: var(--bg); color: var(--fg); }
+}
+
+.runner__poster,
+.runner__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.runner__poster { color: var(--fg); }
+.runner__canvas { display: none; }
+.runner[data-live] .runner__canvas { display: block; }
+.runner[data-live] .runner__poster { display: none; }
+.runner[data-state="paused"] .runner__canvas { opacity: 0.4; transition: opacity 200ms var(--ease-kd-ui); }
+
+/* The score sits in the stage's sky, top right: the cup runs at the left and the obstacles stay low. */
+.runner__hud {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  margin: 0;
+  pointer-events: none;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.runner__key { color: var(--fg-soft); }
+
+.runner__foot {
+  display: grid;
+  gap: 1rem var(--grid-gap);
+  margin-top: var(--foot-gap);
+  align-items: center;
+}
+/* Until the page is interactive the controls can do nothing: they keep their room (no shift) unseen. */
+.runner:not([data-ready]) :is(.runner__hud, .runner__foot) { visibility: hidden; }
+.runner__note { margin: 0; max-width: 44ch; }
+.runner__hint-touch { display: none; }
+@media (pointer: coarse) {
+  .runner__hint-touch { display: inline; }
+}
+/* The buttons keep to the stage's right edge, under the score, at every width. */
+.runner__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
+@media (min-width: 640px) {
+  .runner__foot { grid-template-columns: minmax(0, 1fr) auto; }
+}

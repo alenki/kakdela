@@ -1,62 +1,143 @@
 /* ═════════════ REVIEWS «Отзывы»: cream ═════════════
-   The shared heading, with the guests' answer in the lead's place: the 5,0 in display type and its
-   three figures as one small caption beside it. Then the guests verbatim, the section's one serif
-   moment: one column on phones, three even columns from 1024px (cols 1–4, 5–8, 9–12), each under a
-   hairline. One link to the rest. */
+   The café asks in the section's title («Как вам у нас?»), and the flagship's 5,0 answers beside it on a
+   slip of the notice's paper (Slip, brand.css). Under it the guests answer, verbatim, on notes of the same
+   paper torn off a pad along their top edge, lying in a loose pile: one on top, large, in the café's
+   italic; the others peek out under it. The ← and → pills sit under the pile, the link to the rest under
+   them. The site's one centred composition: the pile on columns 3 to 10.
+   Every note is server-rendered and stacked in one cell, so the longest quote sets the pile's size and
+   nothing moves when the top one changes. Where a note lies is its data-pos (0 on top): the server sets
+   them in order and ReviewsPile moves them. Without JS the first note stays on top and the arrows wait. */
 
-/* ── The 5,0 and its caption ── */
-/* Phones and tablets: under the title, the caption beside the 5,0 from the top of its digits. */
-.rv-score {
+.rv {
+  /* A thrown note flies out past the gutter. */
+  overflow-x: clip;
+  /* The notes' type: 21px on a phone, about 35px at 1440, 3rem at most. */
+  --rv-note: clamp(1.3125rem, 0.6rem + 1.8vw, 3rem);
+}
+
+/* ── The question, and the 5,0 beside it ── */
+/* The title, then the slip on its line, sized off the title (0.74 of it). Where the line is too short for
+   both, the slip goes under the title. */
+.rv-head {
   display: flex;
-  align-items: flex-start;
-  column-gap: clamp(16px, 2vw, 40px);
-}
-.rv-score__num {
-  flex: none;
-  margin: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.3em;
+  row-gap: 0.14em;
+  margin-bottom: var(--head-gap);
   font-size: var(--h2);
-  white-space: nowrap;
 }
-.rv-score__figs {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: var(--fs-small);
-  line-height: 1.5;
-}
+.rv-slip { font-size: 0.74em; }
 
-/* ── Guests, verbatim ── */
-.rv-quotes {
+/* ── The pile ── */
+/* Phones and tablets: full width, up to 44rem. Desktop: columns 3 to 10, the arrows centred under them.
+   --nudge is how far the notes under the top one peek out. */
+.rv-pile { display: grid; justify-items: center; }
+.rv-notes {
+  --nudge: clamp(8px, 1.1vw, 22px);
   display: grid;
-  gap: clamp(40px, 10vw, 56px) var(--grid-gap);
+  width: min(100%, 44rem);
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.rv-q {
-  margin: 0;
-  padding-top: clamp(16px, 1.4vw, 24px);
-  border-top: var(--rule) solid var(--line);
-}
-.rv-q__quote { margin: 0; }
-.rv-q__text {
-  max-width: 26em;
-  font-size: clamp(1.375rem, 1.05rem + 0.9vw, 2rem);
-  line-height: 1.22;
-}
-.rv-q__cap { margin-top: 1rem; }
-
-/* The same step as every section's closing line. */
-.rv-all { margin: var(--foot-gap) 0 0; }
-
-/* ── Desktop: the 5,0 in the lead's place, on the title's baseline; its caption ends on that baseline too ── */
 @media (min-width: 1024px) {
-  .rv-score { align-items: last baseline; }
-  .rv-quotes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rv-pile { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+  .rv-notes { grid-column: 3 / 11; width: 100%; }
+  .rv-ctrl { grid-column: 1 / -1; }
 }
-/* Below 1280px four columns can't hold the longest figure on one line: the 5,0 steps in a column. */
-@media (min-width: 1024px) and (max-width: 1279.98px) {
-  .rv .section-head > .dlg { grid-column: 1 / span 7; }
-  .rv .section-head > .rv-score { grid-column: 8 / -1; }
+
+/* Where a note lies: its place in the pile (data-pos) and a lean of its own (--lean, tornSheet), as CSS
+   `translate` and `rotate`, eased when the place changes. The landing is GSAP's on .rv-note__land and the
+   throw on .rv-note__fly: nothing else moves the li, so the three never fight over one transform. */
+.rv-note {
+  grid-area: 1 / 1;
+  display: grid;
+  translate: var(--tx, 0) var(--ty, 0);
+  rotate: calc(var(--tr, 0deg) + var(--lean, 0deg));
+  transition: translate 560ms var(--ease-kd-out), rotate 560ms var(--ease-kd-out);
 }
+.rv-note[data-pos="0"] { --tr: -1deg; z-index: 3; }
+/* The note under the top one starts to come up while the top one is dragged away (--lift, 0 to 1). */
+.rv-note[data-pos="1"] {
+  --tx: calc(var(--nudge) * (1 - var(--lift, 0)));
+  --ty: calc(var(--nudge) * 0.55 * (1 - var(--lift, 0)));
+  --tr: calc(2.6deg - 3.6deg * var(--lift, 0));
+  z-index: 2;
+}
+.rv-note:not([data-pos="0"], [data-pos="1"]) {
+  --tx: calc(var(--nudge) * -1.1);
+  --ty: calc(var(--nudge) * 1.05);
+  --tr: -3.4deg;
+  z-index: 1;
+}
+/* The thrown note stays over the pile while it flies. */
+.rv-note[data-leaving] { z-index: 4; }
+.rv-notes[data-dragging] .rv-note { transition: none; }
+
+.rv-note__land,
+.rv-note__fly { display: grid; }
+/* The notice's paper, its edge and its shadow (globals.css), and the lighter fringe of the rip
+   (--fibres), just proud of the paper's torn top. */
+.rv-note__paper {
+  position: relative;
+  display: grid;
+  font-size: var(--rv-note);
+  filter: drop-shadow(var(--paper-shadow));
+  transition: translate 200ms var(--ease-kd-ui);
+}
+.rv-note__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper), #fff 65%);
+  clip-path: var(--fibres);
+}
+/* The rip is at most 0.46em deep (tornSheet): the 1.7em on top keeps it clear of the words. A short
+   quote sits in the middle of its note. */
+.rv-note__sheet {
+  display: grid;
+  align-content: center;
+  margin: 0;
+  padding: 1.7em 1.5em 1.45em;
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  clip-path: var(--rip);
+  color: var(--color-ink);
+}
+.rv-quote { margin: 0; }
+
+/* Only the top note's words are there to read, and to a screen reader: the notes under it are paper.
+   The thrown note keeps its words while it flies; the one pulled back gets them as it comes out, and the
+   one it lands on keeps them until it is covered. */
+.rv-note:not([data-pos="0"], [data-leaving], [data-arriving], [data-covered]) .rv-quote { visibility: hidden; }
+
+/* After hydration the top note can be picked up (ReviewsPile): a hand over it, and its words aren't
+   selected by the drag. A finger's sideways drag is the pile's; up and down stays the page's scroll. */
+.rv[data-js] .rv-note[data-pos="0"] { cursor: grab; -webkit-user-select: none; user-select: none; }
+.rv[data-js] .rv-notes[data-dragging] .rv-note { cursor: grabbing; }
+.rv[data-js] .rv-notes { touch-action: pan-y; touch-action: pan-y pinch-zoom; }
+@media (hover: hover) and (pointer: fine) {
+  .rv[data-js] .rv-notes:not([data-dragging]) .rv-note[data-pos="0"]:hover .rv-note__paper { translate: 0 -4px; }
+}
+
+/* ── The arrows: two secondary pills under the pile (.btn with BtnLabel, so they pour like every button) ── */
+.rv-ctrl { display: flex; gap: 0.625rem; margin-top: clamp(2rem, 3.2vw, 3.5rem); }
+.rv-arrow { min-width: 4rem; padding: 0; }
+.rv-arrow__icon {
+  width: 1.75rem;
+  height: auto;
+  overflow: visible;
+  transition: translate 200ms var(--ease-kd-ui);
+}
+.rv-arrow--next .rv-arrow__icon { scale: -1 1; }
+@media (hover: hover) and (pointer: fine) {
+  .rv-arrow--prev:hover .rv-arrow__icon { translate: -3px 0; }
+  .rv-arrow--next:hover .rv-arrow__icon { translate: 3px 0; }
+}
+/* Before hydration they can't do anything yet: they keep their place, unseen. */
+.rv:not([data-js]) .rv-ctrl { visibility: hidden; }
+
+/* ── The link to the rest, one step under the arrows ── */
+.rv-all { margin: var(--foot-gap) 0 0; text-align: center; }

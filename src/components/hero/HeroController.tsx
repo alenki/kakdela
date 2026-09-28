@@ -82,11 +82,15 @@ export function HeroController() {
       next.setAttribute("data-active", "");
       if (reduced()) return;
 
-      const word = next.querySelector<HTMLElement>("[data-answer]");
-      const rest = next.querySelectorAll<HTMLElement>(".panel__photo, .panel__text > *");
+      // The dish comes up first, then the torn tab drops onto it (a touch larger, as if from above, and
+      // settles), then the café's lines follow.
+      const slip = next.querySelector<HTMLElement>("[data-answer]");
+      const photo = next.querySelector<HTMLElement>(".panel__photo");
+      const text = next.querySelectorAll<HTMLElement>(".panel__text > *");
       scene = gsap.timeline({ defaults: { ease: "kd.out", clearProps: "opacity,transform" } });
-      if (word) scene.fromTo(word, { opacity: 0, yPercent: 14 }, { opacity: 1, yPercent: 0, duration: 0.5, ease: "kd.settle" }, 0);
-      scene.fromTo(rest, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05 }, 0.12);
+      if (photo) scene.fromTo(photo, { opacity: 0 }, { opacity: 1, duration: 0.45 }, 0);
+      if (slip) scene.fromTo(slip, { opacity: 0, y: -26, scale: 1.05 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "kd.settle" }, 0.06);
+      scene.fromTo(text, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05 }, 0.16);
     }
 
     // ── Tearing ──

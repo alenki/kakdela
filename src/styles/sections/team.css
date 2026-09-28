@@ -1,10 +1,11 @@
 /* ═════════════ TEAM: the founding line, then the people who answer. Cream. ═════════════ */
 
-/* The section's one serif moment: the founding line is the heading. It has no lead beside it, so from
-   1024px it spans columns 1–10. Its size grows with those columns, so from a tablet up to 2560px it
+/* The section's one italic moment: the founding line is the heading. It has no lead beside it, so from
+   1024px it spans columns 1 to 10. Its size grows with those columns, so from a tablet up to 2560px it
    sets as the same four balanced lines; on a desktop the longest one reaches the tenth column. */
 .team__statement {
-  font-size: clamp(1.875rem, 0.25rem + 3.95vw, 5.25rem);
+  font-size: clamp(1.5rem, 0.2rem + 3.06vw, 4.0625rem);
+  line-height: 1.2;
   color: var(--fg);
 }
 @media (min-width: 1024px) {
@@ -20,26 +21,31 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: var(--grid-gap);
 }
-/* Each card runs on the list's own rows (photo, caption, answer, line), so cards side by side share
-   their baselines even when one answer wraps. */
+/* Each card runs on the list's own five rows (photo, slip, caption, line, dish), so cards side by side
+   share their baselines. The card is not a container: layout containment would switch its subgrid off.
+   Its one column is held to the card's width, so no unbreakable run can widen one photo past the rest. */
 .team-card {
   display: grid;
-  grid-row: span 4;
+  grid-row: span 5;
   grid-template-rows: subgrid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   min-width: 0;
 }
 .team-card:nth-child(n + 3) { margin-top: clamp(2.5rem, 6vw, 4rem); }
 
-/* Under the photo, the same steps as a dessert under its photo in «Вечером»: the caption, then the
-   answer at the item-title size, then the person's line in --fg-soft. */
-/* «Role · place» on one line; a card too narrow for it sets the place under the role instead. */
-.team-card__who { margin-top: 1rem; container-type: inline-size; }
-@container (width < 17rem) {
-  .team-card__sep { display: none; }
-  .team-card__where { display: block; }
-}
-.team-card__answer { margin-top: 0.5rem; }
+/* The answer: the notice's tab (Slip, brand.css), lying across the foot of the portrait. Its cell is the
+   container, so the word is sized against the card: «Как в сказке» (about 4.6em, 5.6em with its padding)
+   takes about 84% of it, and 77% at 2560, where the --h3 cap takes over. Flush with the photo's left
+   edge, as in the hero, and 0.62em up onto it; it paints over the photo because it comes after it (and
+   its filter makes it a stacking context). */
+.team-card__tab { display: grid; min-width: 0; container-type: inline-size; }
+.team-card__slip { margin: -0.62em 0 0.22em 0; font-size: min(calc(var(--h3) * 1.2), 15cqi); }
+.team-card .slip__paper { color: var(--slip-ink, var(--color-ink)); transition: color 200ms var(--ease-kd-ui); }
+
+/* «как у вас», under the slip while the guest's answer matches; the phrase never breaks. The row itself
+   always stays, so cards side by side keep sharing their subgrid rows. */
+.team-card__same { display: var(--match, none); margin-top: 0.75rem; white-space: nowrap; }
 .team-card__line {
   max-width: 44ch;
   margin-top: 0.5rem;
@@ -47,15 +53,41 @@
   color: var(--fg-soft);
 }
 
-/* The note sits as close to the cards as a menu's closing row does to its rows. */
-.team__note { margin-top: var(--foot-gap); }
+/* The breakfast of that name closes the card. The name never breaks inside its quotes; a card too narrow
+   for the widest one («Завтрак «Как в сказке»») sets every name on a line of its own, so the row stays even. */
+.team-card__dish { margin-top: 0.5rem; font-size: var(--fs-small); container-type: inline-size; }
+.team-card__dish-name { white-space: nowrap; }
+@container (width < 10.5rem) {
+  .team-card__dish-name { display: block; }
+}
+
+/* The tab this guest tore: its slip's word in red and «как у вас» under it. html[data-answer] is
+   set before paint (head-script.ts: a tear earlier today) and live by the store (a tear, or browsing the
+   tabs with the arrow keys); a time-of-day guess also sets data-guess and never matches. Without JS the
+   hero's checked radio drives the same state. One pair of lines per answer (lib.test.ts checks them). */
+html[data-answer="luchshe-vseh"]:not([data-guess]) [data-team-answer="luchshe-vseh"],
+html[data-answer="kak-v-skazke"]:not([data-guess]) [data-team-answer="kak-v-skazke"],
+html[data-answer="vsyo-shik"]:not([data-guess]) [data-team-answer="vsyo-shik"],
+html[data-answer="10-iz-10"]:not([data-guess]) [data-team-answer="10-iz-10"],
+html[data-answer="est-hochu"]:not([data-guess]) [data-team-answer="est-hochu"],
+html[data-answer="normalno"]:not([data-guess]) [data-team-answer="normalno"],
+html[data-answer="sonno"]:not([data-guess]) [data-team-answer="sonno"],
+html[data-answer="tak-sebe"]:not([data-guess]) [data-team-answer="tak-sebe"],
+html:not(.js):has(#ans-luchshe-vseh:checked) [data-team-answer="luchshe-vseh"],
+html:not(.js):has(#ans-kak-v-skazke:checked) [data-team-answer="kak-v-skazke"],
+html:not(.js):has(#ans-vsyo-shik:checked) [data-team-answer="vsyo-shik"],
+html:not(.js):has(#ans-10-iz-10:checked) [data-team-answer="10-iz-10"],
+html:not(.js):has(#ans-est-hochu:checked) [data-team-answer="est-hochu"],
+html:not(.js):has(#ans-normalno:checked) [data-team-answer="normalno"],
+html:not(.js):has(#ans-sonno:checked) [data-team-answer="sonno"],
+html:not(.js):has(#ans-tak-sebe:checked) [data-team-answer="tak-sebe"] {
+  --slip-ink: var(--accent-ink);
+  --match: block;
+}
 
 /* Phones: two narrow columns, so the line steps down to the small size. */
 @media (max-width: 639.98px) {
   .team-card__line { font-size: var(--fs-small); }
-}
-@media (min-width: 640px) {
-  .team-card__who { margin-top: clamp(1rem, 1.4vw, 1.75rem); }
 }
 @media (min-width: 1024px) {
   .team__people { grid-template-columns: repeat(4, minmax(0, 1fr)); }

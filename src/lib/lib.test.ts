@@ -1,13 +1,15 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { isOpen, minutesInMoscow, pickByHour, toMinutes } from "./time";
 import { haversineKm } from "./geo";
 import { groupDigits, km, plural, rub, rubSpoken } from "./format";
-import { bindLastWord, keepWhole, NBSP, typograf, WJ } from "./typograf";
-import { tornEdge } from "./tear";
+import { bindLastWord, keepWhole, NBSP, quote, typograf, WJ } from "./typograf";
+import { tornEdge, tornSheet, tornStrip } from "./tear";
 import { mulberry32 } from "./seed";
 import { cafes } from "@/content/cafes";
-import { answers } from "@/content/answers";
+import { answerById, answers } from "@/content/answers";
 import { breakfasts } from "@/content/menu";
+import { reviews, team } from "@/content/people";
 import { ru } from "@/i18n/ru";
 
 const midnightClose = { open: "07:30", close: "00:00" as const };
@@ -51,7 +53,7 @@ describe("format", () => {
   it("formats rubles with no-break spaces", () => {
     expect(rub(670)).toBe(`670${NBSP}₽`);
     expect(rub(5000)).toBe(`5${NBSP}000${NBSP}₽`);
-    // Digit groups take the plain no-break space: Onest's narrow one (U+202F) reads as «2709» at label size.
+    // Digit groups take the plain no-break space: Montserrat's narrow one (U+202F) reads as «2709» at label size.
     expect(groupDigits(2709)).toBe(`2${NBSP}709`);
     expect(groupDigits(1234567)).toBe(`1${NBSP}234${NBSP}567`);
   });
@@ -157,6 +159,15 @@ describe("typograf", () => {
   it("binds the last word", () => {
     expect(show(bindLastWord("Бариста варят достойный эспрессо."))).toBe("Бариста варят достойный~эспрессо.");
   });
+  it("sets a guest's words in «ёлочки», a name inside in „лапках“, and keeps that name whole", () => {
+    expect(quote("Заказали «Лучше всех»")).toBe("«Заказали „Лучше всех“»");
+    const said = (s: string) => show(quote(bindLastWord(keepWhole(typograf(s)))));
+    expect(said("Заказали «Лучше всех» и «Как в сказке»… Бариста варят достойный эспрессо.")).toBe(
+      "«Заказали „Лучше~всех“ и~„Как~в~сказке“… Бариста варят достойный~эспрессо.»",
+    );
+    // quote() goes last: a short quotation still breaks between its words.
+    expect(said("Уютно, вкусно, тепло")).toBe("«Уютно, вкусно,~тепло»");
+  });
 });
 
 describe("i18n (ru)", () => {
@@ -165,14 +176,15 @@ describe("i18n (ru)", () => {
     expect(ru.locations.cafesCount(2)).toBe("2 кофейни");
     expect(ru.locations.cafesCount(7)).toBe("7 кофеен");
     expect(ru.locations.cafesCount(cafes.length)).toBe("9 кофеен");
-    expect(ru.locations.rating(5, 626)).toBe("5,0 · 626 оценок");
-    expect(ru.locations.rating(4.8, 1234)).toBe(`4,8 · 1${NBSP}234 оценки`);
-    expect(ru.locations.rating(4.9, 21)).toBe("4,9 · 21 оценка");
   });
   it("keeps the unit with its number in distances", () => {
     expect(ru.locations.metres(50)).toBe(`50${NBSP}м`);
     expect(ru.locations.km("1,4")).toBe(`1,4${NBSP}км`);
     expect(ru.locations.nearestTagMetres(800)).toBe(`ближе всех · 800${NBSP}м`);
+  });
+  it("reads out the note on top of the reviews' pile, and whose 5,0 the slip is", () => {
+    expect(ru.reviews.shown(2, 3, "Уютно.")).toBe("Отзыв 2 из 3: Уютно.");
+    expect(ru.reviews.rating("Байсултанова, 1", "5,0")).toBe("Байсултанова, 1: 5,0 на Яндекс Картах");
   });
 });
 
@@ -180,6 +192,43 @@ describe("determinism (server and client must agree)", () => {
   it("tears the same edge for the same tab", () => {
     expect(tornEdge("sonno")).toEqual(tornEdge("sonno"));
     expect(tornEdge("sonno")).not.toEqual(tornEdge("normalno"));
+  });
+  it("lands the same strip for the same tab, its tear clear of the word", () => {
+    expect(tornStrip("sonno")).toEqual(tornStrip("sonno"));
+    expect(tornStrip("sonno").clip).not.toEqual(tornStrip("normalno").clip);
+    const depths = (polygon: string) => [...polygon.matchAll(/100% - ([\d.]+)em/g)].map((m) => Number(m[1]));
+    for (const a of answers) {
+      const { clip, fibres, tilt } = tornStrip(a.id);
+      const paper = depths(clip), fringe = depths(fibres);
+      // brand.css pads the strip's right end by 0.62em: the rip never reaches the letters, and the
+      // fringe stays inside the strip's box.
+      expect(paper).toHaveLength(10);
+      expect(Math.max(...paper)).toBeLessThan(0.45);
+      expect(fringe).toHaveLength(28);
+      expect(Math.min(...fringe)).toBeGreaterThan(0.1);
+      // Every third nick sits on a jag, a little proud of the paper.
+      paper.forEach((d, i) => expect(fringe[i * 3]).toBeLessThan(d));
+      expect(tilt).toBeGreaterThanOrEqual(1.2);
+      expect(tilt).toBeLessThanOrEqual(2.8);
+    }
+  });
+  it("tears the same sheet for the same review, its rip clear of the words", () => {
+    expect(tornSheet("elbrus")).toEqual(tornSheet("elbrus"));
+    expect(tornSheet("elbrus").clip).not.toEqual(tornSheet("warmth").clip);
+    const depths = (polygon: string) => [...polygon.matchAll(/% ([\d.]+)em/g)].map((m) => Number(m[1]));
+    for (const r of reviews) {
+      const { clip, fibres, lean } = tornSheet(r.id);
+      const paper = depths(clip), fringe = depths(fibres);
+      // reviews.css pads the note's top by 1.7em: the rip never reaches the words, and the fringe stays
+      // inside the note's box.
+      expect(paper).toHaveLength(27);
+      expect(Math.max(...paper)).toBeLessThan(0.5);
+      expect(fringe).toHaveLength(79);
+      expect(Math.min(...fringe)).toBeGreaterThan(0.1);
+      // Every third nick sits over a jag, a little proud of the paper.
+      paper.forEach((d, i) => expect(fringe[i * 3]).toBeLessThan(d));
+      expect(Math.abs(lean)).toBeLessThanOrEqual(0.8);
+    }
   });
   it("seeds the same sequence", () => {
     const a = mulberry32(7), b = mulberry32(7);
@@ -201,5 +250,21 @@ describe("content integrity", () => {
     expect(cafes.filter((c) => c.city === "nalchik")).toHaveLength(7);
     expect(cafes.filter((c) => c.city === "vladikavkaz")).toHaveLength(2);
     for (const c of cafes) expect(c.phone).toMatch(/^\+7\d{10}$/);
+  });
+  it("answers the team from the notice, on slips that fit their cards", () => {
+    // team.css sizes the slip so «Как в сказке», the longest tab, fills most of a card; its word never wraps.
+    const longest = answerById["kak-v-skazke"].label.length;
+    for (const p of team) {
+      if (p.answerId) expect(Object.hasOwn(answerById, p.answerId)).toBe(true);
+      const label = p.answerId ? answerById[p.answerId].label : p.answer;
+      expect(label.length).toBeLessThanOrEqual(longest);
+    }
+  });
+  it("gives every answer its match in team.css, with JS and without", () => {
+    const css = readFileSync(new URL("../styles/sections/team.css", import.meta.url), "utf8");
+    for (const { id } of answers) {
+      expect(css).toContain(`html[data-answer="${id}"]:not([data-guess]) [data-team-answer="${id}"]`);
+      expect(css).toContain(`html:not(.js):has(#ans-${id}:checked) [data-team-answer="${id}"]`);
+    }
   });
 });

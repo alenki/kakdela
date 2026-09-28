@@ -2,7 +2,7 @@
 // visitors never see a flash of the wrong city, motion mode or answer, and React never has to
 // re-render server markup to reflect them.
 //   data-city       nalchik | vladikavkaz          (localStorage kd-city)
-//   data-motion     full | reduced                   (kd-motion, else prefers-reduced-motion)
+//   data-motion     full | reduced                   (prefers-reduced-motion)
 //   data-answer     today's answer, or a time-of-day guess
 //   data-guess="1"  the answer is only a guess
 //   data-yesterday  the answer from a previous day
@@ -16,8 +16,8 @@ export const HEAD_SCRIPT = `(function(){
 var d=document.documentElement,ds=d.dataset;d.classList.add('js');
 function g(s,k){try{return window[s].getItem(k)}catch(e){return null}}
 var c=g('localStorage','kd-city');if(c==='vladikavkaz')ds.city=c;
-var m=g('localStorage','kd-motion'),rm=false;try{rm=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
-ds.motion=(m==='reduced'||(m!=='full'&&rm))?'reduced':'full';
+var rm=false;try{rm=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+ds.motion=rm?'reduced':'full';
 var h=0,mi=0,day='';try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Moscow',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
 for(var i=0;i<p.length;i++){if(p[i].type==='hour')h=+p[i].value;if(p[i].type==='minute')mi=+p[i].value}
 day=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow'}).format(new Date())}catch(e){h=new Date().getHours()}

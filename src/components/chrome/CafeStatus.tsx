@@ -12,7 +12,6 @@ export function CafeStatus({ cafe, className }: { cafe: Cafe; className?: string
   if (now === null) {
     return (
       <span className={cn("status mono", className)}>
-        <span className="status__dot" data-state="idle" aria-hidden="true" />
         {cafe.open}–{cafe.close}
       </span>
     );
@@ -22,7 +21,6 @@ export function CafeStatus({ cafe, className }: { cafe: Cafe; className?: string
   const [head, tail] = open ? [t.status.open, `${t.status.until} ${cafe.close}`] : [t.status.closed, t.status.opensAt];
   return (
     <span className={cn("status mono", className)} data-open={open ? "" : undefined}>
-      <span className="status__dot" data-state={open ? "open" : "closed"} aria-hidden="true" />
       <span className="status__text">
         <span className="status__part">{head} ·</span> <span className="status__part">{tail}</span>
       </span>

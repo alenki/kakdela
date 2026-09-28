@@ -27,8 +27,8 @@ a[href], button, input, select, textarea, summary, [tabindex="0"] {
 }
 
 /* ───── Header ───── */
-/* Full bleed: .wrap runs gutter to gutter, so the logo and the nav sit on the same edges as every
-   section's content. Sizes are in rem, which grows past 1600px, so the header keeps its proportions on
+/* Full bleed: .wrap runs gutter to gutter, so «Меню» and the sections button sit on the same edges as
+   every section's content. Sizes are in rem, which grows past 1600px, so the header keeps its proportions on
    wide canvases; its height stays var(--header-h) (globals), which the sections under it rely on.
    data-theme is the theme of the section beneath (HeaderBehavior), so --fg/--bg are that section's. */
 .site-header {
@@ -38,11 +38,8 @@ a[href], button, input, select, textarea, summary, [tabindex="0"] {
   height: var(--header-h);
   color: var(--fg);
   pointer-events: none;
-  transition: transform 350ms var(--ease-kd-out), color 300ms var(--ease-kd-ui);
+  transition: color 300ms var(--ease-kd-ui);
 }
-.site-header[data-hidden] { transform: translateY(calc(-100% - 1px)); }
-/* Shift+Tab back into a tucked-away header brings it back, so focus is never off screen. */
-.site-header[data-hidden]:focus-within { transform: none; }
 /* Once the page scrolls: a solid plate in the colour of the section beneath, with a hairline. */
 .site-header::before {
   content: "";
@@ -57,20 +54,38 @@ a[href], button, input, select, textarea, summary, [tabindex="0"] {
 }
 .site-header[data-solid]::before { opacity: 1; }
 html[data-dialog] .site-header::before { opacity: 0; }
-html[data-dialog] .site-header { transform: none; }
 /* Without JS the header can't follow the sections: let it scroll away with the hero instead. */
 html:not(.js) .site-header { position: absolute; }
 /* Without JS the dialog can't open: hide the dead «Разделы» button (the footer carries the navigation). */
 html:not(.js) .hdr-burger { display: none; }
+/* Three columns: the outer two share what's left equally, so the logo sits on the true centre line. */
 .site-header__inner {
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
-.site-header__logo, .site-header__nav { pointer-events: auto; }
-.site-header__logo { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; }
+.site-header__logo, .site-header__nav, .site-header__end { pointer-events: auto; }
+.site-header__nav { justify-self: start; }
+.site-header__end { justify-self: end; display: flex; align-items: center; }
+.site-header__logo {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 0s;
+}
+/* On the homepage the logo steps aside while the page's own wordmark is on screen: at the very top (the
+   hero's notice), until the plate lands, and again once the footer's sign rises in (data-end, from
+   HeaderBehavior). Every other page keeps it, and so does every page without JS. */
+html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header__logo {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 250ms;
+}
 /* 26px up to 1600px, then with the rem: 28px at 1920, 32.5px at 2560. */
 .site-header__mark--full { display: none; position: relative; height: 1.625rem; aspect-ratio: 1671 / 342; }
 .site-header__letters {
@@ -82,13 +97,16 @@ html:not(.js) .hdr-burger { display: none; }
 }
 .site-header__badge-in { position: absolute; inset: 0; width: 100%; height: 100%; }
 .site-header__mark--badge { height: 38px; width: auto; }
-/* The logo's clover is the header's one touch of red. */
-.site-header__clover { color: var(--color-tomato); }
+/* The logo's clover is the header's one touch of red: the theme's accent, so it turns milk over the
+   tomato coffee poster instead of vanishing into it. */
+.site-header__clover { color: var(--accent); }
 @media (min-width: 1024px) {
   .site-header__mark--full { display: block; }
   .site-header__mark--badge { display: none; }
 }
 .site-header__nav { display: flex; align-items: center; gap: clamp(20px, 2vw, 2.5rem); }
+/* Below 1024px the left column is too narrow for all four: only «Меню» stays. */
+@media (max-width: 1023.98px) { .hdr-link--wide { display: none; } }
 .hdr-link, .hdr-burger, .menu-dialog__close {
   position: relative;
   display: inline-flex;
@@ -106,16 +124,17 @@ html:not(.js) .hdr-burger { display: none; }
   cursor: pointer;
   transition: opacity 150ms var(--ease-kd-ui);
 }
-.hdr-link, .hdr-burger__label, .menu-dialog__close { text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
+.hdr-link, .menu-dialog__close { text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 :is(.hdr-link, .hdr-burger, .menu-dialog__close):active { opacity: 0.6; }
-/* «Меню» is narrower than 44px: widen the hit area without moving the word. */
+/* «Меню» and the bare burger are narrower than 44px: widen the hit area without moving them. */
 .hdr-link::before { content: ""; position: absolute; inset: 0 -8px; }
+.hdr-burger::before { content: ""; position: absolute; inset: 0 -12px; }
 @media (hover: hover) and (pointer: fine) {
-  .hdr-link:hover, .hdr-burger:hover .hdr-burger__label, .menu-dialog__close:hover { text-decoration-line: underline; }
+  .hdr-link:hover, .menu-dialog__close:hover { text-decoration-line: underline; }
+  .hdr-burger:hover { opacity: 0.7; }
 }
 .hdr-burger__lines { display: inline-grid; gap: 0.3125rem; width: 1.25rem; }
 .hdr-burger__lines span { display: block; height: 1.5px; background: currentColor; }
-@media (max-width: 380px) { .hdr-burger__label { display: none; } }
 
 /* ───── «Разделы» dialog ───── */
 /*
@@ -151,7 +170,7 @@ html:not(.js) .hdr-burger { display: none; }
   align-content: start;
   padding-bottom: clamp(32px, 6vh, 4rem);
 }
-.menu-dialog__top { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
+.menu-dialog__top { display: flex; align-items: center; justify-content: flex-end; height: var(--header-h); }
 .menu-dialog__x { position: relative; width: 1.125rem; height: 1.125rem; }
 .menu-dialog__x::before, .menu-dialog__x::after {
   content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor;
@@ -195,7 +214,11 @@ html:not(.js) .hdr-burger { display: none; }
 .menu-dialog__side { display: grid; gap: 24px; align-content: start; margin-top: 40px; }
 .menu-dialog__city { display: flex; }
 .menu-dialog__city .city-switch__opt { flex: 1 1 0; justify-content: center; }
-.menu-dialog__cafes { border-top: 1px solid var(--line); }
+.menu-dialog__places { display: grid; }
+.menu-dialog__cafes { grid-area: 1 / 1; align-self: start; border-top: 1px solid var(--line); }
+/* The other city's list keeps its space but leaves the page and the a11y tree. */
+html:not([data-city="vladikavkaz"]) [data-city-hold="vladikavkaz"],
+html[data-city="vladikavkaz"] [data-city-hold="nalchik"] { visibility: hidden; }
 /* Address left, status right; on a tight row the status drops under the address. */
 .menu-dialog__cafes li {
   display: flex;
@@ -268,11 +291,8 @@ html[data-city="vladikavkaz"] .city-switch:not([data-ready]) [data-city-opt="vla
 }
 
 /* ───── Live status ───── */
-/* Open: a filled dot in the text colour; closed: an empty ring. No pulse, no green. */
-.status { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--fs-label); white-space: nowrap; }
-.status__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; border: 1px solid currentColor; flex: none; }
-.status__dot[data-state="open"] { background: currentColor; }
-.status__dot[data-state="closed"], .status__dot[data-state="idle"] { opacity: 0.55; }
+/* Words only: no dot, no pulse, no green. */
+.status { display: inline-flex; align-items: center; font-size: var(--fs-label); white-space: nowrap; }
 
 /* ───── Mobile action bar ───── */
 /* Three equal actions in the colours of the section beneath (data-theme, MobileActionBar). */
@@ -316,17 +336,22 @@ html[data-city="vladikavkaz"] .city-switch:not([data-ready]) [data-city-opt="vla
   }
 }
 @media (min-width: 1024px) { .action-bar { display: none; } }
-html[data-dialog] .action-bar { display: none; }
+/* Out of the way of the dialog, and of a runner in play (html[data-game], set by the game). */
+html[data-dialog] .action-bar,
+html[data-game] .action-bar { display: none; }
 
 /* ───── Not found ───── */
-/* One screen, set as a section head: the title, and beside it a line of explanation, one way home and
-   two ways on. */
+/* Set as a section head: the title, and beside it a line of explanation, one way home and two ways on.
+   Then the runner as a side offer. One screen on tall windows; on 1440 × 900 and 1920 × 1080 the page
+   scrolls a little, and starting a run brings the game into view. The rows stay together, centred. */
 .not-found {
   min-height: 100svh;
   display: grid;
-  align-items: center;
+  align-content: center;
+  row-gap: var(--head-gap);
   padding-block: calc(var(--header-h) + var(--section-pad)) var(--section-pad);
 }
+.not-found__game-label { margin: 0 0 1rem; }
 .not-found__inner { margin-bottom: 0; row-gap: clamp(28px, 4vh, 40px); }
 .not-found__line { display: block; }
 .not-found__aside { display: grid; justify-items: start; gap: 24px; }

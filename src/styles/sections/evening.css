@@ -1,6 +1,6 @@
-/* ═════════════ EVENING «Вечером»: three desserts and the pie, then the chess blitz, on ink ═════════════ */
+/* ═════════════ EVENING «Вечером»: three desserts and the pie, on ink (the chess blitz follows in chess.css) ═════════════ */
 
-/* ── Desserts: primary menu rows (name …… price, a line of description), a photo over each ──
+/* ── Desserts: primary menu rows (name, price, a line of description), a photo over each ──
    Phones: one per row. From 640: three even columns (4 + 4 + 4 of the 12), the rows on one baseline. */
 .ev-desserts {
   display: grid;
@@ -12,7 +12,7 @@
 }
 .ev-dessert { min-width: 0; }
 .ev-dessert__text { margin-top: 1rem; }
-.ev-dessert__line { display: flex; align-items: baseline; column-gap: 0.75rem; }
+.ev-dessert__line { display: flex; align-items: baseline; justify-content: space-between; column-gap: 1.5rem; }
 .ev-dessert__name { margin: 0; white-space: nowrap; }
 .ev-dessert__price {
   flex: none;
@@ -34,68 +34,14 @@
   .ev-dessert__text { margin-top: clamp(1rem, 1.4vw, 1.75rem); }
   .ev-dessert__desc { font-size: var(--fs-body); }
 }
-/* Below 1200 a third of the canvas is too narrow for «Сан-Себастьян», its leader and its price on one
-   line: the price goes under the name, in every column alike. */
+/* Below 1200 a third of the canvas is too narrow for «Сан-Себастьян» and its price on one line: the
+   price goes under the name, in every column alike. */
 @media (min-width: 640px) and (max-width: 1199.98px) {
   .ev-dessert__line { flex-direction: column; align-items: flex-start; row-gap: 0.375rem; }
-  .ev-dessert__line .leader { display: none; }
 }
 @media (min-width: 1024px) {
   .ev-dessert__desc { margin-top: 0.625rem; }
 }
 
-/* ── The cherry pie and the full menu ──
-   Below 1024 the link goes under the pie. From 1024 they keep the desserts' thirds: the pie spans the
-   first two, its price under Брауни's, and the link stands in the third, under Сан-Себастьян and the
-   lead. A little closer to the desserts than the hairline is: the row belongs to them. */
-.ev-more {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem var(--grid-gap);
-  margin-top: var(--foot-gap);
-}
-.ev-more__link { justify-self: start; }
-@media (min-width: 1024px) {
-  .ev-more { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: baseline; }
-  .ev-pie { grid-column: 1 / span 2; }
-}
-
-/* The pie is a secondary menu row (.menu-row, globals.css). */
-
-/* ── Chess: an event block below one hairline, the same pause on both sides of it ──
-   From 1024 it keeps the desserts' thirds: the place over the title, then the title, the facts and
-   the button on one baseline, like a row of the menu (below 1280 the button goes under the facts). */
-.ev-chess {
-  display: grid;
-  gap: 1.25rem var(--grid-gap);
-  margin-top: var(--head-gap);
-  padding-top: var(--head-gap);
-}
-.ev-chess__head { display: grid; gap: 0.875rem; }
-.ev-chess__place,
-.ev-chess__title,
-.ev-chess__body { margin: 0; }
-.ev-chess__body { max-width: 44ch; line-height: 1.45; color: var(--fg-soft); }
-/* One sentence to a line; a long one wraps evenly. */
-.ev-chess__line { display: block; text-wrap: balance; }
-.ev-chess__actions { margin-top: 0.5rem; }
-.ev-chess__ext { font-weight: 400; }
-@media (min-width: 1024px) {
-  .ev-chess {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    row-gap: 0.875rem;
-    align-items: first baseline;
-  }
-  /* Its two lines join the grid, so the title can share the row's baseline. */
-  .ev-chess__head { display: contents; }
-  .ev-chess__place { grid-column: 1 / span 4; grid-row: 1; }
-  .ev-chess__title { grid-column: 1 / span 4; grid-row: 2; }
-  .ev-chess__body { grid-column: 5 / span 4; grid-row: 2; }
-  .ev-chess__actions { grid-column: 9 / -1; grid-row: 2; margin-top: 0; }
-}
-/* Below 1280 a third is too narrow for a sentence to a line (five ragged lines at 1024): the facts
-   take the last two thirds and the button goes under them. */
-@media (min-width: 1024px) and (max-width: 1279.98px) {
-  .ev-chess__body { grid-column: 5 / -1; }
-  .ev-chess__actions { grid-column: 5 / -1; grid-row: 3; margin-top: 0.75rem; }
-}
+/* ── The full menu ── */
+.ev-more { margin-top: var(--foot-gap); }

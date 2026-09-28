@@ -72,7 +72,6 @@ export const kd = {
   },
   setMotion(motion: MotionMode) {
     document.documentElement.dataset.motion = motion;
-    safe(() => localStorage.setItem("kd-motion", motion));
     kd.set({ motion });
   },
   answer(id: AnswerId) {

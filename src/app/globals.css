@@ -8,11 +8,14 @@
 @import "../styles/sections/locations.css";
 @import "../styles/sections/reviews.css";
 @import "../styles/sections/evening.css";
+@import "../styles/sections/chess.css";
+@import "../styles/sections/game.css";
 @import "../styles/sections/footer.css";
 
 /* ───────────────────────── Tokens ───────────────────────── */
 /* Warm paper, black ink, one red. Tomato is the only accent: the logo clover, focus, and at most one
-   small highlight per viewport. It is never a section background and never a block of body text. */
+   small highlight per viewport. It is never a section background (except the coffee poster, the one
+   exception: see coffee.css) and never a block of body text. */
 @theme {
   --color-cream: #f3ebdc;
   --color-milk: #fff8ee;
@@ -27,8 +30,9 @@
 
 @theme inline {
   --font-display: var(--nf-display), "Arial Narrow", sans-serif;
-  --font-serif: var(--nf-serif), Georgia, serif;
   --font-sans: var(--nf-sans), system-ui, sans-serif;
+  /* The barista's hand: only the notes in the coffee poster. */
+  --font-hand: var(--nf-hand), cursive;
 }
 
 /* ───────────────────────── Base ───────────────────────── */
@@ -52,11 +56,21 @@
     --lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
     --h2: clamp(2.75rem, 1.4rem + 5.4vw, 7.5rem);
     --h3: clamp(1.75rem, 1.2rem + 2vw, 3.25rem);
+    /* Montserrat's regular reads light on cream: running text sits a little above it. */
+    --fw-text: 450;
 
     /* Hairlines are 1px of the current text colour, so they work on both themes. */
     --rule: 1px;
-    --line: color-mix(in srgb, currentColor 16%, transparent);
+    --line: color-mix(in srgb, currentColor 76%, transparent);
     --line-strong: color-mix(in srgb, currentColor 28%, transparent);
+
+    /* Paper: the hero's notice and its torn strips, the team's slips, and the reviews' 5,0 and notes. Milk with a
+       fibre tile (one 256px tile, a 512px image, sharp on 2x screens; npm run assets:paper), a hairline
+       edge and a crisp offset shadow. */
+    --paper: var(--color-milk);
+    --paper-tex: url("/tex/paper.png") 0 0 / 256px 256px;
+    --paper-shadow: 5px 6px 1px rgb(92 62 30 / 0.16);
+    --edge: color-mix(in srgb, var(--color-ink) 14%, transparent);
   }
   @media (min-width: 640px) {
     :root { --gutter: clamp(24px, 3.4vw, 104px); --grid-gap: clamp(20px, 1.6vw, 48px); }
@@ -74,8 +88,10 @@
   }
 
   /* ───── Themes ───── */
-  /* Two themes. Any element with data-theme (sections, the header, the action bar, the dialog) gets its
-     tokens; .field paints them. The page is one café day: cream until the evening, ink at night. */
+  /* Two themes, and tomato for the coffee poster alone. Any element with data-theme (sections, the
+     header, the action bar, the dialog) gets its tokens; .field paints them. The page is one café day:
+     cream until the evening, ink at night. Never put data-theme inside a section: the header and the
+     action bar take the last themed element under their line. */
   :root,
   [data-theme="cream"] {
     --bg: var(--color-cream);
@@ -98,6 +114,18 @@
     --grain: url("/tex/grain-dark.png");
     color-scheme: dark;
   }
+  /* The coffee poster only. Milk on tomato is 4.6:1, just over AA, so nothing on it is softened: at 92%
+     milk small text would drop to about 4.1:1. The header's clover and every focus ring turn milk here. */
+  [data-theme="tomato"] {
+    --bg: var(--color-tomato);
+    --fg: var(--color-milk);
+    --fg-soft: var(--color-milk);
+    --accent: var(--color-milk);
+    --accent-ink: var(--color-milk);
+    --focus: var(--color-milk);
+    --grain: url("/tex/grain-dark.png");
+    color-scheme: dark;
+  }
 
   html {
     /* Past 1600px the rem grows with the canvas (16px → 20px at 2560px), so type and
@@ -112,6 +140,7 @@
   body {
     font-family: var(--font-sans);
     font-size: var(--fs-body);
+    font-weight: var(--fw-text);
     line-height: 1.55;
     color: var(--color-ink);
     background: var(--color-cream);
@@ -119,6 +148,7 @@
   }
   ::selection { background: var(--color-ink); color: var(--color-cream); }
   [data-theme="ink"] ::selection { background: var(--color-milk); color: var(--color-ink); }
+  [data-theme="tomato"] ::selection { background: var(--color-milk); color: var(--color-tomato-ink); }
 
   :focus-visible {
     outline: 2px solid var(--focus);
@@ -149,15 +179,6 @@
     background: var(--grain) 0 0 / 128px 128px;
     opacity: 0.3;
   }
-  /* Consecutive cream sections are divided by one hairline across the gutters, not by a colour change.
-     A background layer, so every pseudo-element stays free for the section. */
-  .field[data-theme="cream"] + .field[data-theme="cream"] {
-    background-image: linear-gradient(var(--line), var(--line));
-    background-size: calc(100% - 2 * var(--gutter)) 1px;
-    background-position: var(--gutter) 0;
-    background-repeat: no-repeat;
-  }
-
   .wrap {
     width: 100%;
     padding-inline: var(--gutter);
@@ -177,13 +198,14 @@
     letter-spacing: -0.01em;
   }
   .item-title { font-size: var(--h3); }
+  /* The café's voice: the text face in italic, as on the café's own posts. */
   .reply {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-style: italic;
-    font-weight: 500;
-    line-height: 1.15;
+    font-weight: 400;
+    line-height: 1.3;
   }
-  /* Prices, hours, phones: Onest with tabular figures (₽ is never set in the display face). */
+  /* Prices, hours, phones: Montserrat with tabular figures (₽ is never set in the display face). */
   .mono {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
@@ -199,7 +221,7 @@
     max-width: 44ch;
     font-family: var(--font-sans);
     font-size: var(--lead);
-    font-weight: 400;
+    font-weight: var(--fw-text);
     line-height: 1.45;
     color: var(--fg-soft);
     /* Two to four lines beside a title: even lines, broken at the sense (usually the dash). */
@@ -212,6 +234,19 @@
      wide canvas (≈ 1:6.6 from 1440 to 2560; 14px under the 150px title would get lost). */
   .dlg-label { font-size: clamp(var(--fs-small), 0.5rem + 0.5vw, 1.125rem); }
   .dlg-title { font-size: var(--h2); }
+  /* The question over a title («А кофе?», the coffee poster's `ask`): the display face at its thin end,
+     tracked caps. Hairlines lose more to antialiasing at phone sizes, so they get a little weight there. */
+  .dlg-ask {
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 0.9rem + 1.2vw, 2.5rem);
+    font-weight: 200;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  @media (max-width: 639.98px) {
+    .dlg-ask { font-weight: 300; }
+  }
   /* Desktop: the title spans cols 1–8, the lead cols 9–12 on the title's last baseline. */
   .section-head { display: grid; row-gap: 1.25rem; margin-bottom: var(--head-gap); }
   @media (min-width: 1024px) {
@@ -228,36 +263,32 @@
   .rule-t { border-top: 1px solid var(--line); }
   .rule-b { border-bottom: 1px solid var(--line); }
 
-  /* Dotted leader: only inside menu price rows (name …… price). */
-  .leader {
-    flex: 1 1 auto;
-    min-width: 1.5rem;
-    height: 0.2em;
-    align-self: baseline;
-    background-image: radial-gradient(circle, currentColor 0.75px, transparent 1.1px);
-    background-size: 6px 100%;
-    background-repeat: repeat-x;
-    background-position: 0 50%;
-    opacity: 0.45;
-  }
-
-  /* ───── Secondary menu row: name …… price, in the text face ───── */
-  /* The hero's dish, the breakfasts extras, the evening pie. The name takes what the price leaves; when
-     it wraps, the leader runs on from the end of its last line (a word joiner glues it to the last word;
-     it paints to the right and is clipped at the name's edge, keeping at least 1.5rem) and the price sits
-     on that line's baseline. Never a lone leader line.
+  /* ───── Secondary menu row: name, price, in the text face ───── */
+  /* The hero's dish, the evening pie. The name takes what the price leaves and
+     may wrap; the price stands at the row's end, on the name's last baseline, at least 1.5rem from it.
        <p class="menu-row">
-         <span class="menu-row__name">Name<span class="menu-row__lead" aria-hidden="true">{WJ}<span class="leader menu-row__dots" /></span></span>
+         <span class="menu-row__name">Name</span>
          <span class="menu-row__price mono">350 ₽</span>
        </p> */
-  .menu-row { display: flex; align-items: last baseline; column-gap: 0.5em; margin: 0; font-weight: 500; line-height: 1.35; }
-  .menu-row__name { flex: 1 1 0; min-width: 0; overflow-x: clip; text-wrap: balance; }
-  .menu-row__lead { white-space: nowrap; padding-right: 1.5rem; }
-  .menu-row__dots { display: inline-block; width: 100vw; margin: 0 -100vw 0 0.5em; }
+  .menu-row { display: flex; align-items: last baseline; column-gap: 1.5rem; margin: 0; font-weight: 500; line-height: 1.35; }
+  .menu-row__name { flex: 1 1 0; min-width: 0; text-wrap: balance; }
   .menu-row__price { flex: none; white-space: nowrap; }
 
   /* ───── Buttons: pills, at most two in a group ───── */
+  /* The pour: hover (a mouse or a pen), a press or keyboard focus fills the pill from the bottom with
+     one liquid, and the label turns over exactly at its surface (the copy inside the liquid comes from
+     BtnLabel). The text colour pours into the outline pill, tomato into the filled one. The liquid is
+     simulated (src/lib/pour.ts, put on the page by pour-controller.ts, which marks html[data-pour]): it
+     is poured down the end wall on the pointer's side, its surface sloshes as water would in a tank
+     this size, and a pointer that leaves mid-pour drains it from wherever it got to. Without it (no JS
+     yet, reduced motion) the level rises flat, and reduced motion cuts that to an instant swap. A press
+     sinks the pill a little and springs it back. */
   .btn {
+    --pour-bg: var(--fg);
+    --pour-fg: var(--bg);
+    --press-dur: 620ms;
+    --press-ease: cubic-bezier(0.25, 1.9, 0.45, 1);
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -274,16 +305,64 @@
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
-    transition: background-color 200ms var(--ease-kd-ui), border-color 200ms var(--ease-kd-ui), transform 120ms var(--ease-kd-ui);
+    transition:
+      border-color 200ms var(--ease-kd-ui),
+      transform var(--press-dur) var(--press-ease);
   }
-  .btn:active { transform: translateY(1px); }
-  .btn-primary { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+  .btn:active { --press-dur: 110ms; --press-ease: var(--ease-kd-ui); transform: scale(0.965); }
+  .btn-primary {
+    --pour-bg: var(--color-tomato-ink);
+    --pour-fg: var(--color-milk);
+    background: var(--fg);
+    border-color: var(--fg);
+    color: var(--bg);
+  }
+  /* The filled pill keeps its own edge: in the page colour it would sit a pixel inside the liquid. */
   @media (hover: hover) and (pointer: fine) {
-    .btn:hover { border-color: currentColor; }
-    .btn-primary:hover {
-      background: color-mix(in srgb, var(--fg) 84%, var(--bg));
-      border-color: color-mix(in srgb, var(--fg) 84%, var(--bg));
+    .btn:not(.btn-primary):hover { border-color: currentColor; }
+  }
+
+  .btn__label { display: inline-flex; align-items: center; gap: inherit; }
+  /* The liquid, laid out exactly like the button (the same border box, border width and padding), so
+     its copy of the label sits on the real one. Empty, it is clipped away from the top down; the
+     simulation writes its surface as an inline clip-path while it moves, and clip-path: none brim-full.
+     Never give it will-change, a transform, opacity or a filter: on a layer of its own the copy is
+     rastered apart from the real label, and the words would visibly change weight at the surface. The
+     half-pixel shadow covers the pill's own antialiased edge under the liquid's (a dark fringe around a
+     full primary otherwise); the clip cuts it with the liquid. The copy can't be selected: a selection
+     across a button would carry its label twice. */
+  .btn__pour {
+    position: absolute;
+    inset: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: inherit;
+    padding: inherit;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    background: var(--pour-bg);
+    color: var(--pour-fg);
+    box-shadow: 0 0 0 0.5px var(--pour-bg);
+    pointer-events: none;
+    user-select: none;
+    clip-path: inset(100% 0 0 0);
+  }
+  html:not([data-pour]) .btn__pour { transition: clip-path 560ms cubic-bezier(0.55, 0, 0.3, 1); }
+  html:not([data-pour]) .btn:not(:disabled):focus-visible .btn__pour {
+    clip-path: inset(-1px);
+    transition-duration: 820ms;
+    transition-timing-function: cubic-bezier(0.3, 0.75, 0.25, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html:not([data-pour]) .btn:not(:disabled):hover .btn__pour {
+      clip-path: inset(-1px);
+      transition-duration: 820ms;
+      transition-timing-function: cubic-bezier(0.3, 0.75, 0.25, 1);
     }
+  }
+  @media (forced-colors: active) {
+    .btn__pour { display: none; }
   }
 
   /* ───── Text links ───── */
@@ -302,7 +381,7 @@
   }
   .dlink:active { text-decoration-color: currentColor; }
   /* « ↗» after an external link: inline-block, so the underline stops at the words. */
-  .dlink__ext { display: inline-block; margin-left: 0.3em; font-weight: 400; }
+  .dlink__ext { display: inline-block; margin-left: 0.3em; font-weight: var(--fw-text); }
   /* Touch: a 44px hit area at any text size, without moving the line. */
   @media (pointer: coarse) {
     .dlink::before { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }

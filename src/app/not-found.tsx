@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { BtnLabel } from "@/components/chrome/BtnLabel";
+import { Runner } from "@/components/game/Runner";
 import type { City } from "@/content/types";
 import { external } from "@/content/routes";
 import { typograf } from "@/lib/typograf";
@@ -11,7 +13,10 @@ const MAPS: Record<City, string> = { nalchik: external.yandexNalchik, vladikavka
 // «Ещё варим.» | «Загляните чуть позже.»: the title breaks between its sentences, never inside them.
 const lines = t.notFound.title.split(/(?<=[.!?…])\s+/u);
 
-/** Every link to a page that isn't built yet lands here: one heading, one way home, two ways on. */
+/**
+ * Every link to a page that isn't built yet lands here: one heading, one way home, two ways on, and
+ * the runner under them while the page is brewing.
+ */
 export default function NotFound() {
   return (
     <main id="main" tabIndex={-1}>
@@ -31,7 +36,7 @@ export default function NotFound() {
           <div className="not-found__aside">
             <p className="lead">{typograf(t.notFound.lead)}</p>
             <Link href="/" className="btn btn-primary">
-              {t.notFound.home}
+              <BtnLabel>{t.notFound.home}</BtnLabel>
             </Link>
             <ul className="not-found__links" role="list">
               <li>
@@ -53,6 +58,11 @@ export default function NotFound() {
               ))}
             </ul>
           </div>
+        </div>
+        {/* A side offer under the head, never its equal: a label, and a button that is never primary. */}
+        <div className="wrap not-found__game">
+          <h2 className="label not-found__game-label">{typograf(t.notFound.game)}</h2>
+          <Runner variant="aside" />
         </div>
       </section>
     </main>

@@ -8,6 +8,7 @@ import "lenis/dist/lenis.css";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { kd } from "@/lib/store";
 import { useMotionMode } from "@/lib/motion";
+import { bindPour } from "@/components/chrome/pour-controller";
 
 const loadFeatures = () => import("./motion-features").then((m) => m.default);
 
@@ -77,27 +78,26 @@ function useScrollRefresh() {
   }, [pathname]); // observe the new page's <main>/footer after navigation
 }
 
-/** Keep OS-level reduced-motion changes in sync when the guest hasn't chosen explicitly. */
+/** Motion follows the OS: keep a reduced-motion change made mid-visit in sync. */
 function useOsMotionSync() {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => {
-      let explicit: string | null = null;
-      try { explicit = localStorage.getItem("kd-motion"); } catch {}
-      if (!explicit) {
-        document.documentElement.dataset.motion = mq.matches ? "reduced" : "full";
-        kd.set({ motion: mq.matches ? "reduced" : "full" });
-      }
-    };
+    const onChange = () => kd.setMotion(mq.matches ? "reduced" : "full");
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
+}
+
+/** The buttons' liquid pour, in full motion only; otherwise the stylesheet's flat level (an instant swap). */
+function usePour(mode: "full" | "reduced") {
+  useEffect(() => (mode === "full" ? bindPour() : undefined), [mode]);
 }
 
 export function Providers({ children }: { children: ReactNode }) {
   const mode = useMotionMode();
   useClock();
   useSmoothScroll(mode);
+  usePour(mode);
   useScrollRefresh();
   useOsMotionSync();
   return (

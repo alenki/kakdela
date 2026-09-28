@@ -6,7 +6,6 @@ import { external, type RouteKey } from "@/content/routes";
 import type { City } from "@/content/types";
 import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { MotionToggle } from "./footer/MotionToggle";
 import { FooterMotion } from "./footer/FooterMotion";
 
 // Split as in the «Разделы» dialog: the four places set large, the services in the text face.
@@ -34,8 +33,8 @@ function Phrases({ text }: { text: string }) {
 
 /**
  * The page ends at night, set like the «Разделы» dialog: the places large, the services, the city's
- * phone with the socials and the café facts, one line of small print, and the full wordmark in milk
- * with its tomato clover: the footer's one moment.
+ * phone with the socials, the café facts and the ©, then the plain wordmark in milk with its tomato
+ * clover: the footer's one moment.
  */
 export function SiteFooter() {
   return (
@@ -105,19 +104,14 @@ export function SiteFooter() {
             <p className="ft-note label">
               <Phrases text={t.footer.utility} />
             </p>
+            <p className="ft-copy label">
+              <Phrases text={t.footer.copyright} />
+            </p>
           </div>
         </div>
 
-        <div className="ft-legal label">
-          <p>
-            <Phrases text={t.footer.copyright} />
-          </p>
-          <p>{typograf(t.footer.photoCredit, 1)}</p>
-          <MotionToggle />
-        </div>
-
         <div className="ft-sign" data-ft-sign>
-          <Wordmark variant="full" className="ft-mark" cloverClassName="ft-mark__clover" />
+          <Wordmark variant="plain" className="ft-mark" cloverClassName="ft-mark__clover" />
         </div>
       </div>
       <FooterMotion />

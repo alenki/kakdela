@@ -1,15 +1,16 @@
 /* ═════════════ BREAKFASTS «Что на завтрак?»: a printed menu ═════════════
-   Six breakfasts named as answers to «как дела?», set as menu rows: name, dotted leader, price,
-   the description under them, 1px rules between. Mobile and tablet: every row carries its own photo.
+   Six breakfasts named as answers to «как дела?», set as menu rows: the name over its description, the
+   price beside them, 1px rules between; every row as tall as the tallest. Mobile and tablet: every row
+   carries its own photo.
    Desktop (≥1024px): the price bar and the list own columns 1–7; a sticky photo of the hovered /
-   focused / read dish owns 9–12, under the lead, its top level with the bar's. */
+   focused / read dish owns 9–12, its top level with the bar's. */
 .bf {
   /* The sticky photo's distance from the header. */
   --bf-top: clamp(16px, 3vh, 2.5rem);
   /* The row photo below 1024px: 96px on the smallest phones, then 27vw, 128px from 480px. It never
      drops under 96px, so the stock-photo badge always fits on one line. */
   --bf-thumb: clamp(96px, 27vw, 128px);
-  /* Between name, leader and price; the photo keeps 4px more. */
+  /* Between the text and the price; the photo keeps 4px more. */
   --bf-gap: 0.5rem;
 }
 @media (min-width: 480px) {
@@ -29,8 +30,11 @@
 html:not(.js) .bf-bar__static { display: inline; }
 html:not(.js) .bf-bar__switch { display: none; }
 
-/* ── The list (mobile-first: photo, then name …… price over the description) ── */
+/* ── The list (mobile-first: photo, then name and price over the description) ──
+   1fr rows: every row is as tall as the tallest. */
 .bf-list {
+  display: grid;
+  grid-auto-rows: 1fr;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -39,12 +43,12 @@ html:not(.js) .bf-bar__switch { display: none; }
 .bf-item {
   position: relative;
   display: grid;
-  grid-template-columns: calc(var(--bf-thumb) + 4px) minmax(0, max-content) minmax(1rem, 1fr) auto;
+  grid-template-columns: calc(var(--bf-thumb) + 4px) minmax(0, 1fr) auto;
   grid-template-rows: auto auto 1fr;
   grid-template-areas:
-    "photo name leader price"
-    "photo desc desc desc"
-    "photo kbju kbju kbju";
+    "photo name price"
+    "photo desc desc"
+    "photo kbju kbju";
   align-items: baseline;
   column-gap: var(--bf-gap);
   padding-block: 1rem;
@@ -65,8 +69,6 @@ html:not(.js) .bf-bar__switch { display: none; }
 .bf-item__link::after { content: ""; position: absolute; inset: 0 -0.625rem; z-index: 1; }
 .bf-item__link:focus-visible { outline: none; }
 .bf-item__link:focus-visible::after { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 2px; }
-/* The track keeps at least 1rem of dots; the leader never spills past it into the price. */
-.bf-item__leader { grid-area: leader; min-width: 0; }
 .bf-item__price {
   grid-area: price;
   margin: 0;
@@ -100,46 +102,40 @@ html:not(.js) .bf-bar__switch { display: none; }
       "photo desc"
       "photo kbju";
   }
-  .bf-item__leader { display: none; }
   .bf-item__price { margin-top: 0.25rem; text-align: left; }
+}
+/* From 480 the text column has room to give the price a column of its own: it stands beside the name,
+   the description and КБЖУ, centred in the row. (Narrower, the description would take four lines.) */
+@media (min-width: 480px) {
+  .bf-item {
+    grid-template-areas:
+      "photo name price"
+      "photo desc price"
+      "photo kbju price";
+    column-gap: 1.25rem;
+  }
+  .bf-item__price { align-self: center; }
 }
 
 /* A city without a price: the price slot says to ask, quietly. Inline-flex, so when it takes two
-   lines on a narrow phone it sits on the row's baseline by its first line, not its last. */
+   lines it sits on the row's baseline (or its centre) by its first line, not its last. */
 .bf-price__ask {
   display: inline-flex;
   font-size: var(--fs-label);
-  font-weight: 400;
+  font-weight: var(--fw-text);
   line-height: 1.3;
   white-space: normal;
   color: var(--fg-soft);
   text-wrap: balance;
 }
 /* Below 390 it can't share a row's line in one piece: it takes two lines (typograf binds
-   «в кофейне»), shrink-wrapped, so the dots run right up to it. */
+   «в кофейне»), shrink-wrapped, so the name keeps its room. */
 @media (max-width: 389.98px) {
   .bf-item .bf-price__ask { width: min-content; }
 }
 
-/* ── Extras: secondary rows, name …… price on one line ── */
-.bf-extras { margin-top: clamp(2.5rem, 3.4vw, 4rem); }
-.bf-extras__title { margin: 0 0 0.75rem; }
-.bf-extras__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-bottom: var(--rule) solid var(--line);
-}
-/* Secondary rows (.menu-row): a name that wraps keeps the leader and the price on its last line. */
-.bf-extra {
-  padding-block: 0.75rem;
-  border-top: var(--rule) solid var(--line);
-  font-size: var(--fs-body);
-}
-
 /* ── Links (.dlinks) and the light-menu note ── */
 .bf-foot { display: grid; gap: 1rem; margin-top: var(--foot-gap); }
-.bf-note { margin: 0; max-width: 60ch; }
 
 /* ── Desktop: the list beside a sticky photo ── */
 .bf-preview { display: none; }
@@ -154,12 +150,14 @@ html:not(.js) .bf-bar__switch { display: none; }
   .bf__main { grid-column: 1 / 8; grid-row: 2; min-width: 0; }
 
   .bf-item {
-    grid-template-columns: minmax(0, max-content) minmax(2rem, 1fr) auto;
-    grid-template-rows: auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
-      "name leader price"
-      "desc desc .";
-    column-gap: 1rem;
+      "name price"
+      "desc price";
+    /* A row shorter than the tallest keeps its text centred, level with the price. */
+    align-content: center;
+    column-gap: 2rem;
     padding-block: clamp(1.25rem, 1.7vw, 2.25rem);
   }
   .bf-item__photo { display: none; }
@@ -174,14 +172,13 @@ html:not(.js) .bf-bar__switch { display: none; }
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  .bf-extra { padding-block: 0.875rem; }
 
   /* From the bar's top to the end of the links, so the photo stays while the list is read.
      A container, so the photo can know the column's width (100cqi). */
   .bf-preview { display: block; grid-column: 9 / -1; grid-row: 1 / -1; min-width: 0; container-type: inline-size; }
 }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  /* While the pointer reads the list, the other dishes step back evenly (name, dots, price and
+  /* While the pointer reads the list, the other dishes step back evenly (name, price and
      description; never the rules), so the row and the photo pair up. */
   .bf[data-js] .bf-item > :not(.bf-item__photo) { transition: opacity 240ms var(--ease-kd-ui); }
   .bf[data-js] .bf-list:hover .bf-item:not([data-active]):not(:focus-within) > :not(.bf-item__photo) { opacity: 0.45; }

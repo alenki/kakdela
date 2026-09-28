@@ -1,22 +1,17 @@
 /* ═════════════ FOOTER: the café at night ═════════════
    Ink, like the evening before it, and set like the «Разделы» dialog: the four places in display type,
-   the services in the text face, the city's phone with the socials and the café facts. Then one line of
-   small print and the full wordmark in milk, gutter to gutter, with its tomato clover: the one moment.
+   the services in the text face, the city's phone with the socials, the café facts and the ©. Then the
+   plain wordmark in milk, gutter to gutter, with its tomato clover: the one moment.
      phone      one column
      640–1023   places | services, the contacts under the places
      ≥1024      the thirds of the grid, as in the evening above: places, services, contacts (the dialog's
-                city band sits on the same last third); the small print sits on the same lines */
+                city band sits on the same last third) */
 .ft {
-  /* One gap between the three bands: the columns, the small print, the wordmark. */
+  /* The gap between the two bands: the columns, the wordmark. */
   --ft-gap: clamp(56px, 7vw, 9rem);
   --ft-row: max(44px, calc(var(--h3) * 0.95));
   padding-top: var(--section-pad);
   overflow: clip;
-  /* Ink after ink: one hairline across the gutters, as between the cream sections. */
-  background-image: linear-gradient(var(--line), var(--line));
-  background-size: calc(100% - 2 * var(--gutter)) 1px;
-  background-position: var(--gutter) 0;
-  background-repeat: no-repeat;
 }
 .ft-nobr { white-space: nowrap; }
 
@@ -72,46 +67,14 @@
 .ft-phone { white-space: nowrap; font-variant-numeric: proportional-nums; }
 .ft-social { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; min-height: var(--ft-row); }
 .ft-note { max-width: 44ch; margin-top: 1rem; }
+.ft-copy { margin-top: 1.5rem; }
 /* On the narrowest phones «Халяль и намазхана во всех кофейнях» may be wider than the column: only
    that phrase may wrap. */
 @media (max-width: 359.98px) {
   .ft-note .ft-nobr:first-child { white-space: normal; }
 }
 
-/* ── Small print: © · the photo credit · the motion switch, under one hairline ── */
-.ft-legal {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-  margin-top: var(--ft-gap);
-  padding-top: 1rem;
-  /* The row is set in --fg-soft: the hairline takes the text colour, like every other rule. */
-  border-top: 1px solid color-mix(in srgb, var(--fg) 16%, transparent);
-}
-/* Phones: the switch gets its own line, clear of the credit, so its 44px touch area covers only itself. */
-.ft-legal > .ft-motion { margin-top: 0.75rem; }
-@media (min-width: 640px) {
-  .ft-legal { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 1.5rem; }
-  .ft-legal > .ft-motion { margin-top: 0; }
-}
-@media (min-width: 1024px) {
-  /* Under the columns: © under the places, the credit under the services, the switch under the contacts. */
-  .ft-legal { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--grid-gap); }
-  .ft-legal > .ft-motion { justify-self: start; }
-}
-
-.ft-motion {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--fg);
-  font-family: inherit;
-  cursor: pointer;
-}
-.ft-motion[hidden] { display: none; }
-
-/* ── The sign: the full wordmark, framed by the gutters on three sides ── */
+/* ── The sign: the plain wordmark, framed by the gutters on three sides ── */
 .ft-sign { padding-block: var(--ft-gap) calc(var(--gutter) + env(safe-area-inset-bottom)); }
 .ft-mark { width: 100%; height: auto; overflow: visible; color: var(--fg); }
 .ft-mark__clover { fill: var(--accent); }

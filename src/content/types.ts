@@ -40,7 +40,7 @@ export type Answer = {
     /** The dish's anchor on the menu page: `<RouteLink to="menu" hash={anchor}>`. */
     anchor: string;
   };
-  /** The café's reply, Cormorant italic. */
+  /** The café's reply, Montserrat italic. */
   reply: string;
   verify: Verify;
 };
@@ -60,6 +60,11 @@ export type Drink = {
   name: string;
   desc?: string;
   price: Price | { sizes: [number, number] };
+  /**
+   * The barista's note on the coffee cup, in their own lower case: a question and the drink it
+   * suggests («классика?», «капучино»). Never a price: `noteLines()` adds it from `price`.
+   */
+  cupNote?: { ask: string; say: string };
   lang?: "en";
 };
 
@@ -104,8 +109,14 @@ export type TeamMember = {
   id: string;
   name: string;
   role: string;
-  answer: string;
   line: string;
   photo: Photo;
   placeholder: boolean;
-};
+} & (
+  /** One of the notice's answers: its slip has that tab's tear, the card links to the dish of that
+   *  name, and it turns red while the guest's answer in the hero is the same. */
+  | { answerId: AnswerId; answer?: never }
+  /** Their own words: a slip of its own (seeded by `id`), no dish, no match. The slip never wraps, so
+   *  keep it no longer than «Как в сказке» (12 characters); a test guards it. */
+  | { answer: string; answerId?: never }
+);

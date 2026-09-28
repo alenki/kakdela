@@ -2,7 +2,7 @@
 // Client photos come from kakdelacoffee.ru, the café's Instagram and its own Yandex Maps uploads;
 // `placeholder: true` marks CC0 stand-ins (see src/assets/photos/manifest.json for credits). A café photo's
 // `sign` is where its «Как дела?» sign is (types.ts): the about page's street lines every sign up on one
-// line. Kujbysheva 3 (the mural) shows no sign, and Shogencukova 19's is not measured yet.
+// line. Kujbysheva 3 (the mural) shows no sign.
 import type { Photo } from "./types";
 
 import luchsheVseh from "@/assets/photos/luchshe-vseh.jpg";
@@ -101,7 +101,7 @@ export const photos = {
   team2: { src: team2, alt: "Холодный кофе наливают из бутылки в фирменный стакан «Как дела?» со льдом" },
   team3: { src: team3, alt: "Бариста в фартуке держит холдер со свежемолотым кофе у кофемолки" },
   team4: { src: team4, alt: "Гость в зелёном свитере держит фирменный стакан «Как дела?»" },
-  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19" },
+  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19", sign: { x: 0.405, y: 0.308, w: 0.76 } },
   // /menu kitchen card thumbnails (client)
   ovsyanayaKasha: { src: ovsyanayaKasha, alt: "Овсяная каша с бананом, клубникой и голубикой" },
   risovayaKasha: { src: risovayaKasha, alt: "Рисовая каша с клубникой и голубикой" },

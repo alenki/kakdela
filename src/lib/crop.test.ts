@@ -5,11 +5,11 @@ import type { Photo } from "@/content/types";
 import manifest from "@/assets/photos/manifest.json";
 
 // Under vitest an image import is its path, not next/image's data: read the size from the manifest.
-const aspectOf = (photo: Photo) => {
+const sizeOf = (photo: Photo) => {
   const file = String(photo.src).split("/").pop();
   const m = manifest.find((e) => e.file.endsWith(`/${file}`));
   if (!m) throw new Error(`no manifest entry for ${file}`);
-  return m.width / m.height;
+  return { width: m.width, height: m.height };
 };
 
 const EPS = 1e-3;
@@ -27,13 +27,14 @@ describe("signCrop (the about page's street)", () => {
   const signed = cafes.filter((c) => c.photo.sign);
 
   it("has a sign for every café photo that isn't a stand-in, bar the mural", () => {
-    expect(signed.length).toBe(7);
+    expect(signed.length).toBe(8);
   });
 
   it("puts every sign on one line, at least MIN of the frame wide, and always covers the frame", () => {
     for (const c of signed) {
       const sign = c.photo.sign!;
-      const aspect = aspectOf(c.photo);
+      const { width, height } = sizeOf(c.photo);
+      const aspect = width / height;
       const crop = signCrop(aspect, sign, FRAME, LINE, MIN);
       covers(crop);
       // The sign's middle lands on the line exactly.
@@ -41,8 +42,9 @@ describe("signCrop (the about page's street)", () => {
       expect(sign.w * crop.w).toBeGreaterThanOrEqual(MIN - EPS);
       // The image keeps its proportions: w/h in frame units is the photo's aspect over the frame's.
       expect(crop.w / crop.h).toBeCloseTo(aspect / FRAME, 3);
-      // Never zoomed so far that the photo goes soft on a phone (the widest source is 1333px).
-      expect(crop.w).toBeLessThan(1.6);
+      // Never zoomed so far that the photo goes soft on a phone: the frame (74vw) at 2× wants 640 source
+      // pixels across it. A landscape photo is always zoomed further into a 4:5 frame, from a wider source.
+      expect(width / crop.w).toBeGreaterThanOrEqual(640);
     }
   });
 

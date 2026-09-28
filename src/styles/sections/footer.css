@@ -68,6 +68,8 @@
 .ft-social { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; min-height: var(--ft-row); }
 .ft-note { max-width: 44ch; margin-top: 1rem; }
 .ft-copy { margin-top: 1.5rem; }
+.ft-owner { max-width: 44ch; margin-top: 0.5rem; }
+.ft-legal { margin-top: 0.75rem; }
 /* On the narrowest phones «Халяль и намазхана во всех кофейнях» may be wider than the column: only
    that phrase may wrap. */
 @media (max-width: 359.98px) {

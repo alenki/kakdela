@@ -16,9 +16,12 @@ describe("the note's contact", () => {
     expect(contactKind("+7 (928) 082-61-11")).toBe("phone");
     expect(contactKind("89280826111")).toBe("phone");
     expect(contactKind("anna@mail.ru")).toBe("email");
+  });
+  it("recognises a Telegram name only to explain that the café can't answer there", () => {
     expect(contactKind("@anna_k")).toBe("telegram");
     expect(contactKind("t.me/anna_k")).toBe("telegram");
     expect(contactKind("https://t.me/anna_k/")).toBe("telegram");
+    expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "@anna_k", consent: true })).toEqual({ contact: "telegram" });
   });
   it("leaves an empty contact alone and flags what can't be answered", () => {
     expect(contactKind("")).toBeNull();
@@ -32,22 +35,31 @@ describe("the note's contact", () => {
 
 describe("reading and checking a note", () => {
   it("keeps only known tones and cafés, and tidies the text", () => {
-    const note = readNote(form({ tone: "shik", cafe: "lenina-32", text: "  Спасибо!\r\nВсё было вкусно.  ", name: "  Анна   К. ", contact: " @anna_k " }), CAFE_IDS);
-    expect(note).toEqual({ tone: "shik", cafe: "lenina-32", text: "Спасибо!\nВсё было вкусно.", name: "Анна К.", contact: "@anna_k" });
+    const note = readNote(form({ tone: "shik", cafe: "lenina-32", text: "  Спасибо!\r\nВсё было вкусно.  ", name: "  Анна   К. ", contact: " anna@mail.ru ", consent: "yes" }), CAFE_IDS);
+    expect(note).toEqual({ tone: "shik", cafe: "lenina-32", text: "Спасибо!\nВсё было вкусно.", name: "Анна К.", contact: "anna@mail.ru", consent: true });
     const odd = readNote(form({ tone: "<script>", cafe: "moscow-1", text: "Да" }), CAFE_IDS);
     expect(odd.tone).toBeNull();
     expect(odd.cafe).toBeNull();
     expect(readNote(() => null, CAFE_IDS)).toEqual(EMPTY_NOTE);
   });
   it("asks for words, and not too many", () => {
-    expect(checkNote(EMPTY_NOTE)).toEqual({ text: "empty" });
-    expect(checkNote({ ...EMPTY_NOTE, text: " . " })).toEqual({ text: "empty" });
-    expect(checkNote({ ...EMPTY_NOTE, text: "x".repeat(TEXT_MAX + 1) })).toEqual({ text: "long" });
-    expect(checkNote({ ...EMPTY_NOTE, text: "Всё шик" })).toEqual({});
+    const agreed = { ...EMPTY_NOTE, consent: true };
+    expect(checkNote(agreed)).toEqual({ text: "empty" });
+    expect(checkNote({ ...agreed, text: " . " })).toEqual({ text: "empty" });
+    expect(checkNote({ ...agreed, text: "x".repeat(TEXT_MAX + 1) })).toEqual({ text: "long" });
+    expect(checkNote({ ...agreed, text: "Всё шик" })).toEqual({});
   });
   it("sends back a contact that can't be answered", () => {
-    expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "потом" })).toEqual({ contact: "unclear" });
-    expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "anna@mail.ru" })).toEqual({});
+    expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "потом", consent: true })).toEqual({ contact: "unclear" });
+    expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "anna@mail.ru", consent: true })).toEqual({});
+  });
+  it("never lets a note go without the guest's own consent", () => {
+    expect(checkNote({ ...EMPTY_NOTE, text: "Всё шик" })).toEqual({ consent: "missing" });
+    // Only the box's own value counts: a forged or missing field is no consent.
+    for (const v of [null, "", "on", "true", "да", "YES"]) {
+      expect(readNote(form({ text: "Всё шик", ...(v === null ? {} : { consent: v }) }), CAFE_IDS).consent).toBe(false);
+    }
+    expect(readNote(form({ text: "Всё шик", consent: "yes" }), CAFE_IDS).consent).toBe(true);
   });
 });
 

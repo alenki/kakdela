@@ -1,0 +1,159 @@
+/* ═════════════ PRIVACY «Политика» (/privacy) and «Согласие» (/privacy/consent): cream ═════════════
+   A document, set like the rest of the site and kept quiet: the heading and lead, then the contents on
+   the left and the numbered clauses on the right, their paragraph numbers hanging in the margin. The
+   policy opens with «Коротко», its six plain lines on a note of the notice's paper. The operator's
+   details not known yet are blanks on a form: a line, with what goes on it printed under it.
+     phone      one column: the contents, then the text
+     ≥1024      the contents on cols 1–3 (sticky), the text on cols 5–11, at most 62ch */
+
+.pp {
+  padding-block: calc(var(--header-h) + var(--section-pad) * 0.75) calc(var(--section-pad) * 1.15);
+}
+
+.pp-doc { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(2.5rem, 6vw, 3.5rem); }
+/* An address like «www.kakdelacoffee.ru/privacy/consent» may break anywhere on a narrow screen. */
+.pp-body { min-width: 0; overflow-wrap: anywhere; }
+@media (min-width: 1024px) {
+  .pp-doc {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: start;
+  }
+  .pp-toc { grid-column: 1 / 4; position: sticky; top: calc(var(--header-h) + clamp(1.5rem, 4vh, 2.5rem)); }
+  .pp-body { grid-column: 5 / 12; }
+}
+
+/* ── The contents: the clause being read (TocSpy) in the text colour, the rest softer ── */
+.pp-toc__label { margin: 0 0 1rem; }
+.pp-toc__list { display: grid; gap: 0.1rem; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-strong); }
+.pp-toc__link {
+  display: grid;
+  grid-template-columns: 1.6em minmax(0, 1fr);
+  align-items: baseline;
+  min-height: 44px;
+  padding-block: 0.55rem;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--fg-soft);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  line-height: 1.35;
+  transition: color 200ms var(--ease-kd-ui);
+}
+.pp-toc__n { font-variant-numeric: tabular-nums; }
+.pp-toc__link[aria-current] { color: var(--fg); }
+.pp-toc__link[aria-current] span:last-child { text-decoration: underline 1px; text-underline-offset: 0.25em; }
+@media (hover: hover) and (pointer: fine) {
+  .pp-toc__link:hover { color: var(--fg); }
+}
+.pp-toc__meta { margin: 1rem 0 0; }
+.pp-toc__meta + .pp-toc__meta { margin-top: 0.5rem; }
+/* Phones: the contents in two columns where they fit. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .pp-toc__list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+}
+
+/* ── «Коротко»: the notice's paper, torn off a pad along the top, a little askew ── */
+.pp-brief {
+  position: relative;
+  display: grid;
+  margin: 0 0 clamp(2.5rem, 6vw, 4.5rem);
+  rotate: var(--lean, 0deg);
+  filter: drop-shadow(var(--paper-shadow));
+}
+.pp-brief::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper), #fff 65%);
+  clip-path: var(--fibres);
+}
+.pp-brief__sheet {
+  padding: 1.9em clamp(20px, 3.4vw, 3rem) clamp(1.5rem, 3vw, 2.25rem);
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  clip-path: var(--rip);
+  color: var(--color-ink);
+  font-size: clamp(1.0625rem, 0.95rem + 0.4vw, 1.3125rem);
+}
+.pp-brief__title { margin: 0 0 0.75em; font-size: var(--h3); }
+.pp-brief__list { display: grid; gap: 0.85em; margin: 0; padding: 0; list-style: none; }
+.pp-brief__item { display: grid; grid-template-columns: 1.25em minmax(0, 1fr); column-gap: 0.75em; font-weight: 500; line-height: 1.4; }
+.pp-tick { width: 1.25em; height: 1.25em; margin-top: 0.02em; overflow: visible; }
+.pp-tick path { fill: none; stroke: currentColor; stroke-width: 2.2px; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── The clauses ── */
+.pp-intro { max-width: 62ch; margin: 0 0 clamp(2rem, 4vw, 3rem); font-size: var(--lead); line-height: 1.45; }
+.pp-clause + .pp-clause { margin-top: clamp(2.25rem, 4.5vw, 3.75rem); }
+.pp-clause__title {
+  margin: 0 0 1.1rem;
+  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.5rem);
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+.pp-clause__n { font-variant-numeric: tabular-nums; }
+.pp-p { position: relative; max-width: 62ch; margin: 0 0 0.9em; line-height: 1.6; }
+.pp-p__n { color: var(--fg-soft); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* From 1024 the numbers hang in the margin, so every paragraph starts on the same line. */
+@media (min-width: 1024px) {
+  .pp-p__n { position: absolute; right: calc(100% + 1.25rem); white-space: nowrap; }
+}
+.pp-list { max-width: 60ch; margin: -0.35em 0 0.9em; padding-left: 1.25em; line-height: 1.55; list-style: disc; }
+.pp-list li + li { margin-top: 0.35em; }
+.pp-list li::marker { color: var(--fg-soft); }
+
+/* What the site keeps in the browser: three columns, hairlines between rows; on phones each row stacks. */
+.pp-table-wrap { max-width: 62ch; margin: 0.25em 0 1.25em; }
+.pp-table { width: 100%; border-collapse: collapse; font-size: var(--fs-small); line-height: 1.45; }
+.pp-table th,
+.pp-table td { padding: 0.7rem 1rem 0.7rem 0; border-bottom: 1px solid var(--line-strong); text-align: left; vertical-align: baseline; font-weight: var(--fw-text); }
+.pp-table thead th { padding-top: 0; font-weight: 500; }
+.pp-table td:last-child { padding-right: 0; color: var(--fg-soft); }
+.pp-key { font-family: var(--font-sans); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 639.98px) {
+  .pp-table thead { display: none; }
+  .pp-table tr { display: grid; row-gap: 0.2rem; padding-block: 0.75rem; border-bottom: 1px solid var(--line-strong); }
+  .pp-table th,
+  .pp-table td { padding: 0; border: 0; }
+}
+
+/* ── A blank: a line to fill in, with what goes on it printed under it ── */
+/* As long as what is printed under it (--cap, its length in characters), so the caption never runs past
+   the line; a paragraph with a blank opens its lines up to make room for the caption under it. */
+.pp-p:has(.pp-blank),
+.pp-list li:has(.pp-blank),
+.pp-intro:has(.pp-blank) { line-height: 2.05; }
+.pp-blank {
+  position: relative;
+  display: inline-block;
+  min-width: max(8em, calc(var(--cap, 12) * 0.37em));
+  height: 1.1em;
+  margin-inline: 0.1em;
+  border-bottom: 1px solid var(--line-strong);
+  vertical-align: -0.2em;
+}
+.pp-blank__cap {
+  position: absolute;
+  top: calc(100% + 0.15em);
+  left: 0;
+  font-size: 0.62em;
+  line-height: 1;
+  color: var(--fg-soft);
+  white-space: nowrap;
+}
+
+.pp-edition { margin: clamp(2.5rem, 5vw, 4rem) 0 0; }
+
+/* ── Printed: the document alone, black on white ── */
+@media print {
+  html:has(.pp) :is(.site-header, .skip-link, .action-bar, .ft, .pp-toc) { display: none !important; }
+  html:has(.pp),
+  html:has(.pp) body,
+  .pp { background: #fff !important; color: #000; }
+  .pp::before { display: none; }
+  .pp { padding-block: 0; }
+  .pp-doc { display: block; }
+  .pp-brief { rotate: none; filter: none; }
+  .pp-brief__sheet { clip-path: none; background: none; border: 1px solid #000; }
+  .pp-p__n { position: static; }
+  .pp-clause { break-inside: avoid-page; }
+}

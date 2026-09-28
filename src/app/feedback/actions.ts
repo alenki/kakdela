@@ -1,44 +1,59 @@
 "use server";
 
+import nodemailer from "nodemailer";
 import { cafes } from "@/content/cafes";
-import { t } from "@/i18n";
 import { toneById } from "@/content/feedback";
-import { checkNote, contactKind, hasErrors, readNote, type NoteFields, type NoteState } from "@/lib/feedback";
+import { EDITION_LABEL } from "@/content/privacy";
+import { t } from "@/i18n";
+import { checkNote, contactKind, hasErrors, noteNumber, readNote, street, type Channel, type NoteFields, type NoteState } from "@/lib/feedback";
 
 const CAFE_IDS = new Set(cafes.map((c) => c.id));
+const moscowTime = new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", dateStyle: "short", timeStyle: "short" });
 
 /**
- * Hands a note to the café. PLACEHOLDER channel (client sign-off): a Telegram bot posting to the team's
- * chat, set up with FEEDBACK_TELEGRAM_TOKEN and FEEDBACK_TELEGRAM_CHAT_ID. Without them a development
- * build prints the note to the server log; a production build reports that it could not send, so a note
- * is never lost in silence.
+ * Hands a note to the café: a plain-text letter to the operator's mailbox at a mail provider in Russia.
+ * The mailbox is the only place a note is kept (the site's server keeps nothing), so the guests' data is
+ * recorded in Russia first and never crosses a border (152-FZ art. 18 part 5, art. 12; /privacy says so).
+ * The letter carries the consent record (art. 9 part 3): the note's number, the time, the consent's
+ * edition. Set up with FEEDBACK_SMTP_URL (e.g. smtps://user:password@smtp.example.ru:465),
+ * FEEDBACK_MAIL_TO and, if the provider needs another sender, FEEDBACK_MAIL_FROM. Without them a
+ * development build prints the note to the server log; a production build reports that it could not
+ * send, so a note is never lost in silence.
  */
-async function deliver(id: string, note: NoteFields): Promise<boolean> {
+async function deliver(id: string, note: NoteFields, channel: Channel | null): Promise<boolean> {
   const cafe = cafes.find((c) => c.id === note.cafe);
-  const lines = [
-    `Записка ${id.slice(0, 8)}${note.tone ? ` · ${toneById[note.tone].label}` : ""}`,
-    `Кофейня: ${cafe ? `${cafe.address} (${t.city[cafe.city]})` : "не указана"}`,
+  const tone = note.tone ? toneById[note.tone].label : null;
+  const subject = [`Записка № ${noteNumber(id)}`, tone, cafe && street(cafe.address)].filter(Boolean).join(" · ");
+  const text = [
+    `Записка № ${noteNumber(id)} (${id})`,
+    `Отправлена: ${moscowTime.format(new Date())}, время московское`,
+    `Тема: ${tone ?? "не отмечена"}`,
+    `Кофейня: ${cafe ? `${cafe.address} (${t.city[cafe.city]})` : "не отмечена"}`,
     `Подпись: ${note.name || "без подписи"}`,
     `Ответить: ${note.contact || "не нужно"}`,
+    `Согласие на обработку персональных данных: дано, редакция от ${EDITION_LABEL}`,
     "",
     note.text,
-  ];
-  const text = lines.join("\n");
-  const token = process.env.FEEDBACK_TELEGRAM_TOKEN;
-  const chat = process.env.FEEDBACK_TELEGRAM_CHAT_ID;
-  if (!token || !chat) {
+  ].join("\n");
+
+  const url = process.env.FEEDBACK_SMTP_URL;
+  const to = process.env.FEEDBACK_MAIL_TO;
+  if (!url || !to) {
     if (process.env.NODE_ENV === "production") return false;
-    console.info(`[feedback]\n${text}`);
+    console.info(`[feedback] ${subject}\n${text}`);
     return true;
   }
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(8000),
+    const mail = nodemailer.createTransport({ url, connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 12000 });
+    await mail.sendMail({
+      from: process.env.FEEDBACK_MAIL_FROM || to,
+      to,
+      subject,
+      text,
+      // A guest who left an email gets the answer straight from the mailbox.
+      replyTo: channel === "email" ? note.contact : undefined,
     });
-    return res.ok;
+    return true;
   } catch {
     return false;
   }
@@ -46,16 +61,17 @@ async function deliver(id: string, note: NoteFields): Promise<boolean> {
 
 /**
  * The note's form action (useActionState on the page, and a plain POST without JS). Every note is read
- * and checked again here, whatever the page already checked. A filled honeypot is thanked and dropped.
+ * and checked again here, whatever the page already checked, the consent included: without it nothing
+ * is sent. A filled honeypot is thanked and dropped.
  */
 export async function sendNote(_prev: NoteState, form: FormData): Promise<NoteState> {
   const fields = readNote((key) => form.get(key), CAFE_IDS);
   const errors = checkNote(fields);
   if (hasErrors(errors)) return { status: "invalid", fields, errors };
   const kind = contactKind(fields.contact);
-  const channel = kind === "unclear" ? null : kind;
+  const channel = kind === "phone" || kind === "email" ? kind : null;
   const id = crypto.randomUUID();
   if (String(form.get("website") ?? "").trim()) return { status: "sent", id, note: fields, channel };
-  if (!(await deliver(id, fields))) return { status: "failed", fields };
+  if (!(await deliver(id, fields, channel))) return { status: "failed", fields };
   return { status: "sent", id, note: fields, channel };
 }

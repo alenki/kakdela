@@ -19,16 +19,18 @@ export type NoteFields = {
   text: string;
   /** «Подпись»: how the guest signs, if at all. */
   name: string;
-  /** Where to answer: a phone, an email or a Telegram name, or nothing. */
+  /** Where to answer: a phone or an email, or nothing. */
   contact: string;
+  /** The guest's consent to the processing (152-FZ art. 9), ticked by hand on the note. */
+  consent: boolean;
 };
 
-export const EMPTY_NOTE: NoteFields = { tone: null, cafe: null, text: "", name: "", contact: "" };
+export const EMPTY_NOTE: NoteFields = { tone: null, cafe: null, text: "", name: "", contact: "", consent: false };
 
 /** How the café can answer, read off the contact. */
-export type Channel = "phone" | "email" | "telegram";
+export type Channel = "phone" | "email";
 
-export type NoteErrors = Partial<{ text: "empty" | "long"; contact: "unclear" }>;
+export type NoteErrors = Partial<{ text: "empty" | "long"; contact: "unclear" | "telegram"; consent: "missing" }>;
 
 export type NoteState =
   | { status: "idle" }
@@ -42,8 +44,12 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u;
 const TELEGRAM = /^(?:@|(?:https?:\/\/)?t\.me\/)([a-z0-9_]{5,32})\/?$/iu;
 const PHONE = /^\+?[\d\s()\-.]+$/u;
 
-/** «+7 (928) 082-61-11» → phone, «anna@mail.ru» → email, «@anna_k» or «t.me/anna_k» → Telegram. */
-export function contactKind(raw: string): Channel | null | "unclear" {
+/**
+ * «+7 (928) 082-61-11» → phone, «anna@mail.ru» → email. A Telegram name («@anna_k», «t.me/anna_k») is
+ * recognised so the note can say why it can't be used: an answer through a foreign messenger would carry
+ * the guest's data abroad (152-FZ art. 12), so the café answers by phone or email only.
+ */
+export function contactKind(raw: string): Channel | null | "telegram" | "unclear" {
   const s = raw.trim();
   if (!s) return null;
   if (s.length > CONTACT_MAX) return "unclear";
@@ -72,17 +78,29 @@ export function readNote(get: (key: string) => unknown, cafeIds: ReadonlySet<str
     text: clean(get("text")),
     name: clean(get("name")).replace(/\s+/gu, " ").slice(0, NAME_MAX),
     contact: clean(get("contact")).replace(/\s+/gu, " "),
+    consent: get("consent") === "yes",
   };
 }
 
-/** What stops a note from going: no words (or too many), or a contact that can't be answered. */
+/**
+ * What stops a note from going: no words (or too many), a contact that can't be answered, or no
+ * consent. Without the guest's consent nothing is sent, on the page or on the server.
+ */
 export function checkNote(note: NoteFields): NoteErrors {
   const errors: NoteErrors = {};
   const text = note.text.trim();
   if (text.length < 2) errors.text = "empty";
   else if (text.length > TEXT_MAX) errors.text = "long";
-  if (contactKind(note.contact) === "unclear") errors.contact = "unclear";
+  const kind = contactKind(note.contact);
+  if (kind === "unclear" || kind === "telegram") errors.contact = kind;
+  if (!note.consent) errors.consent = "missing";
   return errors;
 }
 
+/** The note's number as the guest sees it and quotes it in a request: the first 8 characters of its id. */
+export const noteNumber = (id: string) => id.slice(0, 8);
+
 export const hasErrors = (errors: NoteErrors) => Object.keys(errors).length > 0;
+
+/** «ул. Байсултанова, 1» → «Байсултанова, 1»: a café as the note and the café's reply name it. */
+export const street = (address: string) => address.replace(/^(ул\.|пр\.)\s+/u, "");

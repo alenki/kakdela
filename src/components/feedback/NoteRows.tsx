@@ -3,16 +3,13 @@ import type { City } from "@/content/types";
 import { cafes } from "@/content/cafes";
 import { noTone, toneById, tones } from "@/content/feedback";
 import { CitySwitch } from "@/components/chrome/CitySwitch";
-import { CONTACT_MAX, NAME_MAX, TEXT_MAX, TEXT_WARN, type NoteErrors, type NoteFields } from "@/lib/feedback";
+import { CONTACT_MAX, NAME_MAX, street, TEXT_MAX, TEXT_WARN, type NoteErrors, type NoteFields } from "@/lib/feedback";
 import { typograf } from "@/lib/typograf";
 import { cn } from "@/lib/format";
 import { t } from "@/i18n";
 import { Loop } from "./Loop";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
-
-/** «ул. Байсултанова, 1» → «Байсултанова, 1»: the note prints the street as the café is called. */
-export const street = (address: string) => address.replace(/^(ул\.|пр\.)\s+/u, "");
 
 export type Edit = (patch: Partial<NoteFields>) => void;
 

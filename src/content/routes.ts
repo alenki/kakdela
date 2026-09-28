@@ -13,6 +13,8 @@ export const routes = {
   careers: { href: "/careers", status: "planned" },
   bonus: { href: "/bonus", status: "planned" },
   feedback: { href: "/feedback", status: "live" },
+  privacy: { href: "/privacy", status: "live" },
+  consent: { href: "/privacy/consent", status: "live" },
   certificates: { href: "/bonus#sertifikaty", status: "planned" },
 } as const satisfies Record<string, { href: string; status: RouteStatus }>;
 

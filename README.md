@@ -1,7 +1,7 @@
 # kakdela
 
 The website for **«Как дела?»**, a chain of specialty-coffee and breakfast cafés in Nalchik and Vladikavkaz.
-Phase 1 is the homepage, and «Обратная связь» (`/feedback`) is live beside it. The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
+Phase 1 is the homepage, and «Обратная связь» (`/feedback`) is live beside it, with the policy on personal data (`/privacy`) and the consent (`/privacy/consent`). The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
 
 ## Concept: «Разговор»
 The brand name is a question, and the menu already answers it: the breakfasts are called «Лучше всех», «Как в сказке», «Шик» and «10 из 10». The homepage is one conversation:
@@ -21,7 +21,7 @@ npm run dev          # http://localhost:3000
 npm run build && npm start
 npm run typecheck    # tsc --noEmit
 npm run lint         # eslint
-npm test             # vitest (time/geo/format/typograf/i18n/determinism/content/runner/feedback)
+npm test             # vitest (time/geo/format/typograf/i18n/determinism/content/runner/feedback/privacy)
 npm run shot -- "#kofe" kofe.png 390 844 [--reduced] [--nojs]   # headless screenshot helper
 npm run perf -- http://localhost:3100/ [--mobile]              # LCP/CLS/bytes probe against `npm start`
 ```
@@ -44,6 +44,7 @@ npm run assets:puzzles # a year of weekly mates in two from the Lichess puzzle d
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
+| `src/components/privacy/*` | The policy and the consent: `LegalDoc` sets the text from `src/content/privacy.ts` |
 | `src/components/feedback/*` | «Обратная связь»: the pad and the café's side, the note's rows, the pen loop and the tear; the server action is `src/app/feedback/actions.ts` |
 | `src/components/game/*` | The runner «Игра со стаканчиком»: the poster, the island, the lazy controller and canvas drawing (homepage section and 404) |
 | `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup; the runner's engine and record |
@@ -60,4 +61,13 @@ Some content is still a placeholder or unverified. It is flagged in code with `v
 - Delivery, loyalty, certificate and careers URLs.
 - Hosting that is reachable from Russian mobile networks.
 - The runner's copy (the title «Игра со стаканчиком.», the lead, the hints) and its place after the evening.
-- Feedback: where the notes go (a Telegram bot: set `FEEDBACK_TELEGRAM_TOKEN` and `FEEDBACK_TELEGRAM_CHAT_ID`; until then a production build tells the guest it could not send), a privacy policy for the consent line, and the café's replies in `src/content/feedback.ts`.
+- Personal data (152-ФЗ; the policy is `/privacy`, the consent `/privacy/consent`). These block the launch of the feedback form:
+  - the operator's details in `src/content/privacy.ts` (`operator`): full name, ИНН, ОГРН, address, the mailbox for requests, the person responsible, and the hosting and mail providers with their addresses (each shows as a blank until filled in);
+  - the notification to Roskomnadzor (art. 22) before the form goes live, and its register number;
+  - hosting in Russia, and the notes' mailbox at a mail provider in Russia (art. 18 part 5): set `FEEDBACK_SMTP_URL`, `FEEDBACK_MAIL_TO` and, if needed, `FEEDBACK_MAIL_FROM` (until then a production build tells the guest it could not send);
+  - processing agreements («поручение», art. 6 part 3) with both providers; the local acts, the responsible person's appointment and staff briefing (art. 18.1); deleting notes after a year;
+  - any CDN, proxy or firewall in front of the site sees the form's data: it must be in Russia too, named in both texts and under a «поручение»; the hosting provider should be in Roskomnadzor's register of hosting providers (149-ФЗ art. 10.2-1);
+  - the protection level set against Resolution No. 1119 (with health details possible in a complaint, likely УЗ-3), and a written ban on forwarding notes to personal or foreign mail and messengers;
+  - `next dev` never exposed publicly: without the mail settings it prints whole notes to its log;
+  - until the above is true, the policy's statements about Russia and about no transfer abroad are not yet facts: don't open the form to guests before then;
+  - a lawyer's sign-off on both texts and on the café's replies in `src/content/feedback.ts`.

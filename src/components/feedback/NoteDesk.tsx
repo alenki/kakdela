@@ -9,13 +9,14 @@ import { Wordmark } from "@/components/brand/Wordmark";
 import { Photo } from "@/components/brand/Photo";
 import { BtnLabel } from "@/components/chrome/BtnLabel";
 import { CafeStatus } from "@/components/chrome/CafeStatus";
-import { checkNote, EMPTY_NOTE, hasErrors, IDLE, type NoteErrors, type NoteFields, type NoteState } from "@/lib/feedback";
+import { RouteLink } from "@/components/chrome/RouteLink";
+import { checkNote, EMPTY_NOTE, hasErrors, IDLE, noteNumber, street, type NoteErrors, type NoteFields, type NoteState } from "@/lib/feedback";
 import { tornSheet } from "@/lib/tear";
 import { useKd } from "@/lib/store";
 import { useMotionMode } from "@/lib/motion";
 import { bindLastWord, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { NoteRows, street, type Edit } from "./NoteRows";
+import { NoteRows, type Edit } from "./NoteRows";
 import { bringIntoView, FLIGHT_S, flyNote } from "./flight";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
@@ -92,6 +93,7 @@ export function NoteDesk() {
   const textRef = useRef<HTMLTextAreaElement>(null);
   const contactRef = useRef<HTMLInputElement>(null);
   const firstRef = useRef<HTMLInputElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
   const from = useRef<DOMRect | null>(null);
   // A note that came back with the page (no JS) is already lying there: it never flies.
   const landed = useRef<string | null>(state.status === "sent" ? state.id : null);
@@ -100,6 +102,7 @@ export function NoteDesk() {
     setFields((f) => ({ ...f, ...patch }));
     if ("text" in patch) setErrors((e) => without(e, "text"));
     if ("contact" in patch) setErrors((e) => without(e, "contact"));
+    if ("consent" in patch) setErrors((e) => without(e, "consent"));
     if (state.status === "sent") setResumed(state.id);
   };
 
@@ -112,7 +115,8 @@ export function NoteDesk() {
     const found = checkNote(fields);
     if (hasErrors(found)) {
       setErrors(found);
-      (found.text ? textRef : contactRef).current?.focus();
+      // The first thing to put right, in the order of the sheet.
+      (found.text ? textRef : found.contact ? contactRef : consentRef).current?.focus();
       return;
     }
     setErrors({});
@@ -192,7 +196,45 @@ export function NoteDesk() {
                   {typograf(t.feedback.errors.failed)}
                 </p>
               )}
-              <p className="fb-consent label">{typograf(t.feedback.consent)}</p>
+              {/* The consent: a box of its own, never ticked for the guest, and its text on its own page. */}
+              <div className="fb-agree">
+                <label className="fb-tick">
+                  <input
+                    ref={consentRef}
+                    type="checkbox"
+                    className="fb-tick__input"
+                    name="consent"
+                    value="yes"
+                    required
+                    checked={fields.consent}
+                    onChange={(e) => edit({ consent: e.target.checked })}
+                    aria-invalid={errors.consent ? true : undefined}
+                    aria-describedby={errors.consent ? "fb-consent-err" : undefined}
+                  />
+                  <span className="fb-tick__box" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M4.6 12.9c1.6 1.2 3 2.7 4.1 4.6 2.3-4.9 5.6-9 10.2-12.4" pathLength={1} />
+                    </svg>
+                  </span>
+                  <span className="fb-tick__text">{typograf(t.feedback.consent)}</span>
+                </label>
+                {/* In a new tab: the guest's note stays as it is. */}
+                <p className="fb-agree__links dlinks label">
+                  <RouteLink to="consent" className="dlink" target="_blank">
+                    {t.feedback.consentText}
+                    <span className="sr-only"> {t.a11y.newTab}</span>
+                  </RouteLink>
+                  <RouteLink to="privacy" className="dlink" target="_blank">
+                    {t.feedback.policy}
+                    <span className="sr-only"> {t.a11y.newTab}</span>
+                  </RouteLink>
+                </p>
+                {errors.consent && (
+                  <p className="fb-err" id="fb-consent-err">
+                    {typograf(t.feedback.errors[errors.consent])}
+                  </p>
+                )}
+              </div>
               <button type="submit" className="btn btn-primary fb-send" aria-disabled={pending || undefined}>
                 <BtnLabel>{pending ? t.feedback.sending : t.feedback.send}</BtnLabel>
               </button>
@@ -253,12 +295,16 @@ export function NoteDesk() {
                 ref={noteRef}
                 className="fb-note"
                 role="group"
-                aria-label={t.feedback.sent}
+                aria-label={t.feedback.sent(noteNumber(state.id))}
                 data-gone={sent ? undefined : ""}
                 style={{ "--lean": `${lean(torn.lean)}deg` } as CSSProperties}
               >
                 <div className="fb-note__paper" style={{ "--rip": torn.clip, "--fibres": torn.fibres } as CSSProperties}>
                   <div className="fb-sheet fb-sheet--print">
+                    {/* Its number, to quote in a request about the data (/privacy). */}
+                    <p className="fb-note__no label" aria-hidden="true">
+                      {t.feedback.number(noteNumber(state.id))}
+                    </p>
                     <NoteRows fields={state.note} city={city} />
                   </div>
                 </div>

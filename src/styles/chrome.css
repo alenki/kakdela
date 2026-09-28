@@ -106,7 +106,7 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
 }
 .site-header__nav { display: flex; align-items: center; gap: clamp(20px, 2vw, 2.5rem); }
 /* Below 1024px the left column is too narrow for all four: only «Меню» stays. */
-@media (max-width: 1023.98px) { .hdr-link--wide { display: none; } }
+@media (max-width: 1023.98px) { .hdr-link.hdr-link--wide { display: none; } }
 .hdr-link, .hdr-burger, .menu-dialog__close {
   position: relative;
   display: inline-flex;

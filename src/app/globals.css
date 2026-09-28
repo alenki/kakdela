@@ -12,6 +12,7 @@
 @import "../styles/sections/game.css";
 @import "../styles/sections/footer.css";
 @import "../styles/sections/menu.css";
+@import "../styles/about.css";
 
 /* ───────────────────────── Tokens ───────────────────────── */
 /* Warm paper, black ink, one red. Tomato is the only accent: the logo clover, focus, and at most one

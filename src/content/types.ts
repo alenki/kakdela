@@ -9,11 +9,20 @@ export type Price = { nalchik: number | null; vladikavkaz: number | null };
 /** Facts that still need client sign-off before production. */
 export type Verify = { verified: boolean; note?: string };
 
+/**
+ * Where a café's «Как дела?» sign is in its photo, as fractions of the photo: `x` and `y` are the middle of
+ * the sign's line (at the clover, or where the clover would be), `w` is the line's width. Measured by eye
+ * off the photo; the about page's street lays every photo so its sign sits on one line (src/lib/crop.ts).
+ */
+export type SignBox = { x: number; y: number; w: number };
+
 export type Photo = {
   src: StaticImageData;
   alt: string;
   /** Stock stand-in to be replaced with the client's own photography. */
   placeholder?: boolean;
+  /** The café's sign in this photo (café photos only). Re-measure it when the photo changes. */
+  sign?: SignBox;
 };
 
 export type AnswerId =

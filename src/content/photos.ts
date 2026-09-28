@@ -1,6 +1,6 @@
 // Static imports so next/image knows intrinsic sizes and generates blur placeholders.
-// Client photos come from kakdelacoffee.ru; `placeholder: true` marks CC0 stand-ins
-// (see src/assets/photos/manifest.json for credits).
+// Client photos come from kakdelacoffee.ru, the café's Instagram and its own Yandex Maps uploads;
+// `placeholder: true` marks CC0 stand-ins (see src/assets/photos/manifest.json for credits).
 import type { Photo } from "./types";
 
 import luchsheVseh from "@/assets/photos/luchshe-vseh.jpg";
@@ -89,15 +89,15 @@ export const photos = {
   cafeLermontova4: { src: cafeLermontova4, alt: "Фасад кофейни «Саральп» на улице Лермонтова, 4" },
   cafeKujbysheva3: { src: cafeKujbysheva3, alt: "Роспись на стене кофейни на улице Куйбышева, 3 во Владикавказе" },
   cafePlieva32: { src: cafePlieva32, alt: "Кофейня на улице Генерала Плиева, 32 во Владикавказе" },
-  desyatIzDesyati: { src: desyatIzDesyati, alt: "Завтрак «10 из 10»", placeholder: true },
-  kakVSkazke: { src: kakVSkazke, alt: "Завтрак «Как в сказке»", placeholder: true },
-  shik: { src: shik, alt: "Завтрак «Шик»", placeholder: true },
-  shakshuka: { src: shakshuka, alt: "Шакшука", placeholder: true },
-  team1: { src: team1, alt: "Бариста рисует латте-арт", placeholder: true },
-  team2: { src: team2, alt: "Бариста наливает капучино в бумажный стаканчик", placeholder: true },
-  team3: { src: team3, alt: "Руки бариста у эспрессо-машины", placeholder: true },
-  team4: { src: team4, alt: "Гость держит чашку с латте-артом", placeholder: true },
-  cafeShogencukova19: { src: cafeShogencukova19, alt: "Кофейня на проспекте Шогенцукова, 19", placeholder: true },
+  desyatIzDesyati: { src: desyatIzDesyati, alt: "Завтрак «10 из 10»: бриошь с сёмгой и авокадо под голландезом, руккола и черри" },
+  kakVSkazke: { src: kakVSkazke, alt: "Завтрак «Как в сказке»: скрэмбл с креветками и зелёным горошком, киноа, брокколи и черри" },
+  shik: { src: shik, alt: "Завтрак «Шик»: бурый и дикий рис, цыплёнок в сливочном соусе, свежие овощи и ржаной хлеб" },
+  shakshuka: { src: shakshuka, alt: "Шакшука: яйца в томатах с перцем, креметте и тосты" },
+  team1: { src: team1, alt: "Бариста наливает фильтр-кофе из термоса в фирменную кружку" },
+  team2: { src: team2, alt: "Холодный кофе наливают из бутылки в фирменный стакан «Как дела?» со льдом" },
+  team3: { src: team3, alt: "Бариста в фартуке держит холдер со свежемолотым кофе у кофемолки" },
+  team4: { src: team4, alt: "Гость в зелёном свитере держит фирменный стакан «Как дела?»" },
+  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19" },
   // /menu kitchen card thumbnails (client)
   ovsyanayaKasha: { src: ovsyanayaKasha, alt: "Овсяная каша с бананом, клубникой и голубикой" },
   risovayaKasha: { src: risovayaKasha, alt: "Рисовая каша с клубникой и голубикой" },

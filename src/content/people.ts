@@ -27,8 +27,10 @@ export const reviews: Review[] = [
   },
 ];
 
-// PLACEHOLDER team answers and photos: to be replaced with the real team's own words. An answer that is
-// one of the notice's tabs is its `answerId` (the word comes from answers.ts); anything else is `answer`.
+// PLACEHOLDER team answers: to be replaced with the real team's own words. The photos are the café's
+// own at-work shots, hands only, so no real person is tied to an invented line; portraits come later.
+// An answer that is one of the notice's tabs is its `answerId` (the word comes from answers.ts);
+// anything else is `answer`.
 export const team: TeamMember[] = [
   {
     id: "barista-1",

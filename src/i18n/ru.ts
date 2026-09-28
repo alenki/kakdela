@@ -60,6 +60,7 @@ export const ru = {
       { key: "careers", label: "Работа у нас" },
       { key: "bonus", label: "Бонусная карта" },
       { key: "certificates", label: "Сертификаты" },
+      { key: "feedback", label: "Обратная связь" },
     ] satisfies { key: RouteKey; label: string }[],
     halal: "Халяль и намазхана во всех кофейнях",
   },
@@ -205,6 +206,7 @@ export const ru = {
     services: "Сервисы",
     phone: "Телефон",
     copyright: "© 2026 «Как дела?» · Нальчик · Владикавказ",
+    privacy: "Политика конфиденциальности",
     utility: "Халяль и намазхана во всех кофейнях · Wi‑Fi · меню на английском · каждый день с 07:30",
   },
   // The runner (src/components/game): the homepage section after the evening, and the 404.
@@ -376,6 +378,84 @@ export const ru = {
     maps: "Кофейни на Яндекс Картах",
     // The runner under the head: a side offer, set as a label.
     game: "Игра со стаканчиком",
+  },
+  // «Обратная связь» (/feedback): a note written on the café's pad, and the café's answer. The four
+  // tones with their questions and replies, and the questions answered below, are in
+  // src/content/feedback.ts.
+  feedback: {
+    meta: {
+      title: "Обратная связь · «Как дела?»",
+      description:
+        "Напишите кофейням «Как дела?» в Нальчике и Владикавказе: благодарность, идея, жалоба или вопрос. Мы читаем каждую записку.",
+    },
+    label: "Обратная связь",
+    title: "Скажите честно.",
+    lead: "Благодарность, идея, жалоба или вопрос: пишите как есть. Мы читаем каждую записку.",
+    // The pad: the form's accessible name, then its printed rows.
+    pad: "Записка для кофейни",
+    tone: "О чём записка?",
+    where: "Где это было?",
+    sign: "Подпись",
+    contact: "Как ответить",
+    contactHint: "Телефон или почта, если нужен ответ",
+    // The consent is its own tick on the note (152-FZ art. 9, a separate document since 01.09.2025): the
+    // box, then the consent's text and the policy, each on its own page.
+    consent: "Даю согласие на обработку персональных данных",
+    consentText: "Текст согласия",
+    policy: "Политика конфиденциальности",
+    send: "Отправить записку",
+    sending: "Отправляем…",
+    again: "Написать ещё",
+    left: (n: number) => `Осталось ${n} ${plural(n, "знак", "знака", "знаков")}`,
+    errors: {
+      empty: "Напишите хотя бы пару слов.",
+      long: `Слишком длинно: не больше 2${NBSP}000 знаков.`,
+      unclear: "Не похоже на телефон или почту.",
+      telegram: "Ответить в Telegram не сможем: оставьте телефон или почту.",
+      missing: "Без согласия отправить записку не получится.",
+      failed: "Не получилось отправить. Попробуйте ещё раз или позвоните в кофейню.",
+    },
+    // The café's side: whom the note goes to, and the line to call if it can't wait.
+    all: (city: string) => `Все кофейни · ${city}`,
+    urgent: "Если срочно",
+    // After the café's reply: how it will answer, from the contact left on the note.
+    answerBy: { phone: "Ответим по телефону.", email: "Ответим на почту." },
+    noContact: "Контакта нет, так что ответить не сможем. Но прочитаем обязательно.",
+    // The note that landed on the café's side, as a screen reader names it, and its number, printed in
+    // its corner so it can be quoted in a request about the data (/privacy).
+    sent: (no: string) => `Ваша записка № ${no}`,
+    number: (no: string) => `№${NBSP}${no}`,
+    // «Есть вопрос»: the café points at the questions already answered.
+    asked: "Уже спрашивали",
+    faq: { q: "Вопросы", a: "Уже спрашивали.", lead: "То, о чём гости спрашивают чаще всего." },
+  },
+  // The policy on personal data (/privacy) and the consent (/privacy/consent). Their text is
+  // src/content/privacy.ts; these are the pages' own words.
+  privacy: {
+    meta: {
+      title: "Политика конфиденциальности · «Как дела?»",
+      description: "Какие персональные данные обрабатывают кофейни «Как дела?» на сайте, зачем, как долго и как их защищают.",
+    },
+    label: "Политика обработки персональных данных",
+    title: "Что мы о вас знаем.",
+    lead: "Только то, что вы сами напишете нам в записке. Настройки сайта остаются в вашем браузере.",
+    brief: "Коротко",
+    contents: "Содержание",
+    edition: (date: string) => `Редакция от ${date}`,
+    consent: "Текст согласия",
+    // A blank still to be filled in, as a screen reader hears it: «ИНН, будет указан».
+    blank: "будет указано",
+    table: { key: "Ключ", what: "Что это", kept: "Сколько хранится" },
+  },
+  consent: {
+    meta: {
+      title: "Согласие на обработку персональных данных · «Как дела?»",
+      description: "Согласие на обработку персональных данных, которое гость даёт, отправляя записку кофейням «Как дела?».",
+    },
+    label: "Согласие на обработку персональных данных",
+    title: "Ваше согласие.",
+    lead: "Его дают отдельно, отмечая согласие в записке перед отправкой. Без него записка не уйдёт.",
+    policy: "Политика конфиденциальности",
   },
 } as const;
 

@@ -1,0 +1,528 @@
+/* ═════════════ FEEDBACK «Обратная связь» (/feedback): cream ═════════════
+   The guest's turn in the conversation, set as the hero is: the café's pad on the left (the notice's
+   paper, its perforation, the logo asking «Как дела?» on the letterhead) and the café's side on the
+   right (whom the note goes to, their photo, the café's voice). The guest circles a tone and a café,
+   writes on ruled lines and signs; sent, the sheet is torn off at the perforation and laid on the café's
+   side over the photo, and the café replies (NoteDesk, flight.ts).
+     phone      one column: the pad, then the café's side
+     ≥1024      the pad on cols 1–7, the café's side on 8–12, sticky beside the pad
+   Then «Уже спрашивали.»: the questions answered, set like a menu. */
+
+.fb {
+  padding-block: calc(var(--header-h) + var(--section-pad) * 0.75) calc(var(--section-pad) * 1.15);
+}
+
+.fb-desk { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(40px, 6vw, 64px); }
+@media (min-width: 1024px) {
+  .fb-desk {
+    --fb-stick: clamp(16px, 2.4vh, 2rem);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+  /* Seven columns from 1024: the four tones fit on one line of the sheet at any desktop width. */
+  .fb-pad { grid-column: 1 / 8; }
+  /* The café's side runs the pad's full height and stays in view beside it while the guest writes, so
+     every answer (and the landing) happens where the guest can see it. */
+  .fb-stage { grid-column: 8 / -1; padding-left: var(--grid-gap); }
+  .fb-stage__stick {
+    position: sticky;
+    top: calc(var(--header-h) + var(--fb-stick));
+    height: min(100%, calc(100svh - var(--header-h) - 2 * var(--fb-stick)));
+  }
+}
+
+/* ── The pad and the note: one paper, one scale ──
+   The pad and the landed note are each their own size container, and everything on the sheet is sized
+   in its cqi, so the note on the café's side is the sheet the guest filled in, only smaller: it wraps
+   the same way, and the flight is a plain scale. On the pad the sizes keep a floor for small screens
+   (16px text never zooms a phone); the note on a desktop drops the floors, and scales cleanly. */
+.fb-pad,
+.fb-note {
+  --px: clamp(16px, 5cqi, 4.5rem);
+  --fs-tone: clamp(1.75rem, 4.9cqi, 4rem);
+  --fs-text: clamp(1rem, 2.3cqi, 1.625rem);
+  --fs-lab: max(var(--fs-label), 1.65cqi);
+  --ruled: color-mix(in srgb, var(--color-ink) 15%, transparent);
+  --ruled-strong: color-mix(in srgb, var(--color-ink) 34%, transparent);
+  position: relative;
+  min-width: 0;
+  container-type: inline-size;
+  color: var(--color-ink);
+}
+@media (min-width: 1024px) {
+  .fb-note { --px: 5cqi; --fs-tone: 4.9cqi; --fs-text: 2.3cqi; --fs-lab: 1.65cqi; }
+}
+
+/* A pad of the notice's paper: the letterhead, the tear line, and the sheet, with two more sheets'
+   edges under it and the paper's crisp shadow (a box-shadow: a filter would redraw the whole pad on
+   every keystroke). */
+.fb-pad { box-shadow: var(--paper-shadow); }
+.fb-pad__head {
+  display: grid;
+  justify-items: center;
+  padding: calc(var(--px) * 1.05) var(--px) calc(var(--px) * 0.8);
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  border-bottom: 0;
+}
+.fb-pad__logo { width: min(100%, clamp(180px, 44cqi, 34rem)); height: auto; overflow: visible; }
+.fb-pad__clover { color: var(--color-tomato); }
+/* The tear line: small holes through the paper, as on the notice. */
+.fb-pad__perf {
+  height: 10px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--bg), var(--color-ink) 9%) 1.7px, transparent 2.3px) 50% 50% / 10px 10px space no-repeat,
+    var(--paper-tex),
+    var(--paper);
+  border-inline: 1px solid var(--edge);
+}
+.fb-pad__body { position: relative; display: grid; isolation: isolate; }
+.fb-pad__body > * { grid-area: 1 / 1; }
+/* The sheets under the top one: two paper edges, each a little narrower. */
+.fb-pad__body::before,
+.fb-pad__body::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 3px -4px;
+  background: var(--paper);
+  border: 1px solid var(--edge);
+  border-top: 0;
+}
+.fb-pad__body::after { inset: 0 7px -8px; background: color-mix(in srgb, var(--paper), var(--color-ink) 3%); z-index: -2; }
+
+/* ── The sheet: a printed form ── */
+.fb-sheet {
+  display: flow-root;
+  padding: calc(var(--px) * 0.95) var(--px) var(--px);
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  border-top: 0;
+  font-size: var(--fs-text);
+  transform-origin: 0 0;
+  transition: translate 300ms var(--ease-kd-out), rotate 300ms var(--ease-kd-out);
+}
+/* Sending: the sheet starts to come away from the pad, its right corner first. */
+.fb-sheet[data-tearing] { translate: 0 3px; rotate: 0.3deg; }
+
+.fb-row { display: grid; justify-items: start; row-gap: 0.7em; }
+.fb-row + .fb-row { margin-top: calc(var(--px) * 0.95); }
+.fb-row__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; justify-self: stretch; }
+.fb-row__label { margin: 0; font-size: var(--fs-lab); }
+.fb-row__note { margin: 0; font-size: var(--fs-lab); }
+
+/* ── Options circled with a pen ──
+   A radio under each printed word (visually hidden, still focusable), the word, and the guest's loop
+   round it (Loop.tsx, seeded per option). Checked, the loop draws itself round the word; let go, it
+   fades. Without JS the radio's :checked does the same, and a printed note carries its loop drawn. */
+.fb-opt {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+span.fb-opt { cursor: auto; }
+.fb-opt__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.fb-opt__word { position: relative; white-space: nowrap; }
+.fb-opt:has(.fb-opt__input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 0.4em; border-radius: 2px; }
+.fb-loop {
+  position: absolute;
+  left: -0.42em;
+  top: -0.34em;
+  width: calc(100% + 0.84em);
+  height: calc(100% + 0.64em);
+  overflow: visible;
+  pointer-events: none;
+}
+.fb-loop path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: opacity 180ms var(--ease-kd-ui), stroke-dashoffset 0s linear 180ms;
+}
+.fb-opt__input:checked ~ .fb-loop path,
+.fb-opt[data-on] .fb-loop path {
+  opacity: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 520ms cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  label.fb-opt:hover .fb-opt__word { opacity: 0.72; }
+}
+
+/* The tones: the notice's own words in the display face. Two by two on a phone, one line from there. */
+.fb-tones {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0.34em 1.1em;
+  justify-self: stretch;
+  font-size: var(--fs-tone);
+}
+.fb-opt--tone { justify-items: start; padding-block: 0.08em; line-height: 0.9; }
+/* One line where the sheet is wide enough; on a desktop always, so the pad and the smaller note on the
+   café's side are set alike. */
+@container (min-width: 30rem) {
+  .fb-tones { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 0.6em; }
+}
+@media (min-width: 1024px) {
+  .fb-tones { display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 0.6em; }
+}
+
+/* The cafés: their streets in the text face, as many to a line as fit. A 44px hit area on touch. */
+.fb-cafes { display: grid; justify-self: stretch; font-weight: 500; }
+.fb-cafes__city { display: flex; flex-wrap: wrap; gap: 0.5em 1.35em; }
+.fb-cafes__name { display: none; flex-basis: 100%; }
+.fb-opt--cafe { padding-block: 0.15em; line-height: 1.35; }
+/* A street is long and low: its loop goes wider round it. */
+.fb-opt--cafe .fb-loop { left: -0.6em; top: -0.28em; width: calc(100% + 1.2em); height: calc(100% + 0.56em); }
+@media (pointer: coarse) {
+  label.fb-opt::before { content: ""; position: absolute; inset: calc(50% - 22px) -0.3em; }
+  .fb-cafes__city { row-gap: 0.75em; }
+}
+.fb-city { flex: none; }
+/* Only the city on show (html[data-city], set before paint). Without JS the switch can't work: both
+   cities show, each under its name. */
+html.js:not([data-city="vladikavkaz"]) [data-fb-city="vladikavkaz"],
+html.js[data-city="vladikavkaz"] [data-fb-city="nalchik"] { display: none; }
+html:not(.js) .fb-city { display: none; }
+html:not(.js) .fb-cafes { row-gap: 1em; }
+html:not(.js) .fb-cafes__name { display: block; }
+
+/* ── The words, on ruled lines ──
+   One rule under every line, drawn in the text's own pitch, and scrolled with it. The field grows with
+   what is written (field-sizing), five lines at least. */
+.fb-lines {
+  --ln: 2em;
+  display: block;
+  width: 100%;
+  min-height: calc(var(--ln) * 5);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  resize: none;
+  field-sizing: content;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--ln) - 1px), var(--ruled) calc(var(--ln) - 1px) var(--ln))
+    0 -0.28em / 100% var(--ln) local;
+  color: var(--color-ink);
+  font: inherit;
+  font-weight: 500;
+  line-height: var(--ln);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.fb-lines:focus-visible { outline-offset: 0.35em; }
+.fb-lines[aria-invalid="true"] { --ruled: color-mix(in srgb, var(--color-tomato-ink) 45%, transparent); }
+/* The note on the café's side shows the first twelve lines of it. */
+.fb-lines--print {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 12;
+  line-clamp: 12;
+  overflow: hidden;
+}
+
+/* ── The signature and the contact: a label, then a line to write on ── */
+.fb-sign { grid-template-columns: minmax(0, 1fr); justify-items: stretch; align-items: start; row-gap: 1em; }
+@container (min-width: 34rem) {
+  .fb-sign { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 1.5em; }
+}
+@media (min-width: 1024px) {
+  .fb-sign { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 1.5em; }
+}
+.fb-field { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; align-content: start; column-gap: 0.75em; }
+.fb-field__label { font-size: var(--fs-lab); }
+.fb-field__line {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 2em;
+  margin: 0;
+  padding: 0.3em 0 0.25em;
+  border: 0;
+  border-bottom: 1px solid var(--ruled-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fb-field__line:focus-visible { outline-offset: 0.3em; }
+.fb-field__line[aria-invalid="true"] { border-bottom-color: var(--color-tomato-ink); }
+.fb-field__hint { grid-column: 2; margin: 0.5em 0 0; font-size: var(--fs-lab); }
+
+/* ── What to put right: the text-safe red, the page's one highlight ── */
+.fb-err { margin: 0; color: var(--color-tomato-ink); font-size: var(--fs-lab); font-weight: 500; line-height: 1.4; }
+
+/* ── The foot of the sheet: the small print and the one button ── */
+.fb-sheet__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: calc(var(--px) * 1.1);
+  padding-top: calc(var(--px) * 0.6);
+  border-top: 1px solid var(--ruled);
+}
+.fb-sheet__failed { flex-basis: 100%; }
+
+/* The consent: a printed box the guest ticks by hand (never ticked for them), the words beside it, and
+   the consent's text and the policy under them, each on its own page. The tick draws itself in with the
+   same pen as the loops. */
+.fb-agree { display: grid; justify-items: start; row-gap: 0.5em; max-width: 40ch; font-size: max(0.875rem, 1.9cqi); }
+.fb-tick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.7em;
+  min-height: 44px;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.fb-tick__input {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1.45em;
+  height: 1.45em;
+  margin: 0;
+  translate: 0 -50%;
+  opacity: 0;
+  cursor: inherit;
+}
+.fb-tick__box {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.45em;
+  height: 1.45em;
+  border: 1.5px solid var(--ruled-strong);
+  border-radius: 2px;
+  transition: border-color 200ms var(--ease-kd-ui);
+}
+.fb-tick__box svg { width: 135%; height: 135%; overflow: visible; translate: 8% -12%; }
+.fb-tick__box path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: opacity 160ms var(--ease-kd-ui), stroke-dashoffset 0s linear 160ms;
+}
+.fb-tick__input:checked + .fb-tick__box path {
+  opacity: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 380ms cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+.fb-tick:has(.fb-tick__input:focus-visible) .fb-tick__box { outline: 2px solid var(--focus); outline-offset: 3px; }
+.fb-tick__input[aria-invalid="true"] + .fb-tick__box { border-color: var(--color-tomato-ink); }
+@media (hover: hover) and (pointer: fine) {
+  .fb-tick:hover .fb-tick__box { border-color: var(--color-ink); }
+}
+.fb-agree__links { font-size: var(--fs-lab); }
+.fb-send[aria-disabled="true"] { cursor: progress; }
+
+/* A robot's field: out of sight and out of reach. */
+.fb-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ── After a tear: the stub under the perforation, and on phones the fresh sheet folded under it ── */
+.fb-pad__stub {
+  height: 0.6em;
+  font-size: var(--fs-text);
+  background: var(--paper-tex), var(--paper);
+  border-inline: 1px solid var(--edge);
+  clip-path: var(--stub);
+  pointer-events: none;
+}
+/* Its rip casts a hairline of shadow onto the fresh sheet under it, so the torn edge reads. */
+.fb-pad__stub-wrap {
+  z-index: 1;
+  align-self: start;
+  display: grid;
+  filter: drop-shadow(0 1.5px 0.5px rgb(92 62 30 / 0.3));
+  pointer-events: none;
+}
+.fb-pad__next { display: none; }
+@media (max-width: 1023.98px) {
+  html.js .fb-desk[data-sent] .fb-pad__body > .fb-sheet { display: none; }
+  html.js .fb-desk[data-sent] .fb-pad__next {
+    display: flex;
+    justify-content: center;
+    padding: calc(var(--px) * 1.4) var(--px) var(--px);
+    background: var(--paper-tex), var(--paper);
+    border: 1px solid var(--edge);
+    border-top: 0;
+  }
+}
+
+/* ── The café's side ── */
+.fb-stage { display: grid; min-width: 0; }
+.fb-stage__stick { display: flex; flex-direction: column; min-height: 0; }
+/* Whom the note goes to: the street and its status, or the city's cafés. Its letters sit on the pad's
+   top edge, as the hero's line does on the notice's. */
+.fb-stage__cafe {
+  margin: 0 0 clamp(12px, 1.8vh, 1.25rem);
+  text-box: trim-start cap alphabetic;
+}
+.fb-stage__street { color: var(--fg); }
+.fb-stage__cafe .status { font-size: inherit; }
+
+.fb-board { position: relative; display: grid; min-height: 0; }
+.fb-board > * { grid-area: 1 / 1; }
+.fb-photos { display: grid; min-height: 0; }
+.fb-photo {
+  grid-area: 1 / 1;
+  display: none;
+  min-height: 0;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-kd-ui), display 500ms allow-discrete;
+}
+.fb-photo[data-active] { display: block; opacity: 1; }
+@starting-style { .fb-photo[data-active] { opacity: 0; } }
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .fb-photo .photo { aspect-ratio: 16 / 9; }
+}
+/* From 1024 the board takes the height the street and the café's voice leave. */
+@media (min-width: 1024px) {
+  .fb-board { flex: 1 1 0; grid-template-rows: minmax(0, 1fr); }
+  .fb-photo .photo { aspect-ratio: auto; height: 100%; min-height: 10rem; }
+}
+
+/* The torn-off note lying on the photo: the notice's paper, its rip along the top (tornSheet, the stub's
+   other half), a lighter fringe along it and the paper's shadow, a little askew. Phones: it lies across
+   the foot of the photo and runs on under it. */
+.fb-note {
+  z-index: 1;
+  align-self: start;
+  justify-self: end;
+  /* As wide as the pad on a phone, so it is set exactly as the sheet was. */
+  width: 100%;
+  margin-top: 34%;
+  transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 0s;
+}
+@media (min-width: 1024px) {
+  .fb-note { width: 90%; margin-top: clamp(12px, 3vh, 2rem); }
+}
+.fb-note[data-flying] { visibility: hidden; }
+.fb-note[data-gone] { opacity: 0; visibility: hidden; transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 250ms; }
+@media (max-width: 1023.98px) {
+  .fb-note[data-gone] { display: none; }
+}
+.fb-note__paper {
+  position: relative;
+  display: grid;
+  rotate: var(--lean, 0deg);
+  font-size: var(--fs-text);
+  /* --air lifts the paper's shadow while it flies (flight.ts): 0 on the table, 1 in the air. */
+  filter: drop-shadow(
+    calc(5px + 12px * var(--air, 0)) calc(6px + 18px * var(--air, 0)) calc(1px + 9px * var(--air, 0)) rgb(92 62 30 / calc(0.16 + 0.02 * var(--air, 0)))
+  );
+}
+.fb-note__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper), #fff 65%);
+  clip-path: var(--fibres);
+}
+.fb-sheet--print { position: relative; border-top: 1px solid var(--edge); clip-path: var(--rip); }
+/* The note's number in its corner, as on a receipt: quoted in a request about the data (/privacy). */
+.fb-note__no {
+  position: absolute;
+  top: calc(var(--px) * 0.62);
+  right: var(--px);
+  margin: 0;
+  font-size: var(--fs-lab);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The copy that flies (flight.ts), over everything but the header's plate. */
+.fb-flight { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: clip; }
+.fb-flight .fb-note { position: absolute; left: 0; top: 0; margin: 0; }
+
+/* The café's voice under the photo, and the line to call beside it (the hero's reply and price). */
+.fb-stage__text {
+  display: grid;
+  row-gap: clamp(14px, 2vh, 1.5rem);
+  padding-top: clamp(16px, 2.6vh, 2rem);
+  font-size: clamp(1.0625rem, 0.8rem + 0.55vw, 1.4375rem);
+}
+.fb-says { min-width: 0; display: grid; }
+/* Every line in one cell; the one on show rises in as the hero's reply does, the old one fades. After a
+   flight the reply waits for the landing (--fb-in). */
+.fb-say {
+  grid-area: 1 / 1;
+  max-width: 36ch;
+  margin: 0;
+  text-wrap: pretty;
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 200ms var(--ease-kd-ui), translate 0s linear 200ms, visibility 0s linear 200ms;
+}
+.fb-say[data-active] {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 600ms var(--ease-kd-out) var(--fb-in, 120ms),
+    translate 600ms var(--ease-kd-out) var(--fb-in, 120ms),
+    visibility 0s;
+}
+.fb-say:focus { outline: none; }
+.fb-say:focus-visible { outline: 2px solid var(--focus); }
+.fb-say__link { font-style: normal; }
+/* «Если срочно» and the café's number, on one line under its voice. */
+.fb-call { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0; }
+.fb-call__label { font-size: var(--fs-label); }
+.fb-call__phone { font-size: var(--fs-body); font-weight: 500; line-height: 1.3; white-space: nowrap; font-variant-numeric: proportional-nums; }
+@media (pointer: coarse) {
+  .fb-call__phone { display: inline-flex; align-items: center; min-height: 44px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .fb-call__phone:hover { text-decoration: underline 1px; text-underline-offset: 0.25em; }
+}
+
+/* ═════════════ «Уже спрашивали.»: the questions answered, set like a menu ═════════════
+   The question in the display face, the café's answer beside it (from 1024: cols 1–6 and 7–11), a hairline
+   between rows. */
+.fb-qa { margin: 0; border-top: 1px solid var(--line); }
+.fb-qa__row {
+  display: grid;
+  row-gap: 0.75rem;
+  padding-block: clamp(20px, 2.6vw, 2.25rem);
+  border-bottom: 1px solid var(--line);
+}
+.fb-qa__q { margin: 0; font-size: var(--h3); text-wrap: balance; }
+.fb-qa__a { display: grid; justify-items: start; row-gap: 0.5rem; margin: 0; max-width: 44ch; }
+.fb-qa__a p { margin: 0; }
+@media (min-width: 1024px) {
+  .fb-qa__row { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: first baseline; }
+  .fb-qa__q { grid-column: 1 / 7; }
+  .fb-qa__a { grid-column: 7 / 12; font-size: var(--lead); line-height: 1.45; }
+}

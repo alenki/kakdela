@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { flagship } from "@/content/cafes";
+import { operator } from "@/content/privacy";
 import { external, type RouteKey } from "@/content/routes";
 import type { City } from "@/content/types";
 import { NBSP, typograf } from "@/lib/typograf";
@@ -10,7 +11,7 @@ import { FooterMotion } from "./footer/FooterMotion";
 
 // Split as in the «Разделы» dialog: the four places set large, the services in the text face.
 const PLACES: RouteKey[] = ["menu", "locations", "events", "about"];
-const SERVICES: RouteKey[] = ["delivery", "catering", "bonus", "certificates", "careers"];
+const SERVICES: RouteKey[] = ["delivery", "catering", "bonus", "certificates", "careers", "feedback"];
 const linkLabel = (key: RouteKey) => typograf(t.nav.links.find((l) => l.key === key)?.label ?? key);
 
 /** The city's main line is its flagship's: Байсултанова, 1 in Nalchik, Куйбышева, 3 in Vladikavkaz. */
@@ -19,6 +20,13 @@ const SOCIAL = [
   { label: "Telegram", href: external.telegram },
   { label: "Instagram", href: external.instagram },
 ];
+
+/** The operator as the site's owner: name, ИНН, ОГРН, address and the mailbox for requests, when known. */
+const owner = operator.name
+  ? [operator.name, operator.inn && `ИНН ${operator.inn}`, operator.ogrn && `ОГРН ${operator.ogrn}`, operator.address, operator.email]
+      .filter(Boolean)
+      .join(" · ")
+  : null;
 
 /** Small print: each «·»-separated phrase stays whole, so a line only ever breaks after a «·». */
 function Phrases({ text }: { text: string }) {
@@ -106,6 +114,17 @@ export function SiteFooter() {
             </p>
             <p className="ft-copy label">
               <Phrases text={t.footer.copyright} />
+            </p>
+            {/* The site owner's details (149-FZ art. 10 part 2), once they are filled in (src/content/privacy.ts). */}
+            {owner && (
+              <p className="ft-owner label">
+                <Phrases text={owner} />
+              </p>
+            )}
+            <p className="ft-legal label">
+              <RouteLink to="privacy" className="dlink">
+                {t.footer.privacy}
+              </RouteLink>
             </p>
           </div>
         </div>

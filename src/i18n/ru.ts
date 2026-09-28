@@ -226,6 +226,89 @@ export const ru = {
         ? `Новый рекорд: ${groupDigits(score)}.`
         : `Стаканчик опрокинулся. Счёт ${groupDigits(score)}, рекорд ${groupDigits(best)}.`,
   },
+  // «О нас» (/about, src/components/about): the guest asks back, «А у вас как дела?», and the café answers,
+  // one chapter at a time. Every heading is an exchange: the guest's question in the thin display voice
+  // (`ask`), the café's answer in heavy display (`a`).
+  about: {
+    meta: {
+      title: "О нас · «Как дела?»",
+      description:
+        "Девять кофеен «Как дела?» в Нальчике и Владикавказе: откуда название, что мы делаем сами и кому мы рады. Каждый день с 07:30.",
+    },
+    label: "О нас",
+    // The guest's line. After a tear today it opens with that answer: «Сонно. А у вас как дела?».
+    ask: "А у вас как дела?",
+    a: "Спасибо, что спросили.",
+    // After the founding line (t.team.lead), in the text face.
+    lead: "Поэтому вопрос у нас везде: на вывесках, в названиях завтраков и даже на двери кухни.",
+    door: "Дверь кухни · ул. Лермонтова, 59",
+    now: {
+      ask: "А прямо сейчас?",
+      // The answer is the part of the day it is in Moscow (t.dayparts). Without JS the page can't know the hour.
+      fallback: "Каждый день с 07:30",
+      lead: "Все девять кофеен открываются в 07:30. Время московское, как в Нальчике и Владикавказе.",
+      // The ruler: a day from midnight to midnight, the red hand at the minute it is now.
+      ruler: "Сутки в кофейнях",
+      now: "сейчас",
+    },
+    street: {
+      ask: "А где вы?",
+      a: "Девять дверей, один вопрос.",
+      lead: "Семь кофеен в Нальчике и две во Владикавказе. Адреса разные, вопрос один.",
+      // A café whose photo is still a stand-in: the sign on paper instead of someone else's street.
+      soon: "Фото скоро",
+      all: "Все кофейни",
+      nearest: "Где ближайшая",
+    },
+    own: {
+      ask: "Что у вас своё?",
+      a: "Голландез, сироп из горных трав и названия.",
+      lead: "Зёрна берём у обжарщиков, которым доверяем. А это делаем сами.",
+      hollandaise: {
+        name: "Голландез",
+        desc: "Собственного приготовления. Под ним бриошь, сёмга и авокадо: это завтрак «10 из 10».",
+      },
+      syrup: {
+        name: "Сироп из горных трав",
+        desc: "Тоже свой. С ним фильтр становится «Станцией Мир».",
+        link: "Напиток «Станция Мир»",
+      },
+      names: {
+        name: "Названия",
+        desc: "Завтраки называются так, как отвечают на «как дела?»: «Лучше всех», «Как в сказке», «Шик» и «10 из 10».",
+        link: "Все завтраки",
+      },
+    },
+    welcome: {
+      ask: "Кому у вас рады?",
+      a: "Всем, кто зайдёт.",
+      // Under the guest's words: whose they are.
+      said: (address: string) => `Гость кофейни на ${address}, Яндекс Карты`,
+      listLabel: "Что есть в кофейнях",
+      everywhere: "во всех кофейнях",
+      laptop: "можно с ноутбуком",
+      /** «в 5 кофейнях». */
+      inCafes: (n: number) => `в ${n} ${plural(n, "кофейне", "кофейнях", "кофейнях")}`,
+      house: {
+        halal: "Халяль",
+        prayer: "Намазхана",
+        wifi: "Wi‑Fi и розетки",
+        english: "Меню на английском",
+        kids: "Детская комната",
+        verandas: "Веранды",
+        blitz: "Шахматный блиц",
+      },
+      careers: "Хотите встречать гостей вместе с нами?",
+      careersLink: "Работа у нас",
+    },
+    // The café asks back, and the guest answers on one of the notice's slips (t.a11y.padGroup names the group).
+    back: {
+      a: "А у вас?",
+      prompt: "Выберите честно",
+      idle: "На любой ответ у нас найдётся что предложить.",
+      dish: "Смотреть в меню",
+    },
+  },
   notFound: {
     label: "Ошибка 404",
     title: "Ещё варим. Загляните чуть позже.",

@@ -1,7 +1,7 @@
 # kakdela
 
 The website for **«Как дела?»**, a chain of specialty-coffee and breakfast cafés in Nalchik and Vladikavkaz.
-Phase 1 is the homepage. The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
+Phase 1 is the homepage, and `/about` («О нас») is live. The other routes (`/menu`, `/locations`, `/events`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
 
 ## Concept: «Разговор»
 The brand name is a question, and the menu already answers it: the breakfasts are called «Лучше всех», «Как в сказке», «Шик» and «10 из 10». The homepage is one conversation:
@@ -10,6 +10,8 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 - **The answer is the order.** The torn tab lands on its side across a photo of the dish with that name, and the café replies with the dish and its price.
 - **The page remembers.** The answer comes back the next day as «Вчера было «…». А сегодня?».
 - **The evening ends with a game of chess.** Every Monday a new mate in two from a real game; the café answers every move, and when it's solved it asks «Как дела?» and the grade lands as one of the hero's answers, with its dish. Then the invitation to the blitz.
+
+«О нас» carries the conversation on: the guest asks back, «А у вас как дела?», and the café answers chapter by chapter («Спасибо, что спросили.»). It remembers the tab torn today, answers with the part of the day it is in Moscow, walks a street of its nine doors with every «Как дела?» sign on one line, and ends by asking «А у вас?».
 
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase; DrawSVG and CustomWiggle for the coffee poster), Motion 13 (`m.*` under `LazyMotion`), Lenis.
@@ -41,6 +43,7 @@ npm run assets:puzzles # a year of weekly mates in two from the Lichess puzzle d
 | `src/content/*` | Typed data: answers, menu, cafés (real coordinates, phones and Yandex ids), reviews, team, routes, photos and the weekly puzzles |
 | `src/i18n/ru.ts` | Every UI string (Russian-first; EN will mirror its shape) |
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
+| `src/components/about/*` | «О нас»: one server component per chapter, its islands, and `FramedPhoto` (a photo laid by a crop, `src/lib/crop.ts`) |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
 | `src/components/game/*` | The runner «Игра со стаканчиком»: the poster, the island, the lazy controller and canvas drawing (homepage section and 404) |
@@ -55,6 +58,7 @@ Some content is still a placeholder or unverified. It is flagged in code with `v
 - Closing times for Байсултанова 1, Лермонтова 4 and Шогенцукова 19 (23:00 or 00:00).
 - Vladikavkaz prices, and permission to quote the reviews.
 - Team portraits and their own answers.
+- The about page's copy (`t.about` in `src/i18n/ru.ts`), and a photo of Шогенцукова 19 (the street shows the wordmark on paper until then; measure its sign into `photos.ts`).
 - Delivery, loyalty, certificate and careers URLs.
 - Hosting that is reachable from Russian mobile networks.
 - The runner's copy (the title «Игра со стаканчиком.», the lead, the hints) and its place after the evening.

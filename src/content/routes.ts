@@ -7,7 +7,7 @@ export const routes = {
   menu: { href: "/menu", status: "planned" },
   locations: { href: "/locations", status: "planned" },
   events: { href: "/events", status: "planned" },
-  about: { href: "/about", status: "planned" },
+  about: { href: "/about", status: "live" },
   delivery: { href: "/delivery", status: "planned" },
   catering: { href: "/catering", status: "planned" },
   careers: { href: "/careers", status: "planned" },

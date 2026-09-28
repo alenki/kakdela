@@ -1,0 +1,515 @@
+/* ═════════════ «О НАС» (/about): the guest asks back, the café answers ═════════════
+   One conversation in six chapters, one café day: cream from the opening to the café's own things, ink from
+   the evening's welcome to the footer. Every heading is an exchange: the guest's question in the thin
+   display voice (.dlg-ask), the café's answer in heavy caps (.dlg-title). Components: src/components/about.
+     #o-nas     the opening: «А у вас как дела?» / «Спасибо, что спросили.», gutter to gutter
+     #seychas   «А прямо сейчас?»: the part of the day it is in Moscow, and the day as a ruler
+     #dveri     «Девять дверей, один вопрос.»: the street, every café's sign on one line (the moment)
+     #svoyo     «Голландез, сироп из горных трав и названия.»: three menu entries
+     #rady      «Всем, кто зайдёт.»: a guest's words on a note, what the cafés have (ink)
+     #a-u-vas   «А у вас?»: the café asks back; the eight answers as slips, and its reply (ink) */
+
+/* ───────────────────────── The opening ───────────────────────── */
+.ab-open {
+  padding-top: calc(var(--header-h) + clamp(28px, 7vh, 6rem));
+  padding-bottom: calc(var(--section-pad) * 1.15);
+}
+/* The grid is the title's container: its size is the canvas less the gutters (cqi). */
+.ab-open__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(2.25rem, 6vh, 5.5rem);
+  container-type: inline-size;
+}
+.ab-open__head { gap: clamp(0.75rem, 1.2vw, 1.75rem); }
+
+/* The guest's line. Today's answer, if any, opens it in red: «Сонно. А у вас как дела?» (html[data-answer]
+   is a tear or a pick today; a time-of-day guess also sets data-guess and never shows). The words come
+   from the line's own data-said-* attributes (Opening.tsx), and they are read as part of the heading. */
+.ab-open__ask::before { color: var(--accent-ink); font-weight: 300; }
+html[data-answer="luchshe-vseh"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-luchshe-vseh) " "; }
+html[data-answer="kak-v-skazke"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-kak-v-skazke) " "; }
+html[data-answer="vsyo-shik"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-vsyo-shik) " "; }
+html[data-answer="10-iz-10"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-10-iz-10) " "; }
+html[data-answer="est-hochu"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-est-hochu) " "; }
+html[data-answer="normalno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-normalno) " "; }
+html[data-answer="sonno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-sonno) " "; }
+html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-tak-sebe) " "; }
+
+/* The café's answer. Phones and tablets: «Спасибо, | что спросили.», the longer half across the canvas
+   (it sets 5.17em wide). From 1024: one line gutter to gutter (8.63em wide, at 860), as the coffee
+   poster's answer. Re-measure both when the copy, the weight or the face changes. */
+.ab-open__title {
+  font-size: min(calc(100cqi / 5.2), 11rem);
+  line-height: 0.88;
+  letter-spacing: -0.012em;
+}
+.ab-open__line { display: block; }
+.ab-open__words { display: inline-block; }
+@media (min-width: 1024px) {
+  .ab-open__title { font-size: min(calc(100cqi / 8.66), 14rem); white-space: nowrap; }
+  .ab-open__line { display: inline; }
+}
+
+/* The founding line in the café's italic (the section's one italic moment), the rest in the text face. */
+.ab-open__founding {
+  margin: 0;
+  max-width: 30ch;
+  font-size: clamp(1.375rem, 0.62rem + 1.9vw, 3rem);
+  line-height: 1.22;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+.ab-open__lead {
+  max-width: 44ch;
+  margin: clamp(1.25rem, 2vw, 2rem) 0 0;
+  font-size: var(--lead);
+  line-height: 1.45;
+  color: var(--fg-soft);
+}
+/* The kitchen door, cut down to its «Как дела на кухне?» (FramedPhoto). */
+.ab-open__door { display: grid; gap: 0.75rem; justify-self: end; width: min(66%, 26rem); }
+.ab-open__caption { margin: 0; }
+@media (min-width: 640px) {
+  .ab-open__door { width: calc(50% - var(--grid-gap) / 2); }
+}
+@media (min-width: 1024px) {
+  .ab-open__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+  .ab-open__head { grid-column: 1 / -1; }
+  .ab-open__story { grid-column: 1 / span 7; }
+  .ab-open__door { grid-column: 9 / -1; width: auto; justify-self: stretch; }
+}
+@media (min-width: 1280px) {
+  .ab-open__door { grid-column: 10 / -1; }
+}
+
+/* The exchange lands at first paint, with no script: the guest asks, and after a beat the café answers,
+   each half of it rising out of its own slot (clipped to its line, the clip going with the words), then
+   the rest. The page is visible without it: reduced motion and a mid-visit switch never see it. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="reduced"]) .ab-open__ask { animation: ab-ask 760ms var(--ease-kd-out) 120ms both; }
+  html:not([data-motion="reduced"]) .ab-open__label { animation: ab-fade 600ms var(--ease-kd-out) both; }
+  html:not([data-motion="reduced"]) .ab-open__words {
+    animation: ab-slot 1000ms var(--ease-kd-out) calc(720ms + var(--i, 0) * 130ms) both;
+  }
+  html:not([data-motion="reduced"]) :is(.ab-open__story, .ab-open__door) {
+    animation: ab-up 900ms var(--ease-kd-out) 1250ms both;
+  }
+  html:not([data-motion="reduced"]) .ab-open__door { animation-delay: 1380ms; }
+}
+@keyframes ab-fade { from { opacity: 0; } }
+@keyframes ab-ask { from { opacity: 0; translate: -0.8em 0; } }
+@keyframes ab-up { from { opacity: 0; translate: 0 22px; } }
+@keyframes ab-slot {
+  from { translate: 0 0.95em; clip-path: inset(-0.3em -0.2em 0.95em -0.2em); }
+  to { translate: 0 0; clip-path: inset(-0.3em -0.2em -0.3em -0.2em); }
+}
+
+/* A photo cut by a crop (FramedPhoto): the image keeps its proportions, placed in % of the frame. */
+.framed__img { position: absolute; display: block; }
+
+/* ───────────────────────── «А прямо сейчас?» ───────────────────────── */
+/* The café's answer is this part of the day (html[data-daypart], NOW_SCRIPT and NowClock); without JS,
+   «Каждый день с 07:30.». */
+.ab-now__say { display: none; }
+html:not([data-daypart]) .ab-now__say--still,
+html[data-daypart="0"] .ab-now__say[data-dp="0"],
+html[data-daypart="1"] .ab-now__say[data-dp="1"],
+html[data-daypart="2"] .ab-now__say[data-dp="2"],
+html[data-daypart="3"] .ab-now__say[data-dp="3"],
+html[data-daypart="4"] .ab-now__say[data-dp="4"],
+html[data-daypart="5"] .ab-now__say[data-dp="5"] { display: inline; }
+
+/* The ruler: a day from midnight to midnight between two hairlines, gutter to gutter. The closed hours are
+   hatched, the parts of the day are cut by hairlines, the one it is now is tinted, and the red hand stands
+   at this minute (--kd-now) with «сейчас 14:32» over it. Every position is a share of 24 hours. */
+.ab-ruler {
+  --band: clamp(48px, 5.2vw, 6rem);
+  position: relative;
+  margin-top: clamp(1rem, 2vw, 2rem);
+  padding-top: 2.25rem;
+}
+.ab-ruler__band {
+  position: relative;
+  height: var(--band);
+  border-block: 1px solid var(--line);
+}
+.ab-ruler__closed,
+.ab-ruler__part {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--from) / 24 * 100%);
+  width: calc((var(--to) - var(--from)) / 24 * 100%);
+}
+.ab-ruler__closed {
+  background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--fg) 22%, transparent) 0 1px, transparent 1px 7px);
+}
+.ab-ruler__part { border-left: 1px solid var(--line); transition: background-color 400ms var(--ease-kd-ui); }
+.ab-ruler__part[data-dp="0"] { border-left: 0; }
+html[data-daypart="0"] .ab-ruler__part[data-dp="0"],
+html[data-daypart="1"] .ab-ruler__part[data-dp="1"],
+html[data-daypart="2"] .ab-ruler__part[data-dp="2"],
+html[data-daypart="3"] .ab-ruler__part[data-dp="3"],
+html[data-daypart="4"] .ab-ruler__part[data-dp="4"],
+html[data-daypart="5"] .ab-ruler__part[data-dp="5"] { background-color: color-mix(in srgb, var(--fg) 7%, transparent); }
+.ab-ruler__tick {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--at) / 24 * 100%);
+  width: 1px;
+  height: 18%;
+  background: var(--line-strong);
+}
+.ab-ruler__tick[data-major] { height: 36%; background: var(--line); }
+.ab-ruler__tick:first-child, .ab-ruler__tick:last-of-type { display: none; }
+.ab-ruler__hours { position: relative; height: 1.6em; margin-top: 0.5rem; font-size: var(--fs-label); color: var(--fg-soft); }
+.ab-ruler__hour { position: absolute; top: 0; left: calc(var(--at) / 24 * 100%); translate: -50% 0; line-height: 1; }
+.ab-ruler__hour:first-child { translate: 0 0; }
+.ab-ruler__hour:last-child { translate: -100% 0; }
+/* Phones: every six hours. */
+@media (max-width: 639.98px) {
+  .ab-ruler__hour:nth-child(even) { display: none; }
+}
+
+/* The hand, and its words drawn from the same custom properties (so both are right at first paint). */
+.ab-ruler__now {
+  display: none;
+  position: absolute;
+  top: -0.75rem;
+  bottom: -0.75rem;
+  left: calc(var(--kd-now, 0) / 1440 * 100%);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+  transition: left 600ms var(--ease-kd-out);
+}
+.ab-ruler__band::after {
+  display: none;
+  counter-reset: kd-h var(--kd-h, 0) kd-m var(--kd-m, 0);
+  content: "сейчас " counter(kd-h, decimal-leading-zero) ":" counter(kd-m, decimal-leading-zero);
+  position: absolute;
+  bottom: calc(100% + 1.1rem);
+  left: clamp(0px, calc(var(--kd-now, 0) / 1440 * 100% - 4em), calc(100% - 8em));
+  width: 8em;
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--accent-ink);
+  transition: left 600ms var(--ease-kd-out);
+}
+html[data-daypart] .ab-ruler__now,
+html[data-daypart] .ab-ruler__band::after { display: block; }
+
+/* The six parts in words: rows on a phone, three up on a tablet, six under the ruler from 1024. The one
+   it is now is in full ink, under a rule of ink. */
+.ab-parts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: clamp(2rem, 3.5vw, 3.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ab-part {
+  display: grid;
+  grid-template-columns: 7.5em minmax(0, 1fr);
+  column-gap: 1rem;
+  align-items: baseline;
+  padding-block: 0.875rem;
+  border-top: 1px solid var(--line);
+  color: var(--fg-soft);
+  transition: color 300ms var(--ease-kd-ui), border-color 300ms var(--ease-kd-ui);
+}
+.ab-part:last-child { border-bottom: 1px solid var(--line); }
+.ab-part__time { font-size: var(--fs-small); white-space: nowrap; }
+.ab-part__text { text-wrap: balance; }
+html[data-daypart="0"] .ab-part[data-dp="0"],
+html[data-daypart="1"] .ab-part[data-dp="1"],
+html[data-daypart="2"] .ab-part[data-dp="2"],
+html[data-daypart="3"] .ab-part[data-dp="3"],
+html[data-daypart="4"] .ab-part[data-dp="4"],
+html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-color: currentColor; }
+@media (min-width: 640px) {
+  .ab-parts { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--grid-gap); row-gap: 1.5rem; }
+  .ab-part { grid-template-columns: minmax(0, 1fr); row-gap: 0.5rem; align-content: start; padding-block: 1rem 0; }
+  .ab-part:last-child { border-bottom: 0; }
+}
+@media (min-width: 1024px) {
+  .ab-parts { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* ───────────────────────── The street ───────────────────────── */
+/* Each door is a photo in a 4:5 frame (its sign on the line, 30% down: Street.tsx SIGN_LINE) and its
+   caption. The line is a hairline across the whole street behind the photos, so it shows between them,
+   running sign to sign. The door's height is what the screen under the header leaves for it. */
+.ab-street {
+  --door-gap: clamp(24px, 5vw, 7.5rem);
+  --door-h: clamp(13rem, calc(100svh - var(--header-h) - 16rem), 46rem);
+  --door-w: calc(var(--door-h) * 0.8);
+  --stage-pad: clamp(16px, 4vh, 3.5rem);
+}
+@media (max-width: 639.98px) {
+  .ab-street {
+    --door-w: min(74vw, calc((100svh - var(--header-h) - 12rem) * 0.8));
+    --door-h: calc(var(--door-w) * 1.25);
+  }
+}
+.ab-street__drive { position: relative; }
+/* Without the drive: a row the guest scrolls sideways, doors snapping to the middle. */
+.ab-street__stage {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.ab-street__stage::-webkit-scrollbar { display: none; }
+.ab-street__stage:focus-visible { outline-offset: -4px; }
+.ab-street__track {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--door-gap);
+  width: max-content;
+  padding: var(--stage-pad) var(--gutter);
+}
+.ab-street__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--stage-pad) + var(--door-h) * 0.3);
+  height: 1px;
+  background: var(--fg);
+}
+.ab-town,
+.ab-town__doors { display: flex; align-items: flex-start; gap: var(--door-gap); }
+.ab-town__doors { margin: 0; padding: 0; list-style: none; }
+
+/* The city, standing in the street the way the notice's tabs stand: read from the foot up. It stands in
+   the line, so the line stops at its letters (the field's colour behind them). */
+.ab-town__mark {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 0.75rem;
+  height: var(--door-h);
+  margin: 0;
+}
+.ab-town__name {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  padding-inline: 0.12em;
+  font-size: clamp(2.5rem, calc(var(--door-h) * 0.15), 8rem);
+  line-height: 0.86;
+  background: var(--bg);
+}
+.ab-town__count { white-space: nowrap; }
+
+.ab-door { flex: none; width: var(--door-w); scroll-snap-align: center; }
+.ab-door__photo,
+.ab-door__paper { position: relative; z-index: 1; }
+/* A stand-in: the notice's paper, the plain wordmark on the line, its clover red. */
+.ab-door__paper {
+  aspect-ratio: 4 / 5;
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  color: var(--color-ink);
+  filter: drop-shadow(var(--paper-shadow));
+}
+.ab-door__mark { position: absolute; left: 13%; top: 30%; width: 74%; height: auto; translate: 0 -50%; overflow: visible; }
+.ab-door__clover { color: var(--color-tomato); }
+.ab-door__soon { position: absolute; left: 0; right: 0; bottom: 1.25rem; color: var(--color-graphite); text-align: center; }
+.ab-door__cap {
+  display: grid;
+  row-gap: 0.4rem;
+  margin-top: clamp(14px, 1.4vw, 1.5rem);
+  transition: opacity 400ms var(--ease-kd-ui);
+}
+.ab-door__addr { margin: 0; font-size: var(--h3); text-wrap: balance; }
+.ab-door__pre { color: var(--fg-soft); }
+.ab-door__note, .ab-door__when { margin: 0; }
+.ab-door__when .status { font-size: var(--fs-small); }
+
+/* Driven (StreetDrive, full motion): the stage stays under the header for as long as the street is
+   longer than the screen, and the wrapper is that much taller, so the page's scroll walks it. */
+.ab-street[data-drive] .ab-street__drive { height: calc(100svh - var(--header-h) + var(--travel, 0px)); }
+.ab-street[data-drive] .ab-street__stage {
+  position: sticky;
+  top: var(--header-h);
+  display: flex;
+  align-items: center;
+  height: calc(100svh - var(--header-h));
+  overflow: clip;
+  scroll-snap-type: none;
+}
+.ab-street[data-drive] .ab-street__track { will-change: transform; }
+.ab-street[data-drive] .ab-door:not([data-current]) .ab-door__cap { opacity: 0.42; }
+
+.ab-street__foot { margin-top: var(--foot-gap); }
+
+/* ───────────────────────── «Что у вас своё?» ───────────────────────── */
+/* Three printed entries (as the evening's desserts): a third of the canvas each from 640. */
+.ab-own__list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3.5rem var(--grid-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ab-own__item { min-width: 0; }
+/* The names: the answer's slip across the top of «Лучше всех», half on the photo, as in the hero. */
+.ab-own__visual { display: grid; container-type: inline-size; }
+.ab-own__visual > * { grid-area: 1 / 1; }
+.ab-own__slip {
+  z-index: 1;
+  align-self: start;
+  margin-top: -0.56em;
+  font-size: min(calc(var(--h3) * 1.35), 15cqi);
+}
+.ab-own__name { margin: clamp(1rem, 1.4vw, 1.75rem) 0 0; }
+.ab-own__desc { max-width: 44ch; margin: 0.625rem 0 0; color: var(--fg-soft); }
+.ab-own__link { margin: 0.875rem 0 0; font-size: var(--fs-small); }
+@media (min-width: 640px) {
+  .ab-own__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 639.98px) {
+  .ab-own__item:has(.ab-own__slip) { padding-top: 1rem; }
+}
+
+/* ───────────────────────── «Всем, кто зайдёт.» (ink) ───────────────────────── */
+.ab-welcome__grid { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(3.5rem, 7vw, 6rem); }
+@media (min-width: 1024px) {
+  .ab-welcome__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: center; }
+  .ab-note { grid-column: 1 / span 6; justify-self: start; }
+  .ab-house { grid-column: 8 / -1; }
+}
+
+/* A guest's words at the door, on a note of the notice's paper torn off a pad (the reviews' paper and
+   rip), lying a little askew on the dark counter. */
+.ab-note { margin: 0; max-width: 44rem; }
+.ab-note__land { display: grid; rotate: calc(-1.4deg + var(--lean, 0deg)); }
+/* On a phone the note is as wide as the canvas: keep its tilted corners inside the gutters. */
+@media (max-width: 639.98px) {
+  .ab-note__land { margin-inline: 6px; }
+}
+.ab-note__paper {
+  position: relative;
+  display: grid;
+  font-size: clamp(1.625rem, 0.7rem + 2.5vw, 4.25rem);
+  filter: drop-shadow(5px 6px 1px rgb(0 0 0 / 0.35));
+}
+.ab-note__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--paper), #fff 65%);
+  clip-path: var(--fibres);
+}
+.ab-note__sheet {
+  margin: 0;
+  padding: 1.7em 1.35em 1.5em;
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  clip-path: var(--rip);
+  color: var(--color-ink);
+}
+.ab-note__quote { margin: 0; line-height: 1.24; }
+.ab-note__who { margin-top: 1.5rem; }
+
+/* What the cafés have: a timetable between hairlines, the thing in display type, where in the text face. */
+.ab-house__label { margin: 0 0 1rem; }
+.ab-house__list { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.ab-house__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  padding-block: clamp(14px, 1.25vw, 1.6rem);
+  border-top: 1px solid var(--line);
+}
+.ab-house__name { font-size: var(--h3); }
+.ab-house__where { color: var(--fg-soft); font-size: var(--fs-small); text-align: right; }
+.ab-house__careers { margin: var(--foot-gap) 0 0; }
+.ab-house__ask { color: var(--fg-soft); }
+@media (min-width: 640px) {
+  .ab-house__where { font-size: var(--fs-body); }
+}
+
+/* ───────────────────────── «А у вас?» (ink) ───────────────────────── */
+.ab-back__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: last baseline;
+  column-gap: clamp(1rem, 3vw, 3rem);
+  row-gap: 1rem;
+  margin-bottom: clamp(2.25rem, 4.5vw, 5rem);
+}
+.ab-back__prompt { margin: 0; }
+
+/* The eight answers, lying as the notice's slips, the size of an item title and more. A radio group: the
+   label is the slip, the radio under it is unseen. The chosen one is lifted a little, its word in red. */
+.ab-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 1.6vw, 1.75rem) clamp(10px, 1.3vw, 1.5rem);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.625rem, 0.9rem + 2.4vw, 4rem);
+}
+.ab-pick__opt {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.ab-pick__input { position: absolute; inset: 0; opacity: 0; margin: 0; pointer-events: none; }
+.ab-pick__slip { display: block; transition: translate 320ms var(--ease-kd-out); }
+.ab-pick__slip .slip__paper { transition: color 200ms var(--ease-kd-ui); user-select: none; -webkit-user-select: none; }
+.ab-pick__opt:has(.ab-pick__input:checked) .ab-pick__slip { translate: 0 -0.16em; }
+.ab-pick__opt:has(.ab-pick__input:checked) .slip__paper { color: var(--color-tomato-ink); }
+.ab-pick__opt:has(.ab-pick__input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .ab-pick__opt:not(:has(.ab-pick__input:checked)):hover .ab-pick__slip { translate: 0 -0.07em; }
+}
+
+/* The exchange: the guest's slips, then the café's reply; from 1024 side by side, the slips on columns 1–7
+   and the reply on 9–12, from the same top line. */
+.ab-back__body { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(2.5rem, 4vw, 4rem); }
+@media (min-width: 1024px) {
+  .ab-back__body { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: start; }
+  .ab-pick { grid-column: 1 / span 7; font-size: clamp(1.75rem, 0.6rem + 2.6vw, 4.5rem); }
+  .ab-replies { grid-column: 9 / -1; }
+}
+
+/* The café's reply: all nine (the line before any answer, then one per answer) in one cell, so the
+   longest sets the height; the checked answer picks the one shown, with or without a script. */
+.ab-replies { display: grid; max-width: 46rem; }
+.ab-reply { grid-area: 1 / 1; display: grid; align-content: start; row-gap: 1rem; min-width: 0; visibility: hidden; }
+.ab-reply__line { margin: 0; max-width: 34ch; font-size: clamp(1.25rem, 0.85rem + 1vw, 2.125rem); }
+.ab-reply__dish { max-width: 32rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.ab-reply__ask { color: var(--fg-soft); font-weight: var(--fw-text); }
+.ab-reply__more { margin: 0; font-size: var(--fs-small); }
+.ab-back:not(:has(.ab-pick__input:checked)) .ab-reply--idle,
+.ab-back:has(#back-luchshe-vseh:checked) .ab-reply[data-reply="luchshe-vseh"],
+.ab-back:has(#back-kak-v-skazke:checked) .ab-reply[data-reply="kak-v-skazke"],
+.ab-back:has(#back-vsyo-shik:checked) .ab-reply[data-reply="vsyo-shik"],
+.ab-back:has(#back-10-iz-10:checked) .ab-reply[data-reply="10-iz-10"],
+.ab-back:has(#back-est-hochu:checked) .ab-reply[data-reply="est-hochu"],
+.ab-back:has(#back-normalno:checked) .ab-reply[data-reply="normalno"],
+.ab-back:has(#back-sonno:checked) .ab-reply[data-reply="sonno"],
+.ab-back:has(#back-tak-sebe:checked) .ab-reply[data-reply="tak-sebe"] { visibility: visible; }
+
+.ab-back__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: var(--foot-gap); }

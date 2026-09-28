@@ -10,6 +10,8 @@ type Props = Omit<ComponentPropsWithoutRef<"p">, "children" | "style"> & {
   label: string;
   /** The answer's mood: a sleepy or so-so one droops (clockwise); any other, or none, rises. */
   mood?: Mood;
+  /** A span where only phrasing content may go (a radio's label: the about page's answers). */
+  as?: "p" | "span";
 };
 
 /**
@@ -17,16 +19,16 @@ type Props = Omit<ComponentPropsWithoutRef<"p">, "children" | "style"> & {
  * tear on the right (tornStrip, seeded), a little askew. One element, so it takes one grid cell. The
  * look is brand.css; where it lies and how big it is belong to the caller's class.
  */
-export function Slip({ seed, label, mood, className, ...rest }: Props) {
+export function Slip({ seed, label, mood, className, as: Tag = "p", ...rest }: Props) {
   const strip = tornStrip(seed);
   const tilt = mood === "tired" || mood === "meh" ? strip.tilt : -strip.tilt;
   return (
-    <p
+    <Tag
       className={cn("slip", className)}
       style={{ "--tear": strip.clip, "--fibres": strip.fibres, "--tilt": `${tilt}deg` } as CSSProperties}
       {...rest}
     >
       <span className="slip__paper display">{label}</span>
-    </p>
+    </Tag>
   );
 }

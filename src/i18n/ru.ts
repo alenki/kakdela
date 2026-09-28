@@ -66,6 +66,8 @@ export const ru = {
   actionBar: { label: "Быстрые действия", menu: "Меню", nearest: "Кофейни", delivery: "Доставка" },
   hero: {
     prompt: "Как у вас? Оторвите честно",
+    // The question in words, where the /menu page sets it (the hero's own headline is the logo).
+    q: "Как дела?",
     allTorn: "Все ответы разобрали.",
     reprint: "Повесить новые",
     yesterday: (label: string) => `Вчера было «${label}». А сегодня?`,
@@ -87,9 +89,11 @@ export const ru = {
     a: "Что на завтрак?",
     // Labels the city switch; without JS it reads «Цены: Нальчик».
     prices: "Цены",
-    links: { menu: "Посмотреть меню" },
+    // The /menu page's kitchen and desserts read these two.
+    extras: "Ещё на завтрак",
+    links: { menu: "Посмотреть меню", delivery: "Заказать домой" },
     /** One line under the photo (numbers come formatted). Each figure keeps its name: it wraps only after a «·». */
-    kbju: (kcal: number, b: string, zh: string, u: string) =>
+    kbju: (kcal: number | string, b: string, zh: string, u: string) =>
       `${kcal}${NBSP}ккал · белки${NBSP}${b}${NBSP}г · жиры${NBSP}${zh}${NBSP}г · углеводы${NBSP}${u}${NBSP}г`,
   },
   coffee: {
@@ -226,10 +230,64 @@ export const ru = {
         ? `Новый рекорд: ${groupDigits(score)}.`
         : `Стаканчик опрокинулся. Счёт ${groupDigits(score)}, рекорд ${groupDigits(best)}.`,
   },
+  // The /menu page: the waiter's side of the conversation.
+  menu: {
+    meta: {
+      title: "Меню кофеен «Как дела?»: завтраки весь день, кофе и десерты",
+      description:
+        "Всё меню «Как дела?» в Нальчике и Владикавказе: завтраки весь день, кофе, чай, лимонады и десерты. Цены для вашего города, объёмы и КБЖУ.",
+    },
+    q: "Меню",
+    a: "Что будете?",
+    lead: "Всё, что мы готовим и варим, с ценами вашего города, объёмами и КБЖУ.",
+    // The answers index: its accessible name (the visible label is t.hero.q, or t.hero.yesterday).
+    answersNav: "Блюда по ответам",
+    // Under today's torn answer in the index. Never red.
+    today: "ваш ответ сегодня",
+    contents: "Содержание",
+    runNav: "Разделы меню",
+    count: {
+      kuhnya: (n: number) => `${n} ${plural(n, "блюдо", "блюда", "блюд")}`,
+      bar: (n: number) => `${n} ${plural(n, "напиток", "напитка", "напитков")}`,
+      deserty: (n: number) => `${n} ${plural(n, "десерт", "десерта", "десертов")}`,
+    },
+    everywhere: "во всех кофейнях",
+    // «в 3 из 7 кофеен»: after «из N» always the genitive plural; «3 из 7» never breaks.
+    kitchenShare: (n: number, total: number) => `в ${n}${NBSP}из ${total} кофеен`,
+    cityGen: { nalchik: "Нальчика", vladikavkaz: "Владикавказа" },
+    chapters: {
+      kuhnya: {
+        q: "Кухня",
+        a: "С чего начнём?",
+        // The rest: «в остальных» for several cafés, «в другой» for one, nothing when every café has the kitchen.
+        lead: (n: number, total: number, cityGen: string) =>
+          `Завтраки подаём весь день. Полная кухня есть в ${n}${NBSP}из ${total} кофеен ${cityGen}` +
+          (total - n > 1 ? ", в остальных меню лёгкое." : total - n === 1 ? ", в другой меню лёгкое." : "."),
+      },
+      bar: {
+        q: "Бар",
+        a: "Как обычно?",
+        lead: "Эспрессо, фильтр и авторские напитки, матча, чаи, лимонады и фреши. Во всех кофейнях по одной цене.",
+      },
+      deserty: {
+        q: "Десерты",
+        a: "К кофе что-нибудь?",
+        lead: (n: number) =>
+          `${n} ${plural(n, "десерт", "десерта", "десертов")} к любому кофе, есть без сахара и без глютена. Во всех кофейнях по одной цене.`,
+      },
+    },
+    fullKitchen: "Полная кухня",
+    ml: (n: string) => `${n}${NBSP}мл`,
+    kcal: (k: string) => `${k}${NBSP}ккал`,
+    // Screen-reader form of a two-size price: «200 мл за 240 ₽, 300 мл за 270 ₽» (prices come from rub()).
+    sizesSpoken: (ml1: number, p1: string, ml2: number, p2: string) => `${ml1}${NBSP}мл за ${p1}, ${ml2}${NBSP}мл за ${p2}`,
+    note: "Состав, КБЖУ и цены иногда меняются: уточняйте в кофейне.",
+  },
   notFound: {
     label: "Ошибка 404",
     title: "Ещё варим. Загляните чуть позже.",
-    lead: "Такой страницы пока нет. Меню, адреса и часы работы есть на главной.",
+    lead: "Такой страницы пока нет. Всё меню есть на своей странице, адреса и часы работы на главной.",
+    menu: "Всё меню",
     home: "На главную",
     telegram: "Новости в Telegram",
     maps: "Кофейни на Яндекс Картах",

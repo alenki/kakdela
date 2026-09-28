@@ -35,11 +35,42 @@ import team3 from "@/assets/photos/team-3.jpg";
 import team4 from "@/assets/photos/team-4.jpg";
 import cafeShogencukova19 from "@/assets/photos/cafe-shogencukova-19.jpg";
 
+// /menu: kitchen card and dessert vitrine thumbnails (client, 1200px)
+import ovsyanayaKasha from "@/assets/photos/ovsyanaya-kasha.jpg";
+import risovayaKasha from "@/assets/photos/risovaya-kasha.jpg";
+import talbina from "@/assets/photos/talbina.jpg";
+import pankejki from "@/assets/photos/pankejki.jpg";
+import pokeSKuricej from "@/assets/photos/poke-s-kuricej.jpg";
+import pokeSSyomgoj from "@/assets/photos/poke-s-syomgoj.jpg";
+import boulSKrevetkami from "@/assets/photos/boul-s-krevetkami.jpg";
+import boulSKuricej from "@/assets/photos/boul-s-kuricej.jpg";
+import sendvichSKuricej from "@/assets/photos/sendvich-s-kuricej.jpg";
+import sendvichSSyomgoj from "@/assets/photos/sendvich-s-syomgoj.jpg";
+import sendvichSIndejkoj from "@/assets/photos/sendvich-s-indejkoj.jpg";
+import sendvichSPryanojGovyadinoj from "@/assets/photos/sendvich-s-pryanoj-govyadinoj.jpg";
+import rollSKuricej from "@/assets/photos/roll-s-kuricej.jpg";
+import rollSSyomgoj from "@/assets/photos/roll-s-syomgoj.jpg";
+import pastaSKuricej from "@/assets/photos/pasta-s-kuricej.jpg";
+import pastaSKrevetkami from "@/assets/photos/pasta-s-krevetkami.jpg";
+import trajfl from "@/assets/photos/trajfl.jpg";
+import tortBeze from "@/assets/photos/tort-beze.jpg";
+import pannaKotta from "@/assets/photos/panna-kotta.jpg";
+import tiramisu from "@/assets/photos/tiramisu.jpg";
+import tartSMaskarponeIMalinoj from "@/assets/photos/tart-s-maskarpone-i-malinoj.jpg";
+import dubajskijBatonchik from "@/assets/photos/dubajskij-batonchik.jpg";
+import snikersPp from "@/assets/photos/snikers-pp.jpg";
+import bauntiPp from "@/assets/photos/baunti-pp.jpg";
+import deniz from "@/assets/photos/deniz.jpg";
+import syrokSoSgushchenkoj from "@/assets/photos/syrok-so-sgushchenkoj.jpg";
+import syrokShokoladnyj from "@/assets/photos/syrok-shokoladnyj.jpg";
+import finikiVShokolade from "@/assets/photos/finiki-v-shokolade.jpg";
+import moti from "@/assets/photos/moti.jpg";
+
 export const photos = {
   luchsheVseh: { src: luchsheVseh, alt: "Завтрак «Лучше всех»: глазунья, домашние колбаски, свежие овощи и грибной соус" },
   otlichnyj: { src: otlichnyj, alt: "Завтрак «Отличный»: омлет с моцареллой, тост с авокадо, салат и соус" },
   kapitalnyj: { src: kapitalnyj, alt: "Завтрак «Капитальный»: яйца, гренки, хумус, салат и черри" },
-  syrniki: { src: syrniki, alt: "Сырники с соусами" },
+  syrniki: { src: syrniki, alt: "Сырники на сметанной подушке под вишнёвым соусом" },
   espressoTonik: { src: espressoTonik, alt: "Эспрессо-тоник со льдом и цитрусами" },
   dalsheSlashe: { src: dalsheSlashe, alt: "Авторский напиток «Дальше слаще» с грейпфрутом" },
   klever: { src: klever, alt: "Кофе «Клевер» в стеклянном кувшине" },
@@ -67,4 +98,35 @@ export const photos = {
   team3: { src: team3, alt: "Руки бариста у эспрессо-машины", placeholder: true },
   team4: { src: team4, alt: "Гость держит чашку с латте-артом", placeholder: true },
   cafeShogencukova19: { src: cafeShogencukova19, alt: "Кофейня на проспекте Шогенцукова, 19", placeholder: true },
+  // /menu kitchen card thumbnails (client)
+  ovsyanayaKasha: { src: ovsyanayaKasha, alt: "Овсяная каша с бананом, клубникой и голубикой" },
+  risovayaKasha: { src: risovayaKasha, alt: "Рисовая каша с клубникой и голубикой" },
+  talbina: { src: talbina, alt: "Тальбина с финиками и грецкими орехами" },
+  pankejki: { src: pankejki, alt: "Панкейки с кремом, голубикой и ягодным соусом" },
+  pokeSKuricej: { src: pokeSKuricej, alt: "Поке с курицей: рис, филе цыплёнка, яйцо, черри и эдамаме" },
+  pokeSSyomgoj: { src: pokeSSyomgoj, alt: "Поке с сёмгой: рис, сёмга, перец, красная капуста, кукуруза, эдамаме и соус с кунжутом" },
+  boulSKrevetkami: { src: boulSKrevetkami, alt: "Боул с киноа, креветками, авокадо, песто, черри, редисом и лаймом" },
+  boulSKuricej: { src: boulSKuricej, alt: "Боул с курицей: нут, филе цыплёнка, авокадо, черри, лайм и зелень" },
+  sendvichSKuricej: { src: sendvichSKuricej, alt: "Сэндвич с курицей, картофель по-деревенски и соус" },
+  sendvichSSyomgoj: { src: sendvichSSyomgoj, alt: "Сэндвич с сёмгой, картофель по-деревенски и соус" },
+  sendvichSIndejkoj: { src: sendvichSIndejkoj, alt: "Сэндвич с индейкой, картофель фри и соус" },
+  sendvichSPryanojGovyadinoj: { src: sendvichSPryanojGovyadinoj, alt: "Сэндвич с пряной говядиной, картофель по-деревенски и соус" },
+  rollSKuricej: { src: rollSKuricej, alt: "Ролл с курицей в лаваше, разрезанный пополам" },
+  rollSSyomgoj: { src: rollSSyomgoj, alt: "Ролл с сёмгой в лаваше, разрезанный пополам" },
+  pastaSKuricej: { src: pastaSKuricej, alt: "Паста с курицей, шампиньонами и пармезаном, черри и зелёное масло" },
+  pastaSKrevetkami: { src: pastaSKrevetkami, alt: "Паста с креветками в соусе песто, пармезан и черри" },
+  // /menu dessert vitrine thumbnails (client)
+  trajfl: { src: trajfl, alt: "Трайфл в баночке: шоколадная крошка, крем, фисташка и голубика" },
+  tortBeze: { src: tortBeze, alt: "Торт безе со сливочным кремом и клубникой" },
+  pannaKotta: { src: pannaKotta, alt: "Панна-котта с малиновым джемом в баночке" },
+  tiramisu: { src: tiramisu, alt: "Тирамису в баночке с какао" },
+  tartSMaskarponeIMalinoj: { src: tartSMaskarponeIMalinoj, alt: "Кусок тарта с маскарпоне и малиной, сверху миндальные лепестки" },
+  dubajskijBatonchik: { src: dubajskijBatonchik, alt: "Дубайский батончик в молочном шоколаде с фисташками" },
+  snikersPp: { src: snikersPp, alt: "ПП-батончик «Сникерс» в молочном шоколаде с арахисом" },
+  bauntiPp: { src: bauntiPp, alt: "ПП-батончик «Баунти» в молочном шоколаде" },
+  deniz: { src: deniz, alt: "Конфеты «Дениз» в молочном шоколаде с морской солью" },
+  syrokSoSgushchenkoj: { src: syrokSoSgushchenkoj, alt: "Сырки с варёной сгущёнкой в молочном шоколаде" },
+  syrokShokoladnyj: { src: syrokShokoladnyj, alt: "Шоколадные сырки в глазури с хрустящей крошкой" },
+  finikiVShokolade: { src: finikiVShokolade, alt: "Финики в молочном шоколаде с фисташковой крошкой" },
+  moti: { src: moti, alt: "Разноцветные моти на тарелке" },
 } satisfies Record<string, Photo>;

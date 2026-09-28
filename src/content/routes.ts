@@ -4,7 +4,7 @@ export type RouteStatus = "live" | "planned";
 
 export const routes = {
   home: { href: "/", status: "live" },
-  menu: { href: "/menu", status: "planned" },
+  menu: { href: "/menu", status: "live" },
   locations: { href: "/locations", status: "planned" },
   events: { href: "/events", status: "planned" },
   about: { href: "/about", status: "planned" },

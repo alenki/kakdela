@@ -126,6 +126,8 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
 }
 .hdr-link, .menu-dialog__close { text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 :is(.hdr-link, .hdr-burger, .menu-dialog__close):active { opacity: 0.6; }
+/* The page on show (/menu): its link stays underlined. */
+.hdr-link[aria-current="page"] { text-decoration-line: underline; }
 /* «Меню» and the bare burger are narrower than 44px: widen the hit area without moving them. */
 .hdr-link::before { content: ""; position: absolute; inset: 0 -8px; }
 .hdr-burger::before { content: ""; position: absolute; inset: 0 -12px; }

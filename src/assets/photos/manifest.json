@@ -25,11 +25,12 @@
   },
   {
     "slug": "syrniki",
-    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-650d5b3ce6919.jpg",
-    "alt": "Сырники со сметаной и ягодами",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-688b5380d8c9c.JPG",
+    "alt": "Сырники на сметанной подушке под вишнёвым соусом",
+    "max": 1200,
     "file": "src/assets/photos/syrniki.jpg",
-    "width": 768,
-    "height": 512
+    "width": 1200,
+    "height": 800
   },
   {
     "slug": "espresso-tonik",
@@ -264,5 +265,266 @@
     "file": "src/assets/photos/cafe-shogencukova-19.jpg",
     "width": 1024,
     "height": 459
+  },
+  {
+    "slug": "ovsyanaya-kasha",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-6666dfa4209ee.JPG",
+    "alt": "Овсяная каша с бананом, клубникой и голубикой",
+    "max": 1200,
+    "file": "src/assets/photos/ovsyanaya-kasha.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "risovaya-kasha",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-6666dfc86290e.JPG",
+    "alt": "Рисовая каша с клубникой и голубикой",
+    "max": 1200,
+    "file": "src/assets/photos/risovaya-kasha.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "talbina",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-67c6f414f1c73.JPG",
+    "alt": "Тальбина с финиками и грецкими орехами",
+    "max": 1200,
+    "file": "src/assets/photos/talbina.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "pankejki",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-688b4a8c3f203.JPG",
+    "alt": "Панкейки с кремом, голубикой и ягодным соусом",
+    "max": 1200,
+    "file": "src/assets/photos/pankejki.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "poke-s-kuricej",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-67b3244d48082.jpg",
+    "alt": "Поке с курицей: рис, филе цыплёнка, яйцо, черри и эдамаме",
+    "max": 1200,
+    "file": "src/assets/photos/poke-s-kuricej.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "poke-s-syomgoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b09557ed567.png",
+    "alt": "Поке с сёмгой: рис, сёмга, перец, красная капуста, кукуруза, эдамаме и соус с кунжутом",
+    "max": 1200,
+    "file": "src/assets/photos/poke-s-syomgoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "boul-s-krevetkami",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-68b439835abce.jfif",
+    "alt": "Боул с киноа, креветками, авокадо, песто, черри, редисом и лаймом",
+    "max": 1200,
+    "file": "src/assets/photos/boul-s-krevetkami.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "boul-s-kuricej",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b0054a65268.png",
+    "alt": "Боул с курицей: нут, филе цыплёнка, авокадо, черри, лайм и зелень",
+    "max": 1200,
+    "file": "src/assets/photos/boul-s-kuricej.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "sendvich-s-kuricej",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-669e0e5a4b835.JPG",
+    "alt": "Сэндвич с курицей, картофель по-деревенски и соус",
+    "max": 1200,
+    "file": "src/assets/photos/sendvich-s-kuricej.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "sendvich-s-syomgoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-688b50b3516bc.JPG",
+    "alt": "Сэндвич с сёмгой, картофель по-деревенски и соус",
+    "max": 1200,
+    "file": "src/assets/photos/sendvich-s-syomgoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "sendvich-s-indejkoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69b09615718fb.png",
+    "alt": "Сэндвич с индейкой, картофель фри и соус",
+    "max": 1200,
+    "file": "src/assets/photos/sendvich-s-indejkoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "sendvich-s-pryanoj-govyadinoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69afeab6afc1d.png",
+    "alt": "Сэндвич с пряной говядиной, картофель по-деревенски и соус",
+    "max": 1200,
+    "file": "src/assets/photos/sendvich-s-pryanoj-govyadinoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "roll-s-kuricej",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-66deff7e68e0a.jpg",
+    "alt": "Ролл с курицей в лаваше, разрезанный пополам",
+    "max": 1200,
+    "file": "src/assets/photos/roll-s-kuricej.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "roll-s-syomgoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-66deffaa3fe53.jpg",
+    "alt": "Ролл с сёмгой в лаваше, разрезанный пополам",
+    "max": 1200,
+    "file": "src/assets/photos/roll-s-syomgoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "pasta-s-kuricej",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-64752036c009f.JPG",
+    "alt": "Паста с курицей, шампиньонами и пармезаном, черри и зелёное масло",
+    "max": 1200,
+    "file": "src/assets/photos/pasta-s-kuricej.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "pasta-s-krevetkami",
+    "url": "https://www.kakdelacoffee.ru/images/food/Food-Name-69afe8a335d70.png",
+    "alt": "Паста с креветками в соусе песто, пармезан и черри",
+    "max": 1200,
+    "file": "src/assets/photos/pasta-s-krevetkami.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "trajfl",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d5aa1207b.JPG",
+    "alt": "Трайфл в баночке: шоколадная крошка, крем, фисташка и голубика",
+    "max": 1200,
+    "file": "src/assets/photos/trajfl.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "tort-beze",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_6561cb47619eb.jpg",
+    "alt": "Торт безе со сливочным кремом и клубникой",
+    "max": 1200,
+    "file": "src/assets/photos/tort-beze.jpg",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "slug": "panna-kotta",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d70c638e7.JPG",
+    "alt": "Панна-котта с малиновым джемом в баночке",
+    "max": 1200,
+    "file": "src/assets/photos/panna-kotta.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "tiramisu",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_676bcac05af77.jpg",
+    "alt": "Тирамису в баночке с какао",
+    "max": 1200,
+    "file": "src/assets/photos/tiramisu.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "tart-s-maskarpone-i-malinoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_69d375ca1963d.png",
+    "alt": "Кусок тарта с маскарпоне и малиной, сверху миндальные лепестки",
+    "max": 1200,
+    "file": "src/assets/photos/tart-s-maskarpone-i-malinoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "dubajskij-batonchik",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_66f15f1e34178.jpg",
+    "alt": "Дубайский батончик в молочном шоколаде с фисташками",
+    "max": 1200,
+    "file": "src/assets/photos/dubajskij-batonchik.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "snikers-pp",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d96631d51.JPG",
+    "alt": "ПП-батончик «Сникерс» в молочном шоколаде с арахисом",
+    "max": 1200,
+    "file": "src/assets/photos/snikers-pp.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "baunti-pp",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_65c8d97c6c0d9.JPG",
+    "alt": "ПП-батончик «Баунти» в молочном шоколаде",
+    "max": 1200,
+    "file": "src/assets/photos/baunti-pp.jpg",
+    "width": 1200,
+    "height": 799
+  },
+  {
+    "slug": "deniz",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_676bcad0ee1a7.jpg",
+    "alt": "Конфеты «Дениз» в молочном шоколаде с морской солью",
+    "max": 1200,
+    "file": "src/assets/photos/deniz.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "syrok-so-sgushchenkoj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_676bcae06c52b.jpg",
+    "alt": "Сырки с варёной сгущёнкой в молочном шоколаде",
+    "max": 1200,
+    "file": "src/assets/photos/syrok-so-sgushchenkoj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "syrok-shokoladnyj",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_676bcaee44552.jpg",
+    "alt": "Шоколадные сырки в глазури с хрустящей крошкой",
+    "max": 1200,
+    "file": "src/assets/photos/syrok-shokoladnyj.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "finiki-v-shokolade",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_67c6f3530e2a6.jpg",
+    "alt": "Финики в молочном шоколаде с фисташковой крошкой",
+    "max": 1200,
+    "file": "src/assets/photos/finiki-v-shokolade.jpg",
+    "width": 1200,
+    "height": 800
+  },
+  {
+    "slug": "moti",
+    "url": "https://www.kakdelacoffee.ru/images/food/Dessert_669e0e71af668.jpg",
+    "alt": "Разноцветные моти на тарелке",
+    "max": 1200,
+    "file": "src/assets/photos/moti.jpg",
+    "width": 1200,
+    "height": 800
   }
 ]

@@ -10,6 +10,7 @@ The site reads like a well-set printed café menu: warm paper, black ink, one re
 
 ## Files and ownership
 - `src/app/page.tsx` composes the page: hero, team, breakfasts, coffee, locations, reviews, evening, chess, game inside `<main>`, then the footer (the contentinfo landmark).
+- `src/app/menu/page.tsx` composes the menu the same way: its server components live in `src/components/menu/`, its client islands in `src/components/menu/islands/`, its stylesheet is `src/styles/sections/menu.css`, and its data is `src/content/full-menu.ts` (the full menu from the client's site; the dishes shown on the homepage are referenced from `menu.ts`, never copied).
 - The runner lives in `src/components/game/*` (`Runner`, used by the game section and the 404) with its pure engine in `src/lib/runner.ts`; see «The runner» below.
 - The weekly puzzle's rules are `src/lib/chess.ts`, its site logic (weeks, grades, Russian, the saved solve) `src/lib/puzzle.ts`, its puzzles `src/content/puzzles.ts`; see «The weekly puzzle» below.
 - Each section:
@@ -163,7 +164,7 @@ After the desserts, before the runner: a mate in two from a real game, new every
 - **Storage:** `localStorage["kd-puzzle"] = {"v":1,"week":n,"id":"…","grade":"…","line":[key, reply, mate]}`, replayed and checked on read, kept until Monday; «Решить заново» clears it.
 
 ## Accessibility
-- One `h1` (the hero), an `h2` per section via `DialogueHeading`, real lists and landmarks. Alt text comes from `photos.ts`.
+- One `h1` per page (the hero on `/`, the cover on `/menu` via `DialogueHeading as="h1"`), an `h2` per section via `DialogueHeading`, real lists and landmarks. Alt text comes from `photos.ts`.
 - Visible focus is global: a 2px `--focus` ring with a 3px offset. Never remove it; inside anything that clips, or on the screen edge, use a negative `outline-offset`.
 - Touch targets are at least 44px. Decorative SVG is `aria-hidden`.
 - External links get `target="_blank" rel="noreferrer"` and the sr-only «(откроется в новой вкладке)».

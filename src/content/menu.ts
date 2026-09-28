@@ -1,5 +1,5 @@
 import { photos } from "./photos";
-import type { Breakfast, Dessert, Drink, Price } from "./types";
+import type { Breakfast, Dessert, Drink, Photo, Price } from "./types";
 
 const p = (nalchik: number | null, vladikavkaz: number | null = nalchik): Price => ({ nalchik, vladikavkaz });
 
@@ -55,6 +55,13 @@ export const breakfasts: Breakfast[] = [
     verify: { verified: true },
   },
 ];
+
+// Off the homepage now; the /menu page still lists them (full-menu.ts).
+export const extras = {
+  shakshuka: { name: "Шакшука", price: p(550, null), photo: photos.shakshuka as Photo },
+  syrniki: { name: "Сырники", price: p(380, null) },
+  pancakes: { name: "Мини-панкейки", price: p(410, null) },
+};
 
 // The coffee card: the house signatures, each with the note the barista writes on the cup.
 export const signatureDrinks: Drink[] = [
@@ -127,6 +134,9 @@ export const desserts: Dessert[] = [
     verify: { verified: true },
   },
 ];
+
+// Off the homepage now; the /menu page still lists it (full-menu.ts).
+export const cherryPie = { name: "Вишнёвый пирог с шариком мороженого", price: p(350), photo: photos.vishnevyjPirog };
 
 /** Seasonal slot. Summer 2026 «Прекрасное далёко!» has ended; keep inactive until the autumn menu is confirmed. */
 export const season = {

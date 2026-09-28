@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BtnLabel } from "@/components/chrome/BtnLabel";
+import { RouteLink } from "@/components/chrome/RouteLink";
 import { Runner } from "@/components/game/Runner";
 import type { City } from "@/content/types";
 import { external } from "@/content/routes";
@@ -39,6 +40,11 @@ export default function NotFound() {
               <BtnLabel>{t.notFound.home}</BtnLabel>
             </Link>
             <ul className="not-found__links" role="list">
+              <li>
+                <RouteLink to="menu" className="dlink">
+                  {t.notFound.menu}
+                </RouteLink>
+              </li>
               <li>
                 <a href={external.telegram} className="dlink" target="_blank" rel="noreferrer">
                   {t.notFound.telegram}

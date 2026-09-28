@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { RouteLink } from "./RouteLink";
+import { CurrentLink } from "./CurrentLink";
 import { MenuDialog } from "./MenuDialog";
 import { HeaderBehavior } from "./HeaderBehavior";
 import type { RouteKey } from "@/content/routes";
@@ -22,9 +22,9 @@ export function Header() {
         <div className="site-header__inner wrap">
           <nav className="site-header__nav" aria-label={t.a11y.mainNav}>
             {primary.map((l) => (
-              <RouteLink key={l.key} to={l.key} className={l.key === "menu" ? "hdr-link" : "hdr-link hdr-link--wide"}>
+              <CurrentLink key={l.key} to={l.key} className={l.key === "menu" ? "hdr-link" : "hdr-link hdr-link--wide"}>
                 {l.label}
-              </RouteLink>
+              </CurrentLink>
             ))}
           </nav>
           {/* prefetch off: this is the homepage linking to itself */}

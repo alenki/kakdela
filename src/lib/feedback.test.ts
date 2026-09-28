@@ -23,6 +23,12 @@ describe("the note's contact", () => {
     expect(contactKind("https://t.me/anna_k/")).toBe("telegram");
     expect(checkNote({ ...EMPTY_NOTE, text: "Вопрос", contact: "@anna_k", consent: true })).toEqual({ contact: "telegram" });
   });
+  it("turns down an address with a list separator: a typo must not send the reply to a stranger", () => {
+    expect(contactKind("anna,petr@mail.ru")).toBe("unclear");
+    expect(contactKind("anna;petr@mail.ru")).toBe("unclear");
+    expect(contactKind("<anna@mail.ru>")).toBe("unclear");
+    expect(contactKind("anna.petrova+kd@yandex.ru")).toBe("email");
+  });
   it("leaves an empty contact alone and flags what can't be answered", () => {
     expect(contactKind("")).toBeNull();
     expect(contactKind("   ")).toBeNull();

@@ -317,7 +317,8 @@ html:not(.js) .fb-cafes__name { display: block; }
   place-items: center;
   width: 1.45em;
   height: 1.45em;
-  border: 1.5px solid var(--ruled-strong);
+  /* 60% ink: the box is the only sign of an unticked control, so it keeps 3:1 on the paper (WCAG 1.4.11). */
+  border: 1.5px solid color-mix(in srgb, var(--color-ink) 60%, transparent);
   border-radius: 2px;
   transition: border-color 200ms var(--ease-kd-ui);
 }

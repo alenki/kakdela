@@ -69,5 +69,6 @@ Some content is still a placeholder or unverified. It is flagged in code with `v
   - any CDN, proxy or firewall in front of the site sees the form's data: it must be in Russia too, named in both texts and under a «поручение»; the hosting provider should be in Roskomnadzor's register of hosting providers (149-ФЗ art. 10.2-1);
   - the protection level set against Resolution No. 1119 (with health details possible in a complaint, likely УЗ-3), and a written ban on forwarding notes to personal or foreign mail and messengers;
   - `next dev` never exposed publicly: without the mail settings it prints whole notes to its log;
-  - until the above is true, the policy's statements about Russia and about no transfer abroad are not yet facts: don't open the form to guests before then;
+  - HTTPS only (a redirect from HTTP and an HSTS header at the host or proxy), the mailbox provider's access log switched on and kept, and the host's access logs deleted after 30 days at most, as the policy says (sections 4 and 8);
+  - until the above is true, the policy's statements about Russia, about no transfer abroad and about the protection measures are not yet facts: don't open the form to guests before then. The form itself refuses to send in production while the consent has blanks (`consentBlanks()` in `src/content/privacy.ts`);
   - a lawyer's sign-off on both texts and on the café's replies in `src/content/feedback.ts`.

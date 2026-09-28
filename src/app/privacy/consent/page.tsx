@@ -25,7 +25,7 @@ export default function ConsentPage() {
           lead={t.consent.lead}
           intro={consentIntro}
           clauses={consent}
-          other={{ to: "privacy", label: t.consent.policy }}
+          other={{ to: "privacy", label: t.footer.privacy }}
         />
       </main>
       <SiteFooter />

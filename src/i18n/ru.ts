@@ -202,7 +202,8 @@ export const ru = {
     services: "Сервисы",
     phone: "Телефон",
     copyright: "© 2026 «Как дела?» · Нальчик · Владикавказ",
-    privacy: "Политика конфиденциальности",
+    // The policy's own name (152-FZ art. 18.1), the same on the page, in the footer and beside the form.
+    privacy: "Политика обработки персональных данных",
     utility: "Халяль и намазхана во всех кофейнях · Wi‑Fi · меню на английском · каждый день с 07:30",
   },
   // The runner (src/components/game): the homepage section after the evening, and the 404.
@@ -261,7 +262,6 @@ export const ru = {
     // box, then the consent's text and the policy, each on its own page.
     consent: "Даю согласие на обработку персональных данных",
     consentText: "Текст согласия",
-    policy: "Политика конфиденциальности",
     send: "Отправить записку",
     sending: "Отправляем…",
     again: "Написать ещё",
@@ -292,19 +292,17 @@ export const ru = {
   // src/content/privacy.ts; these are the pages' own words.
   privacy: {
     meta: {
-      title: "Политика конфиденциальности · «Как дела?»",
+      title: "Политика обработки персональных данных · «Как дела?»",
       description: "Какие персональные данные обрабатывают кофейни «Как дела?» на сайте, зачем, как долго и как их защищают.",
     },
     label: "Политика обработки персональных данных",
     title: "Что мы о вас знаем.",
-    lead: "Только то, что вы сами напишете нам в записке. Настройки сайта остаются в вашем браузере.",
+    lead: "Почти ничего: то, что вы сами напишете в записке, и технический журнал сервера. Настройки сайта остаются в вашем браузере.",
     brief: "Коротко",
     contents: "Содержание",
     edition: (date: string) => `Редакция от ${date}`,
-    consent: "Текст согласия",
-    // A blank still to be filled in, as a screen reader hears it: «ИНН, будет указан».
+    // A blank still to be filled in, as a screen reader hears it: «ИНН: будет указано».
     blank: "будет указано",
-    table: { key: "Ключ", what: "Что это", kept: "Сколько хранится" },
   },
   consent: {
     meta: {
@@ -314,7 +312,6 @@ export const ru = {
     label: "Согласие на обработку персональных данных",
     title: "Ваше согласие.",
     lead: "Его дают отдельно, отмечая согласие в записке перед отправкой. Без него записка не уйдёт.",
-    policy: "Политика конфиденциальности",
   },
 } as const;
 

@@ -216,16 +216,18 @@ export function NoteDesk() {
                       <path d="M4.6 12.9c1.6 1.2 3 2.7 4.1 4.6 2.3-4.9 5.6-9 10.2-12.4" pathLength={1} />
                     </svg>
                   </span>
-                  <span className="fb-tick__text">{typograf(t.feedback.consent)}</span>
+                  <span className="fb-tick__text">{bindLastWord(typograf(t.feedback.consent))}</span>
                 </label>
                 {/* In a new tab: the guest's note stays as it is. */}
                 <p className="fb-agree__links dlinks label">
                   <RouteLink to="consent" className="dlink" target="_blank">
                     {t.feedback.consentText}
+                    <span className="dlink__ext" aria-hidden="true">↗</span>
                     <span className="sr-only"> {t.a11y.newTab}</span>
                   </RouteLink>
                   <RouteLink to="privacy" className="dlink" target="_blank">
-                    {t.feedback.policy}
+                    {typograf(t.footer.privacy)}
+                    <span className="dlink__ext" aria-hidden="true">↗</span>
                     <span className="sr-only"> {t.a11y.newTab}</span>
                   </RouteLink>
                 </p>

@@ -40,7 +40,8 @@ export type NoteState =
 
 export const IDLE: NoteState = { status: "idle" };
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u;
+// No list separators or quoting in an address: «anna,petr@mail.ru» is a typo to put right, not two people.
+const EMAIL = /^[^\s@,;:<>()[\]"\\]+@[^\s@,;:<>()[\]"\\]+\.[^\s@,;:<>()[\]"\\]{2,}$/u;
 const TELEGRAM = /^(?:@|(?:https?:\/\/)?t\.me\/)([a-z0-9_]{5,32})\/?$/iu;
 const PHONE = /^\+?[\d\s()\-.]+$/u;
 

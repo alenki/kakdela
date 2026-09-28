@@ -25,7 +25,7 @@ const SOCIAL = [
 const owner = operator.name
   ? [operator.name, operator.inn && `ИНН ${operator.inn}`, operator.ogrn && `ОГРН ${operator.ogrn}`, operator.address, operator.email]
       .filter(Boolean)
-      .join(" · ")
+      .join(`${NBSP}· `)
   : null;
 
 /** Small print: each «·»-separated phrase stays whole, so a line only ever breaks after a «·». */
@@ -117,13 +117,12 @@ export function SiteFooter() {
             </p>
             {/* The site owner's details (149-FZ art. 10 part 2), once they are filled in (src/content/privacy.ts). */}
             {owner && (
-              <p className="ft-owner label">
-                <Phrases text={owner} />
-              </p>
+              // Plain text, not <Phrases>: a legal address is longer than the column and must wrap.
+              <p className="ft-owner label">{typograf(owner)}</p>
             )}
             <p className="ft-legal label">
               <RouteLink to="privacy" className="dlink">
-                {t.footer.privacy}
+                {typograf(t.footer.privacy)}
               </RouteLink>
             </p>
           </div>

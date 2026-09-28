@@ -3,7 +3,7 @@
 import nodemailer from "nodemailer";
 import { cafes } from "@/content/cafes";
 import { toneById } from "@/content/feedback";
-import { EDITION_LABEL } from "@/content/privacy";
+import { consentBlanks, EDITION_LABEL } from "@/content/privacy";
 import { t } from "@/i18n";
 import { checkNote, contactKind, hasErrors, noteNumber, readNote, street, type Channel, type NoteFields, type NoteState } from "@/lib/feedback";
 
@@ -18,7 +18,9 @@ const moscowTime = new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow",
  * edition. Set up with FEEDBACK_SMTP_URL (e.g. smtps://user:password@smtp.example.ru:465),
  * FEEDBACK_MAIL_TO and, if the provider needs another sender, FEEDBACK_MAIL_FROM. Without them a
  * development build prints the note to the server log; a production build reports that it could not
- * send, so a note is never lost in silence.
+ * send, so a note is never lost in silence. A production build also refuses while the consent still has
+ * blanks where the operator's details go (consentBlanks): the settings alone never open the form. Every
+ * refusal and failure is logged for the operator by the note's number, never with what the guest wrote.
  */
 async function deliver(id: string, note: NoteFields, channel: Channel | null): Promise<boolean> {
   const cafe = cafes.find((c) => c.id === note.cafe);
@@ -38,8 +40,17 @@ async function deliver(id: string, note: NoteFields, channel: Channel | null): P
 
   const url = process.env.FEEDBACK_SMTP_URL;
   const to = process.env.FEEDBACK_MAIL_TO;
+  const production = process.env.NODE_ENV === "production";
+  const blanks = consentBlanks();
+  if (production && blanks.length) {
+    console.error(`[feedback] № ${noteNumber(id)} not sent: the consent names no ${blanks.join(", ")} (src/content/privacy.ts)`);
+    return false;
+  }
   if (!url || !to) {
-    if (process.env.NODE_ENV === "production") return false;
+    if (production) {
+      console.error(`[feedback] № ${noteNumber(id)} not sent: FEEDBACK_SMTP_URL or FEEDBACK_MAIL_TO is not set`);
+      return false;
+    }
     console.info(`[feedback] ${subject}\n${text}`);
     return true;
   }
@@ -50,11 +61,14 @@ async function deliver(id: string, note: NoteFields, channel: Channel | null): P
       to,
       subject,
       text,
-      // A guest who left an email gets the answer straight from the mailbox.
-      replyTo: channel === "email" ? note.contact : undefined,
+      // A guest who left an email gets the answer straight from the mailbox. An address object, so the
+      // mailer never reads the guest's string as a list of addresses.
+      replyTo: channel === "email" ? { name: "", address: note.contact } : undefined,
     });
     return true;
-  } catch {
+  } catch (e) {
+    const err = e as { code?: string; responseCode?: number; message?: string };
+    console.error(`[feedback] № ${noteNumber(id)} not sent: ${err.code ?? ""} ${err.responseCode ?? ""} ${err.message ?? ""}`.trim());
     return false;
   }
 }

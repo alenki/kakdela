@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { blankCaption, brief, consent, consentIntro, deviceStorage, EDITION, EDITION_LABEL, operator, policy, type Clause } from "@/content/privacy";
+import { blankCaption, brief, consent, consentBlanks, consentIntro, deviceStorage, EDITION, EDITION_LABEL, operator, policy, type Clause } from "@/content/privacy";
 import { routes } from "@/content/routes";
 import { ru } from "@/i18n/ru";
 
@@ -76,8 +76,15 @@ describe("the documents", () => {
     expect(flat(policy)).not.toContain("даю согласие");
     expect(consentIntro).toContain("даю согласие");
   });
-  it("link the form to both, by name", () => {
-    expect(ru.feedback.consentText).toBeTruthy();
-    expect(ru.feedback.policy).toBe(ru.footer.privacy);
+  it("are linked beside the consent box, by the names the documents carry", () => {
+    const desk = readFileSync(path.join(SRC, "components/feedback/NoteDesk.tsx"), "utf8");
+    expect(desk).toMatch(/<RouteLink to="consent"[^>]*>\s*\{t\.feedback\.consentText\}/);
+    expect(desk).toMatch(/<RouteLink to="privacy"[^>]*>\s*\{typograf\(t\.footer\.privacy\)\}/);
+    expect(desk).toMatch(/type="checkbox"[\s\S]{0,200}name="consent"[\s\S]{0,80}required/);
+    expect(ru.privacy.label).toBe(ru.footer.privacy);
+  });
+  it("hold back collecting while the consent names a blank, but not for the register number", () => {
+    expect(consentBlanks().sort()).toEqual(["address", "email", "hosting", "inn", "mail", "name", "ogrn"]);
+    expect(consentBlanks()).not.toContain("registry");
   });
 });

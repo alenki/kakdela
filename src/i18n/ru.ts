@@ -60,6 +60,7 @@ export const ru = {
       { key: "careers", label: "Работа у нас" },
       { key: "bonus", label: "Бонусная карта" },
       { key: "certificates", label: "Сертификаты" },
+      { key: "feedback", label: "Обратная связь" },
     ] satisfies { key: RouteKey; label: string }[],
     halal: "Халяль и намазхана во всех кофейнях",
   },
@@ -235,6 +236,48 @@ export const ru = {
     maps: "Кофейни на Яндекс Картах",
     // The runner under the head: a side offer, set as a label.
     game: "Игра со стаканчиком",
+  },
+  // «Обратная связь» (/feedback): a note written on the café's pad, and the café's answer. The four
+  // tones with their questions and replies, and the questions answered below, are in
+  // src/content/feedback.ts.
+  feedback: {
+    meta: {
+      title: "Обратная связь · «Как дела?»",
+      description:
+        "Напишите кофейням «Как дела?» в Нальчике и Владикавказе: благодарность, идея, жалоба или вопрос. Мы читаем каждую записку.",
+    },
+    label: "Обратная связь",
+    title: "Скажите честно.",
+    lead: "Благодарность, идея, жалоба или вопрос: пишите как есть. Мы читаем каждую записку.",
+    // The pad: the form's accessible name, then its printed rows.
+    pad: "Записка для кофейни",
+    tone: "О чём записка?",
+    where: "Где это было?",
+    sign: "Подпись",
+    contact: "Как ответить",
+    contactHint: "Телефон, почта или Telegram, если нужен ответ",
+    consent: "Отправляя записку, вы соглашаетесь на обработку персональных данных.",
+    send: "Отправить записку",
+    sending: "Отправляем…",
+    again: "Написать ещё",
+    left: (n: number) => `Осталось ${n} ${plural(n, "знак", "знака", "знаков")}`,
+    errors: {
+      empty: "Напишите хотя бы пару слов.",
+      long: `Слишком длинно: не больше 2${NBSP}000 знаков.`,
+      unclear: "Не похоже на телефон, почту или Telegram.",
+      failed: "Не получилось отправить. Попробуйте ещё раз или позвоните в кофейню.",
+    },
+    // The café's side: whom the note goes to, and the line to call if it can't wait.
+    all: (city: string) => `Все кофейни · ${city}`,
+    urgent: "Если срочно",
+    // After the café's reply: how it will answer, from the contact left on the note.
+    answerBy: { phone: "Ответим по телефону.", email: "Ответим на почту.", telegram: "Ответим в Telegram." },
+    noContact: "Контакта нет, так что ответить не сможем. Но прочитаем обязательно.",
+    // The note that landed on the café's side, as a screen reader names it.
+    sent: "Ваша записка",
+    // «Есть вопрос»: the café points at the questions already answered.
+    asked: "Уже спрашивали",
+    faq: { q: "Вопросы", a: "Уже спрашивали.", lead: "То, о чём гости спрашивают чаще всего." },
   },
 } as const;
 

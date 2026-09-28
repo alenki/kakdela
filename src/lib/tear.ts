@@ -56,8 +56,9 @@ export function tornStrip(id: string, { points = 9, depth = 0.3, amp = 0.09 }: {
  * A sheet torn off a pad: the reviews' notes. The rip runs across the top edge, `depth` ± `amp` em down
  * from the box's top (em of the note's type, so it keeps its shape at any size), with the same lighter
  * fringe as `tornStrip` just above it (three nicks per jag, 0.02 to 0.07em proud). `lean` is the note's
- * own small tilt in degrees (-0.8 to 0.8), added to its place in the pile. Seeded by the review's id and
- * deterministic, like `tornEdge`.
+ * own small tilt in degrees (-0.8 to 0.8), added to its place in the pile. `stub` is what the rip leaves
+ * on the pad: the strip above it, down to the same jags (the feedback page's pad keeps it under its
+ * perforation). Seeded by the review's id and deterministic, like `tornEdge`.
  */
 export function tornSheet(id: string, { points = 26, depth = 0.36, amp = 0.1 }: { points?: number; depth?: number; amp?: number } = {}) {
   const rnd = mulberry32(hashString(`${id}:sheet`));
@@ -72,11 +73,13 @@ export function tornSheet(id: string, { points = 26, depth = 0.36, amp = 0.1 }: 
     nicks.push([(j / n) * 100, under - (0.02 + rnd() * 0.05)]);
   }
   const lean = Math.round((rnd() - 0.5) * 1.6 * 100) / 100;
-  const polygon = (edge: [number, number][]) =>
-    `polygon(${edge.map(([x, y]) => `${Math.round(x * 10) / 10}% ${Math.round(y * 1000) / 1000}em`).join(", ")}, 100% 100%, 0% 100%)`;
+  const at = (edge: [number, number][]) => edge.map(([x, y]) => `${Math.round(x * 10) / 10}% ${Math.round(y * 1000) / 1000}em`).join(", ");
+  const polygon = (edge: [number, number][]) => `polygon(${at(edge)}, 100% 100%, 0% 100%)`;
+  const rip = jags.map((y, i): [number, number] => [(i / points) * 100, y]);
   return {
-    clip: polygon(jags.map((y, i) => [(i / points) * 100, y])),
+    clip: polygon(rip),
     fibres: polygon(nicks),
+    stub: `polygon(0% 0%, 100% 0%, ${at([...rip].reverse())})`,
     lean,
   };
 }

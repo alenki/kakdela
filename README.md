@@ -1,7 +1,7 @@
 # kakdela
 
 The website for **«Как дела?»**, a chain of specialty-coffee and breakfast cafés in Nalchik and Vladikavkaz.
-Phase 1 is the homepage. The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
+Phase 1 is the homepage, and «Обратная связь» (`/feedback`) is live beside it. The other routes (`/menu`, `/locations`, `/events`, `/about`, `/delivery`, `/catering`, `/careers`, `/bonus`) are linked through `src/content/routes.ts`. They land on the voiced 404, with the runner, until their phase ships.
 
 ## Concept: «Разговор»
 The brand name is a question, and the menu already answers it: the breakfasts are called «Лучше всех», «Как в сказке», «Шик» and «10 из 10». The homepage is one conversation:
@@ -10,6 +10,7 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 - **The answer is the order.** The torn tab lands on its side across a photo of the dish with that name, and the café replies with the dish and its price.
 - **The page remembers.** The answer comes back the next day as «Вчера было «…». А сегодня?».
 - **The evening ends with a game of chess.** Every Monday a new mate in two from a real game; the café answers every move, and when it's solved it asks «Как дела?» and the grade lands as one of the hero's answers, with its dish. Then the invitation to the blitz.
+- **The guest answers back.** «Обратная связь» is the café's pad: the guest circles a tone in the notice's own words («Всё шик», «Есть идея», «Так себе», «Есть вопрос») and a café, writes and signs; the café's side answers every move. Sent, the sheet is torn off the pad and laid on the café's photo, and the café replies.
 
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase; DrawSVG and CustomWiggle for the coffee poster), Motion 13 (`m.*` under `LazyMotion`), Lenis.
@@ -20,7 +21,7 @@ npm run dev          # http://localhost:3000
 npm run build && npm start
 npm run typecheck    # tsc --noEmit
 npm run lint         # eslint
-npm test             # vitest (time/geo/format/typograf/i18n/determinism/content/runner)
+npm test             # vitest (time/geo/format/typograf/i18n/determinism/content/runner/feedback)
 npm run shot -- "#kofe" kofe.png 390 844 [--reduced] [--nojs]   # headless screenshot helper
 npm run perf -- http://localhost:3100/ [--mobile]              # LCP/CLS/bytes probe against `npm start`
 ```
@@ -43,6 +44,7 @@ npm run assets:puzzles # a year of weekly mates in two from the Lichess puzzle d
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
+| `src/components/feedback/*` | «Обратная связь»: the pad and the café's side, the note's rows, the pen loop and the tear; the server action is `src/app/feedback/actions.ts` |
 | `src/components/game/*` | The runner «Игра со стаканчиком»: the poster, the island, the lazy controller and canvas drawing (homepage section and 404) |
 | `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup; the runner's engine and record |
 | `src/styles/*` | Chrome, brand and hero styles, plus one CSS file per section |
@@ -58,3 +60,4 @@ Some content is still a placeholder or unverified. It is flagged in code with `v
 - Delivery, loyalty, certificate and careers URLs.
 - Hosting that is reachable from Russian mobile networks.
 - The runner's copy (the title «Игра со стаканчиком.», the lead, the hints) and its place after the evening.
+- Feedback: where the notes go (a Telegram bot: set `FEEDBACK_TELEGRAM_TOKEN` and `FEEDBACK_TELEGRAM_CHAT_ID`; until then a production build tells the guest it could not send), a privacy policy for the consent line, and the café's replies in `src/content/feedback.ts`.

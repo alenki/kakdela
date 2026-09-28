@@ -25,7 +25,7 @@ import { answers } from "./answers";
 import { cafes } from "./cafes";
 import { breakfasts, cherryPie, desserts, extras, signatureDrinks } from "./menu";
 import { photos } from "./photos";
-import type { Answer, Cafe, City, MenuCategory, MenuChapter, MenuChapterId, MenuItem, Photo, Price } from "./types";
+import type { Answer, Cafe, City, MenuCategory, MenuChapter, MenuChapterId, MenuItem, MenuSection, MenuSectionId, Photo, Price } from "./types";
 
 // Builders: curated dishes are referenced from menu.ts. An overlay may only ADD what menu.ts lacks (volume,
 // КБЖУ, a description for items without one, `signature`, provenance), never change name, price or copy.
@@ -93,7 +93,7 @@ export const fullMenu: MenuChapter[] = [
           fromBreakfast("10-iz-10", { signature: true, nutrition: { kbju: { k: 609, b: 34.9, zh: 36.8, u: 34 }, verified: false }, seenAt: ALL_KITCHENS, draftNote: "Во Владикавказе (Куйбышева, 3) старый сайт даёт 840 ₽, в menu.ts цена намеренно null: оставлено null." }),
           fromBreakfast("kapitalnyj", { signature: true, nutrition: { kbju: { k: 701, b: 42.5, zh: 39, u: 45 }, verified: false, cities: ["nalchik"], note: "КБЖУ только у нальчикского рецепта. На Куйбышева, 3 другой состав (купаты из филе цыплёнка, французская булка, пармезан, грецкие орехи) и КБЖУ не указано." }, seenAt: ALL_KITCHENS }),
           fromExtra("shakshuka", extras.shakshuka, { desc: "Яйца, томаты, болгарский перец, лук, чеснок, креметте, зелень и французская булка.", nutrition: { kbju: { k: 588, b: 29.2, zh: 33.2, u: 43.2 }, verified: false }, seenAt: ALL_KITCHENS, draftNote: "Во Владикавказе (Куйбышева, 3) старый сайт даёт 550 ₽, в menu.ts цена намеренно null: оставлено null." }),
-          { id: "draniki-s-syomgoj", name: "Драники с сёмгой и яйцом пашот", price: p(null, null), nutrition: { kbju: { k: 603, b: 26, zh: 36.4, u: 43 }, verified: false }, seenAt: ALL_KITCHENS, verify: { verified: false, note: "Цена на старом сайте «0.00 р.» во всех трёх кофейнях: нужна цена. Состав не указан. КБЖУ только в Нальчике." } },
+          { id: "draniki-s-syomgoj", photo: photos.dranikiSSyomgoj, name: "Драники с сёмгой и яйцом пашот", price: p(null, null), nutrition: { kbju: { k: 603, b: 26, zh: 36.4, u: 43 }, verified: false }, seenAt: ALL_KITCHENS, verify: { verified: false, note: "Цена на старом сайте «0.00 р.» во всех трёх кофейнях: нужна цена. Состав не указан. КБЖУ только в Нальчике." } },
         ],
       },
       {
@@ -152,7 +152,7 @@ export const fullMenu: MenuChapter[] = [
         id: "firmennoe", title: "Фирменное", signature: true, items: [
           fromDrink("kapuchino", { signature: true, volume: { sizes: [200, 300] }, photo: photos.kapuchino, draftNote: "КБЖУ старого сайта снято до сверки: 105,5 / 5 / 6,25 / 7,3. Для какого объёма (200 или 300 мл), не указано." }),
           fromDrink("klever", { signature: true, volume: { ml: 250 }, nutrition: { kbju: { k: 39.2, b: 2.5, zh: 2.5, u: 2.5 }, verified: false }, photo: photos.klever }),
-          fromDrink("v60", { signature: true, volume: { ml: 220 }, nutrition: { kbju: { k: 34.5, b: 2.2, zh: 2.02, u: 2.2 }, verified: false } }),
+          fromDrink("v60", { photo: photos.v60, signature: true, volume: { ml: 220 }, nutrition: { kbju: { k: 34.5, b: 2.2, zh: 2.02, u: 2.2 }, verified: false } }),
           fromDrink("stanciya-mir", { signature: true, volume: { ml: 300 }, photo: photos.stanciyaMir }),
           fromDrink("dalshe-slashe", { signature: true, volume: { ml: 250 }, nutrition: { kbju: { k: 130.5, b: 1.64, zh: 2.57, u: 26.5 }, verified: false }, photo: photos.dalsheSlashe }),
           fromDrink("espresso-tonik", { signature: true, volume: { ml: 300 }, nutrition: { kbju: { k: 85.3, b: 1.6, zh: 1.7, u: 15.44 }, verified: false }, photo: photos.espressoTonik }),
@@ -160,82 +160,82 @@ export const fullMenu: MenuChapter[] = [
       },
       {
         id: "espresso-i-filtr", title: "Эспрессо и фильтр", items: [
-          { id: "espresso", name: "Эспрессо", price: same(220), volume: { ml: 60 }, draftNote: "КБЖУ старого сайта снято до сверки: 24,1 / 1,6 / 1,7 / 0,5, как у американо." },
-          { id: "amerikano", name: "Американо", price: same(220), volume: { ml: 200 }, draftNote: "КБЖУ старого сайта снято до сверки: 24,1 / 1,6 / 1,7 / 0,5, как у эспрессо." },
-          { id: "flet-uajt", name: "Флэт уайт", price: same(250), volume: { ml: 200 }, nutrition: { kbju: { k: 117.1, b: 5.8, zh: 7.1, u: 7.55 }, verified: false } },
-          { id: "latte", name: "Латте", price: same(270), volume: { ml: 300 }, nutrition: { kbju: { k: 148.5, b: 6.96, zh: 8.77, u: 10.59 }, verified: false } },
-          { id: "raf-klassicheskij", name: "Раф классический", price: same(320), volume: { ml: 300 }, draftNote: "КБЖУ старого сайта снято до сверки: 363,3 / 8,2 / 23,7 / 7,55. Углеводы как у флэт уайта; калорийность не сходится с Б/Ж/У (+31 %)." },
-          { id: "filtr-kofe", name: "Фильтр-кофе", price: { sizes: [220, 250] }, volume: { sizes: [200, 300] }, oldName: "Фильтр кофе", draftNote: "КБЖУ старого сайта снято до сверки: 39,2 / 2 / 2 / 2. Для какого объёма (200 или 300 мл), не указано." },
+          { id: "espresso", photo: photos.espresso, name: "Эспрессо", price: same(220), volume: { ml: 60 }, draftNote: "КБЖУ старого сайта снято до сверки: 24,1 / 1,6 / 1,7 / 0,5, как у американо." },
+          { id: "amerikano", photo: photos.amerikano, name: "Американо", price: same(220), volume: { ml: 200 }, draftNote: "КБЖУ старого сайта снято до сверки: 24,1 / 1,6 / 1,7 / 0,5, как у эспрессо." },
+          { id: "flet-uajt", photo: photos.fletUajt, name: "Флэт уайт", price: same(250), volume: { ml: 200 }, nutrition: { kbju: { k: 117.1, b: 5.8, zh: 7.1, u: 7.55 }, verified: false } },
+          { id: "latte", photo: photos.latte, name: "Латте", price: same(270), volume: { ml: 300 }, nutrition: { kbju: { k: 148.5, b: 6.96, zh: 8.77, u: 10.59 }, verified: false } },
+          { id: "raf-klassicheskij", photo: photos.rafKlassicheskij, name: "Раф классический", price: same(320), volume: { ml: 300 }, draftNote: "КБЖУ старого сайта снято до сверки: 363,3 / 8,2 / 23,7 / 7,55. Углеводы как у флэт уайта; калорийность не сходится с Б/Ж/У (+31 %)." },
+          { id: "filtr-kofe", photo: photos.filtrKofe, name: "Фильтр-кофе", price: { sizes: [220, 250] }, volume: { sizes: [200, 300] }, oldName: "Фильтр кофе", draftNote: "КБЖУ старого сайта снято до сверки: 39,2 / 2 / 2 / 2. Для какого объёма (200 или 300 мл), не указано." },
         ],
       },
       {
         id: "avtorskie", title: "Авторские напитки", items: [
-          { id: "raf-citrus", name: "Раф цитрус", price: same(330), volume: { ml: 300 }, nutrition: { kbju: { k: 344.2, b: 8.24, zh: 16.69, u: 40.27 }, verified: false } },
-          { id: "raf-malina-apelsin", name: "Раф малина-апельсин", price: same(330), volume: { ml: 300 }, nutrition: { kbju: { k: 294.1, b: 7.41, zh: 15.82, u: 30.73 }, verified: false }, oldName: "Раф Малина-Апельсин" },
-          { id: "tvin-piks", name: "«Твин-Пикс»", price: same(350), volume: { ml: 300 }, oldName: "Твин-Пикс", verify: { verified: false, note: "Состава и КБЖУ на старом сайте нет." } },
-          { id: "filtr-sliva-gibiskus", name: "Фильтр слива-гибискус", price: same(350), volume: { ml: 300 }, oldName: "Фильтр Слива-Гибискус" },
+          { id: "raf-citrus", photo: photos.rafCitrus, name: "Раф цитрус", price: same(330), volume: { ml: 300 }, nutrition: { kbju: { k: 344.2, b: 8.24, zh: 16.69, u: 40.27 }, verified: false } },
+          { id: "raf-malina-apelsin", photo: photos.rafMalinaApelsin, name: "Раф малина-апельсин", price: same(330), volume: { ml: 300 }, nutrition: { kbju: { k: 294.1, b: 7.41, zh: 15.82, u: 30.73 }, verified: false }, oldName: "Раф Малина-Апельсин" },
+          { id: "tvin-piks", photo: photos.tvinPiks, name: "«Твин-Пикс»", price: same(350), volume: { ml: 300 }, oldName: "Твин-Пикс", verify: { verified: false, note: "Состава и КБЖУ на старом сайте нет." } },
+          { id: "filtr-sliva-gibiskus", photo: photos.filtrSlivaGibiskus, name: "Фильтр слива-гибискус", price: same(350), volume: { ml: 300 }, oldName: "Фильтр Слива-Гибискус" },
         ],
       },
       {
         id: "holodnyj-kofe", title: "Холодный кофе", items: [
-          { id: "espresso-tonik-granat", name: "Эспрессо-тоник гранат", price: same(320), volume: { ml: 300 }, oldName: "Эспрессо гранат тоник" },
-          { id: "bambl-klassicheskij", name: "Бамбл классический", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 88.9, b: 3.22, zh: 2.06, u: 15.8 }, verified: false } },
-          { id: "bambl-na-freshe", name: "Бамбл на фреше", price: same(410), volume: { ml: 300 }, nutrition: { kbju: { k: 104.1, b: 3.6, zh: 1.7, u: 16.5 }, verified: false } },
-          { id: "ajs-latte", name: "Айс латте", price: same(270), volume: { ml: 300 }, nutrition: { kbju: { k: 171.6, b: 5.84, zh: 7.33, u: 20.71 }, verified: false } },
+          { id: "espresso-tonik-granat", photo: photos.espressoTonikGranat, name: "Эспрессо-тоник гранат", price: same(320), volume: { ml: 300 }, oldName: "Эспрессо гранат тоник" },
+          { id: "bambl-klassicheskij", photo: photos.bamblKlassicheskij, name: "Бамбл классический", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 88.9, b: 3.22, zh: 2.06, u: 15.8 }, verified: false } },
+          { id: "bambl-na-freshe", photo: photos.bamblNaFreshe, name: "Бамбл на фреше", price: same(410), volume: { ml: 300 }, nutrition: { kbju: { k: 104.1, b: 3.6, zh: 1.7, u: 16.5 }, verified: false } },
+          { id: "ajs-latte", photo: photos.ajsLatte, name: "Айс латте", price: same(270), volume: { ml: 300 }, nutrition: { kbju: { k: 171.6, b: 5.84, zh: 7.33, u: 20.71 }, verified: false } },
         ],
       },
       {
         id: "matcha", title: "Матча", items: [
-          { id: "matcha-latte", name: "Матча латте", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 189.1, b: 8.7, zh: 10.8, u: 13.8 }, verified: false } },
-          { id: "matcha-lichi-ananas", name: "Матча личи-ананас", desc: "Матча, пюре личи и ананасовый сок.", price: same(300), volume: { ml: 300 }, oldName: "Матча Личи-Ананас" },
-          { id: "matcha-klubnika", name: "Матча клубника", price: same(320), volume: { ml: 300 } },
-          { id: "matcha-malina-belyj-shokolad", name: "Матча малина и белый шоколад", price: same(350), volume: { ml: 300 }, oldName: "Матча малина-белый шоколад" },
+          { id: "matcha-latte", photo: photos.matchaLatte, name: "Матча латте", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 189.1, b: 8.7, zh: 10.8, u: 13.8 }, verified: false } },
+          { id: "matcha-lichi-ananas", photo: photos.matchaLichiAnanas, name: "Матча личи-ананас", desc: "Матча, пюре личи и ананасовый сок.", price: same(300), volume: { ml: 300 }, oldName: "Матча Личи-Ананас" },
+          { id: "matcha-klubnika", photo: photos.matchaKlubnika, name: "Матча клубника", price: same(320), volume: { ml: 300 } },
+          { id: "matcha-malina-belyj-shokolad", photo: photos.matchaMalinaBelyjShokolad, name: "Матча малина и белый шоколад", price: same(350), volume: { ml: 300 }, oldName: "Матча малина-белый шоколад" },
         ],
       },
       {
         id: "kakao-i-shokolad", title: "Какао и шоколад", items: [
-          { id: "kakao", name: "Какао", price: { sizes: [200, 240] }, volume: { sizes: [200, 300] }, draftNote: "КБЖУ старого сайта снято до сверки: 162,8 / 5,02 / 7,72 / 17,71. Для какого объёма (200 или 300 мл), не указано." },
-          { id: "bean-to-bar", name: "Bean-to-bar", lang: "en", price: same(350), volume: { ml: 200 }, verify: { verified: false, note: "Что это (горячий шоколад bean-to-bar, судя по фото), на старом сайте не сказано: описание нужно от клиента." } },
+          { id: "kakao", photo: photos.kakao, name: "Какао", price: { sizes: [200, 240] }, volume: { sizes: [200, 300] }, draftNote: "КБЖУ старого сайта снято до сверки: 162,8 / 5,02 / 7,72 / 17,71. Для какого объёма (200 или 300 мл), не указано." },
+          { id: "bean-to-bar", photo: photos.beanToBar, name: "Bean-to-bar", lang: "en", price: same(350), volume: { ml: 200 }, verify: { verified: false, note: "Что это (горячий шоколад bean-to-bar, судя по фото), на старом сайте не сказано: описание нужно от клиента." } },
         ],
       },
       {
         id: "chai", title: "Авторские чаи", items: [
-          { id: "mango-citrus", name: "Манго-цитрус", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 142, b: 1, zh: 0.27, u: 34.3 }, verified: false }, oldName: "Манго цитрус" },
-          { id: "karkade-granat", name: "Каркаде-гранат", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 127, b: 0.03, zh: 0.05, u: 31.81 }, verified: false }, oldName: "Каркаде гранат" },
-          { id: "oblepiha-klyukva", name: "Облепиха-клюква", price: same(280), volume: { ml: 300 }, oldName: "Облепиха клюква", draftNote: "КБЖУ старого сайта снято до сверки: 69,4 / 0,67 / 3,4 / 14,85. Калорийность не сходится с Б/Ж/У (−25 %)." },
-          { id: "imbir-limon-myod", name: "Имбирь, лимон и мёд", price: same(280), volume: { ml: 300 }, oldName: "Имбирь лимон мед", draftNote: "КБЖУ старого сайта снято до сверки: 93,8 / 0,66 / 4,41 / 22,47. Калорийность не сходится с Б/Ж/У (−29 %)." },
-          { id: "yagodnyj-lapsang", name: "Ягодный лапсанг", price: same(350), volume: { ml: 300 }, oldName: "Чай Ягодный Лапсанг" },
+          { id: "mango-citrus", photo: photos.mangoCitrus, name: "Манго-цитрус", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 142, b: 1, zh: 0.27, u: 34.3 }, verified: false }, oldName: "Манго цитрус" },
+          { id: "karkade-granat", photo: photos.karkadeGranat, name: "Каркаде-гранат", price: same(280), volume: { ml: 300 }, nutrition: { kbju: { k: 127, b: 0.03, zh: 0.05, u: 31.81 }, verified: false }, oldName: "Каркаде гранат" },
+          { id: "oblepiha-klyukva", photo: photos.oblepihaKlyukva, name: "Облепиха-клюква", price: same(280), volume: { ml: 300 }, oldName: "Облепиха клюква", draftNote: "КБЖУ старого сайта снято до сверки: 69,4 / 0,67 / 3,4 / 14,85. Калорийность не сходится с Б/Ж/У (−25 %)." },
+          { id: "imbir-limon-myod", photo: photos.imbirLimonMyod, name: "Имбирь, лимон и мёд", price: same(280), volume: { ml: 300 }, oldName: "Имбирь лимон мед", draftNote: "КБЖУ старого сайта снято до сверки: 93,8 / 0,66 / 4,41 / 22,47. Калорийность не сходится с Б/Ж/У (−29 %)." },
+          { id: "yagodnyj-lapsang", photo: photos.yagodnyjLapsang, name: "Ягодный лапсанг", price: same(350), volume: { ml: 300 }, oldName: "Чай Ягодный Лапсанг" },
         ],
       },
       {
         id: "limonady", title: "Лимонады", items: [
-          { id: "malina-marakujya", name: "Малина-маракуйя", price: same(310), volume: { ml: 300 }, oldName: "Малина маракуйя", draftNote: "КБЖУ старого сайта снято до сверки: 91,1 / 1,27 / 0,11 / 15,32. Калорийность не сходится с Б/Ж/У (+35 %)." },
-          { id: "granat-klyukva", name: "Гранат-клюква", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 140.7, b: 0.6, zh: 0.1, u: 31.9 }, verified: false }, oldName: "Гранат клюква" },
-          { id: "modnyj-limonnyj", name: "«Модный лимонный»", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 29, b: 1, zh: 0, u: 6 }, verified: false }, oldName: "Модный лимонный" },
-          { id: "persik-kalamansi", name: "Персик-каламанси", desc: "Персик и пюре каламанси, гибрида мандарина и кумквата.", price: same(310), volume: { ml: 300 }, oldName: "Лимонад Персик-Каламанси" },
+          { id: "malina-marakujya", photo: photos.malinaMarakujya, name: "Малина-маракуйя", price: same(310), volume: { ml: 300 }, oldName: "Малина маракуйя", draftNote: "КБЖУ старого сайта снято до сверки: 91,1 / 1,27 / 0,11 / 15,32. Калорийность не сходится с Б/Ж/У (+35 %)." },
+          { id: "granat-klyukva", photo: photos.granatKlyukva, name: "Гранат-клюква", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 140.7, b: 0.6, zh: 0.1, u: 31.9 }, verified: false }, oldName: "Гранат клюква" },
+          { id: "modnyj-limonnyj", photo: photos.modnyjLimonnyj, name: "«Модный лимонный»", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 29, b: 1, zh: 0, u: 6 }, verified: false }, oldName: "Модный лимонный" },
+          { id: "persik-kalamansi", photo: photos.persikKalamansi, name: "Персик-каламанси", desc: "Персик и пюре каламанси, гибрида мандарина и кумквата.", price: same(310), volume: { ml: 300 }, oldName: "Лимонад Персик-Каламанси" },
         ],
       },
       {
         id: "freshi", title: "Фреши", items: [
-          { id: "fresh-apelsin", name: "Апельсин", price: same(390), volume: { ml: 300 } },
-          { id: "fresh-grejpfrut", name: "Грейпфрут", price: same(420), volume: { ml: 300 } },
-          { id: "fresh-granat", name: "Гранат", price: same(null), volume: { ml: 300 }, verify: { verified: false, note: "Цена на старом сайте пустая («р.») во всех кофейнях." } },
-          { id: "fresh-yabloko", name: "Яблоко", price: same(320), volume: { ml: 300 } },
-          { id: "fresh-morkov", name: "Морковь", price: same(280), volume: { ml: 300 } },
+          { id: "fresh-apelsin", photo: photos.freshApelsin, name: "Апельсин", price: same(390), volume: { ml: 300 } },
+          { id: "fresh-grejpfrut", photo: photos.freshGrejpfrut, name: "Грейпфрут", price: same(420), volume: { ml: 300 } },
+          { id: "fresh-granat", photo: photos.freshGranat, name: "Гранат", price: same(null), volume: { ml: 300 }, verify: { verified: false, note: "Цена на старом сайте пустая («р.») во всех кофейнях." } },
+          { id: "fresh-yabloko", photo: photos.freshYabloko, name: "Яблоко", price: same(320), volume: { ml: 300 } },
+          { id: "fresh-morkov", photo: photos.freshMorkov, name: "Морковь", price: same(280), volume: { ml: 300 } },
         ],
       },
       {
         id: "koktejli", title: "Коктейли", items: [
-          { id: "bananovyj", name: "Банановый", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 441, b: 10.83, zh: 19.67, u: 56.55 }, verified: false } },
-          { id: "klubnichnyj", name: "Клубничный", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 343.7, b: 9.55, zh: 17.12, u: 38 }, verified: false } },
-          { id: "shokoladno-bananovyj", name: "Шоколадно-банановый", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 452.4, b: 11.27, zh: 22.09, u: 52.33 }, verified: false } },
-          { id: "kofejno-bananovyj", name: "Кофейно-банановый", price: same(310), volume: { ml: 300 } },
+          { id: "bananovyj", photo: photos.bananovyj, name: "Банановый", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 441, b: 10.83, zh: 19.67, u: 56.55 }, verified: false } },
+          { id: "klubnichnyj", photo: photos.klubnichnyj, name: "Клубничный", price: same(290), volume: { ml: 300 }, nutrition: { kbju: { k: 343.7, b: 9.55, zh: 17.12, u: 38 }, verified: false } },
+          { id: "shokoladno-bananovyj", photo: photos.shokoladnoBananovyj, name: "Шоколадно-банановый", price: same(310), volume: { ml: 300 }, nutrition: { kbju: { k: 452.4, b: 11.27, zh: 22.09, u: 52.33 }, verified: false } },
+          { id: "kofejno-bananovyj", photo: photos.kofejnoBananovyj, name: "Кофейно-банановый", price: same(310), volume: { ml: 300 } },
         ],
       },
       {
         id: "shoty", title: "Шоты", items: [
-          { id: "shot-vitaminnyj", name: "Витаминный", price: same(350), nutrition: { kbju: { k: 106.2, b: 1.49, zh: 0.28, u: 26.71 }, verified: false }, verify: { verified: false, note: "Объём не указан («мл.» без числа)." } },
-          { id: "espresso-shot", name: "Эспрессо-шот", price: same(350), nutrition: { kbju: { k: 87.7, b: 1.84, zh: 1.82, u: 15.36 }, verified: false }, oldName: "Эспрессо шот", verify: { verified: false, note: "Объём не указан. Состав неизвестен (87,7 ккал, 15 г углеводов: не чистый эспрессо). Фото показывает четыре разных шота." } },
+          { id: "shot-vitaminnyj", photo: photos.shotVitaminnyj, name: "Витаминный", price: same(350), nutrition: { kbju: { k: 106.2, b: 1.49, zh: 0.28, u: 26.71 }, verified: false }, verify: { verified: false, note: "Объём не указан («мл.» без числа)." } },
+          { id: "espresso-shot", photo: photos.espressoShot, name: "Эспрессо-шот", price: same(350), nutrition: { kbju: { k: 87.7, b: 1.84, zh: 1.82, u: 15.36 }, verified: false }, oldName: "Эспрессо шот", verify: { verified: false, note: "Объём не указан. Состав неизвестен (87,7 ккал, 15 г углеводов: не чистый эспрессо). Фото показывает четыре разных шота." } },
         ],
       },
     ],
@@ -302,6 +302,35 @@ export const kitchenCafes: Record<City, Cafe[]> = {
   nalchik: cafes.filter((c) => c.city === "nalchik" && c.kitchen === "full"),
   vladikavkaz: cafes.filter((c) => c.city === "vladikavkaz" && c.kitchen === "full"),
 };
+
+/** The page's sections (its tabs), in the order of a café day: whole categories grouped as a guest looks for them. */
+const SECTIONS: { id: MenuSectionId; theme: MenuSection["theme"]; categories: string[] }[] = [
+  { id: "zavtraki", theme: "cream", categories: ["zavtraki", "sladkie-zavtraki", "kashi"] },
+  { id: "obed", theme: "cream", categories: ["poke", "bouly", "sendvichi", "rolly", "pasta"] },
+  { id: "kofe", theme: "cream", categories: ["firmennoe", "espresso-i-filtr", "avtorskie", "holodnyj-kofe"] },
+  { id: "ne-kofe", theme: "cream", categories: ["matcha", "chai", "kakao-i-shokolad"] },
+  { id: "holodnoe", theme: "cream", categories: ["limonady", "freshi", "koktejli", "shoty"] },
+  { id: "deserty", theme: "ink", categories: ["firmennye", "torty-i-pirozhnye", "batonchiki-i-sladosti"] },
+];
+const categoryById = Object.fromEntries(menuCategories.map((c) => [c.id, c]));
+const chapterOf = (c: MenuCategory) => fullMenu.find((ch) => ch.categories.includes(c))!;
+
+export const menuSections: MenuSection[] = SECTIONS.map((s) => {
+  const categories = s.categories.map((id) => {
+    const c = categoryById[id];
+    if (!c) throw new Error(`full-menu: no category "${id}"`);
+    return c;
+  });
+  return { ...s, categories, servedAt: chapterOf(categories[0]).servedAt };
+});
+
+/** Every item of a section with the category it belongs to, in reading order. */
+export const sectionItems = (s: MenuSection) => s.categories.flatMap((category) => category.items.map((item) => ({ item, category })));
+
+/** Items served in a city: in one section, or on the whole page. */
+export const sectionCount = (s: MenuSection, city: City): number =>
+  sectionItems(s).filter(({ item, category }) => citiesOf(item, category).includes(city)).length;
+export const menuCount = (city: City): number => menuSections.reduce((n, s) => n + sectionCount(s, city), 0);
 
 /** The homepage answers by the menu anchor they link to (answers.ts `item.anchor`). */
 export const answerByAnchor: Record<string, Answer> = Object.fromEntries(answers.map((a) => [a.item.anchor, a]));

@@ -2,21 +2,18 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { answers } from "@/content/answers";
-import { menuItemById, menuItems } from "@/content/full-menu";
+import { menuItemById, menuItems, menuSections } from "@/content/full-menu";
 import { breakfasts, cherryPie, desserts, extras, season, signatureDrinks } from "@/content/menu";
 import { ru } from "@/i18n/ru";
-import { NBSP } from "@/lib/typograf";
 import { MENU_PICK_SCRIPT, PICK_BY_ANCHOR } from "./pick-script";
 
 const css = readFileSync(fileURLToPath(new URL("../../styles/sections/menu.css", import.meta.url)), "utf8");
 
 describe("/menu: the one red", () => {
-  it("styles every answer: its red at the dish (pick and said), its «сегодня» and its yesterday line", () => {
+  it("styles every answer: its red at the dish, for the one the guest lands on and for today's tear", () => {
     for (const a of answers) {
       expect(css).toContain(`html[data-pick="${a.id}"] .mi[data-answer="${a.id}"] .mn-said__a`);
       expect(css).toContain(`html:not([data-pick])[data-said="${a.id}"] .mi[data-answer="${a.id}"] .mn-said__a`);
-      expect(css).toContain(`html[data-said="${a.id}"] .mn-ans[data-answer="${a.id}"] .mn-ans__today`);
-      expect(css).toContain(`html[data-yesterday="${a.id}"]:not([data-said]) [data-mn-yd="${a.id}"]`);
     }
   });
   it("maps exactly the eight hero anchors to their answers, before paint and in the islands", () => {
@@ -58,14 +55,13 @@ describe("/menu: copy", () => {
     // Column ranges in comments («1 to 7» written with an en dash) stay, as in every stylesheet here.
     expect(css).not.toMatch(/\u2014/);
   });
-  it("counts in Russian", () => {
-    expect(ru.menu.count.kuhnya(26)).toBe("26 блюд");
-    expect(ru.menu.count.kuhnya(21)).toBe("21 блюдо");
-    expect(ru.menu.count.bar(46)).toBe("46 напитков");
-    expect(ru.menu.count.deserty(21)).toBe("21 десерт");
-    expect(ru.menu.kitchenShare(3, 7)).toBe(`в 3${NBSP}из 7 кофеен`);
-    expect(ru.menu.chapters.kuhnya.lead(3, 7, "Нальчика")).toMatch(/кофеен Нальчика, в остальных меню лёгкое\.$/);
-    expect(ru.menu.chapters.kuhnya.lead(1, 2, "Владикавказа")).toMatch(/кофеен Владикавказа, в другой меню лёгкое\.$/);
-    expect(ru.menu.chapters.kuhnya.lead(2, 2, "Владикавказа")).toMatch(/кофеен Владикавказа\.$/);
-  });
+  it("counts in Russian, and names every section", () => {
+    expect(ru.menu.count(93)).toBe("93 позиции");
+    expect(ru.menu.count(88)).toBe("88 позиций");
+    expect(ru.menu.count(21)).toBe("21 позиция");
+    for (const s of menuSections) {
+      expect(ru.menu.sections[s.id].title.length).toBeGreaterThan(2);
+      expect(ru.menu.sections[s.id].line).toMatch(/\?$/);
+    }
+});
 });

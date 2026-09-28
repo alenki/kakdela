@@ -66,6 +66,50 @@ import syrokShokoladnyj from "@/assets/photos/syrok-shokoladnyj.jpg";
 import finikiVShokolade from "@/assets/photos/finiki-v-shokolade.jpg";
 import moti from "@/assets/photos/moti.jpg";
 
+// /menu: drinks and the rest of the kitchen for the card grid (client, up to 1200px)
+import dranikiSSyomgoj from "@/assets/photos/draniki-s-syomgoj.jpg";
+import espresso from "@/assets/photos/espresso.jpg";
+import amerikano from "@/assets/photos/amerikano.jpg";
+import fletUajt from "@/assets/photos/flet-uajt.jpg";
+import latte from "@/assets/photos/latte.jpg";
+import rafKlassicheskij from "@/assets/photos/raf-klassicheskij.jpg";
+import filtrKofe from "@/assets/photos/filtr-kofe.jpg";
+import v60 from "@/assets/photos/v60.jpg";
+import rafCitrus from "@/assets/photos/raf-citrus.jpg";
+import rafMalinaApelsin from "@/assets/photos/raf-malina-apelsin.jpg";
+import tvinPiks from "@/assets/photos/tvin-piks.jpg";
+import filtrSlivaGibiskus from "@/assets/photos/filtr-sliva-gibiskus.jpg";
+import espressoTonikGranat from "@/assets/photos/espresso-tonik-granat.jpg";
+import bamblKlassicheskij from "@/assets/photos/bambl-klassicheskij.jpg";
+import bamblNaFreshe from "@/assets/photos/bambl-na-freshe.jpg";
+import ajsLatte from "@/assets/photos/ajs-latte.jpg";
+import matchaLatte from "@/assets/photos/matcha-latte.jpg";
+import matchaLichiAnanas from "@/assets/photos/matcha-lichi-ananas.jpg";
+import matchaKlubnika from "@/assets/photos/matcha-klubnika.jpg";
+import matchaMalinaBelyjShokolad from "@/assets/photos/matcha-malina-belyj-shokolad.jpg";
+import kakao from "@/assets/photos/kakao.jpg";
+import beanToBar from "@/assets/photos/bean-to-bar.jpg";
+import mangoCitrus from "@/assets/photos/mango-citrus.jpg";
+import karkadeGranat from "@/assets/photos/karkade-granat.jpg";
+import oblepihaKlyukva from "@/assets/photos/oblepiha-klyukva.jpg";
+import imbirLimonMyod from "@/assets/photos/imbir-limon-myod.jpg";
+import yagodnyjLapsang from "@/assets/photos/yagodnyj-lapsang.jpg";
+import freshApelsin from "@/assets/photos/fresh-apelsin.jpg";
+import freshGrejpfrut from "@/assets/photos/fresh-grejpfrut.jpg";
+import freshGranat from "@/assets/photos/fresh-granat.jpg";
+import freshYabloko from "@/assets/photos/fresh-yabloko.jpg";
+import freshMorkov from "@/assets/photos/fresh-morkov.jpg";
+import shotVitaminnyj from "@/assets/photos/shot-vitaminnyj.jpg";
+import espressoShot from "@/assets/photos/espresso-shot.jpg";
+import malinaMarakujya from "@/assets/photos/malina-marakujya.jpg";
+import granatKlyukva from "@/assets/photos/granat-klyukva.jpg";
+import modnyjLimonnyj from "@/assets/photos/modnyj-limonnyj.jpg";
+import persikKalamansi from "@/assets/photos/persik-kalamansi.jpg";
+import bananovyj from "@/assets/photos/bananovyj.jpg";
+import klubnichnyj from "@/assets/photos/klubnichnyj.jpg";
+import shokoladnoBananovyj from "@/assets/photos/shokoladno-bananovyj.jpg";
+import kofejnoBananovyj from "@/assets/photos/kofejno-bananovyj.jpg";
+
 export const photos = {
   luchsheVseh: { src: luchsheVseh, alt: "Завтрак «Лучше всех»: глазунья, домашние колбаски, свежие овощи и грибной соус" },
   otlichnyj: { src: otlichnyj, alt: "Завтрак «Отличный»: омлет с моцареллой, тост с авокадо, салат и соус" },
@@ -129,4 +173,47 @@ export const photos = {
   syrokShokoladnyj: { src: syrokShokoladnyj, alt: "Шоколадные сырки в глазури с хрустящей крошкой" },
   finikiVShokolade: { src: finikiVShokolade, alt: "Финики в молочном шоколаде с фисташковой крошкой" },
   moti: { src: moti, alt: "Разноцветные моти на тарелке" },
+  // /menu: drinks and the rest of the kitchen (client)
+  dranikiSSyomgoj: { src: dranikiSSyomgoj, alt: "Драники с сёмгой и яйцом пашот, авокадо с семечками, зелень и соус" },
+  espresso: { src: espresso, alt: "Эспрессо в белой чашке и стакан воды на деревянном подносе" },
+  amerikano: { src: amerikano, alt: "Американо в белой чашке на блюдце" },
+  fletUajt: { src: fletUajt, alt: "Флэт уайт с латте-артом" },
+  latte: { src: latte, alt: "Латте с латте-артом в белой чашке" },
+  rafKlassicheskij: { src: rafKlassicheskij, alt: "Раф классический в белой чашке, рядом тростниковый сахар" },
+  filtrKofe: { src: filtrKofe, alt: "Фильтр-кофе в белой кружке" },
+  v60: { src: v60, alt: "Кофе из воронки V60 в стеклянном кувшине" },
+  rafCitrus: { src: rafCitrus, alt: "Раф цитрус в белой чашке, на блюдце долька апельсина" },
+  rafMalinaApelsin: { src: rafMalinaApelsin, alt: "Раф малина-апельсин, рядом апельсин и малина" },
+  tvinPiks: { src: tvinPiks, alt: "Напиток «Твин-Пикс» со сливочной шапкой и вишней" },
+  filtrSlivaGibiskus: { src: filtrSlivaGibiskus, alt: "Фильтр слива-гибискус в кружке «Как дела?», рядом слива и лепестки роз" },
+  espressoTonikGranat: { src: espressoTonikGranat, alt: "Эспрессо-тоник гранат со льдом, рядом разломанный гранат" },
+  bamblKlassicheskij: { src: bamblKlassicheskij, alt: "Бамбл классический: эспрессо над апельсиновым соком со льдом" },
+  bamblNaFreshe: { src: bamblNaFreshe, alt: "Бамбл на фреше, рядом апельсины и лимон" },
+  ajsLatte: { src: ajsLatte, alt: "Айс латте со льдом в высоком стакане" },
+  matchaLatte: { src: matchaLatte, alt: "Матча латте с латте-артом" },
+  matchaLichiAnanas: { src: matchaLichiAnanas, alt: "Матча личи-ананас со льдом, сверху сушёный лайм" },
+  matchaKlubnika: { src: matchaKlubnika, alt: "Матча клубника со льдом: слои матчи, молока и клубники" },
+  matchaMalinaBelyjShokolad: { src: matchaMalinaBelyjShokolad, alt: "Матча малина и белый шоколад в кружке с малиновой посыпкой" },
+  kakao: { src: kakao, alt: "Какао с маршмеллоу" },
+  beanToBar: { src: beanToBar, alt: "Горячий шоколад в кружке «Как дела?», рядом кусочки шоколада" },
+  mangoCitrus: { src: mangoCitrus, alt: "Чай манго-цитрус в стеклянном чайнике, рядом апельсин и лайм" },
+  karkadeGranat: { src: karkadeGranat, alt: "Чай каркаде-гранат в стеклянном чайнике, рядом гранат и сушёный каркаде" },
+  oblepihaKlyukva: { src: oblepihaKlyukva, alt: "Чай облепиха-клюква в стеклянном чайнике, рядом ягоды и апельсин" },
+  imbirLimonMyod: { src: imbirLimonMyod, alt: "Чай с имбирём, лимоном и мёдом в стеклянном чайнике" },
+  yagodnyjLapsang: { src: yagodnyjLapsang, alt: "Ягодный лапсанг в стеклянном чайнике, рядом сушёные цитрусы и ягоды" },
+  freshApelsin: { src: freshApelsin, alt: "Апельсиновый фреш, рядом половинки апельсина" },
+  freshGrejpfrut: { src: freshGrejpfrut, alt: "Грейпфрутовый фреш, рядом дольки грейпфрута" },
+  freshGranat: { src: freshGranat, alt: "Гранатовый фреш, рядом гранат" },
+  freshYabloko: { src: freshYabloko, alt: "Яблочный фреш, рядом зелёное яблоко" },
+  freshMorkov: { src: freshMorkov, alt: "Морковный фреш, рядом кружочки моркови" },
+  shotVitaminnyj: { src: shotVitaminnyj, alt: "Витаминные шоты на деревянной подставке, рядом цитрусы, гранат и имбирь" },
+  espressoShot: { src: espressoShot, alt: "Четыре шота на деревянной подставке" },
+  malinaMarakujya: { src: malinaMarakujya, alt: "Лимонад малина-маракуйя со льдом" },
+  granatKlyukva: { src: granatKlyukva, alt: "Лимонад гранат-клюква со льдом, рядом гранат и клюква" },
+  modnyjLimonnyj: { src: modnyjLimonnyj, alt: "Лимонад «Модный лимонный», рядом лимон" },
+  persikKalamansi: { src: persikKalamansi, alt: "Лимонад персик-каламанси в ребристом стакане" },
+  bananovyj: { src: bananovyj, alt: "Банановый коктейль, рядом нарезанный банан" },
+  klubnichnyj: { src: klubnichnyj, alt: "Клубничный коктейль, рядом клубника" },
+  shokoladnoBananovyj: { src: shokoladnoBananovyj, alt: "Шоколадно-банановый коктейль в высоком стакане" },
+  kofejnoBananovyj: { src: kofejnoBananovyj, alt: "Кофейно-банановый коктейль, рядом кофейные зёрна" },
 } satisfies Record<string, Photo>;

@@ -18,9 +18,8 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * In-page travel on /menu. Every «#…» link on the page (the answers index, the contents, the running head,
- * the action bar's «Меню») glides to its target (Lenis on fine pointers in full motion, an instant jump
- * otherwise), lands it just under the running head, and moves focus there. Landing on one of the eight
+ * In-page travel on /menu. Every «#…» link on the page (the tabs, the action bar's «Меню») glides to its target (Lenis on fine pointers in full motion, an instant jump
+ * otherwise), lands it just under the tabs, and moves focus there. Landing on one of the eight
  * answer dishes sets html[data-pick], and CSS turns that dish's answer word the page's one red. Nothing is
  * stored: picking on the menu is navigation, not an answer. Without JS the links are plain anchors.
  */
@@ -54,8 +53,8 @@ export function MenuNav() {
       for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
       return y;
     };
-    // A chapter docks right under the running head (its own padding is the air); anything else keeps 16px.
-    const airOf = (el: HTMLElement) => (el.matches(".mn-ch") ? 0 : AIR);
+    // A section docks right under the tabs (its own padding is the air); a dish keeps 16px.
+    const airOf = (el: HTMLElement) => (el.matches(".mn-sec") ? 0 : AIR);
     const heights = () => ({
       header: document.querySelector<HTMLElement>("[data-header]"),
       run: document.querySelector<HTMLElement>("[data-mn-run]")?.offsetHeight ?? 0,

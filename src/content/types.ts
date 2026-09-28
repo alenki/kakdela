@@ -139,6 +139,18 @@ export type MenuChapter = {
   categories: MenuCategory[];
 };
 
+/** The tabs of /menu, in the order of a café day. */
+export type MenuSectionId = "zavtraki" | "obed" | "kofe" | "ne-kofe" | "holodnoe" | "deserty";
+
+export type MenuSection = {
+  id: MenuSectionId;
+  /** Cream by day, ink at night (the desserts), as on the homepage. */
+  theme: "cream" | "ink";
+  servedAt: "full-kitchen" | "every-cafe";
+  /** Whole categories, in reading order. */
+  categories: MenuCategory[];
+};
+
 export type Cafe = {
   id: string;
   city: City;

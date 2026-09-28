@@ -1,4 +1,4 @@
-import type { Mood } from "@/content/types";
+import type { MenuSectionId, Mood } from "@/content/types";
 import type { RouteKey } from "@/content/routes";
 import { groupDigits, plural } from "@/lib/format";
 import { NBSP } from "@/lib/typograf";
@@ -170,53 +170,33 @@ export const ru = {
     photoCredit: "Часть фото временные (CC0)",
     utility: "Халяль и намазхана во всех кофейнях · Wi‑Fi · меню на английском · каждый день с 07:30",
   },
-  // The /menu page: the waiter's side of the conversation.
+  // The /menu page: the waiter's side of the conversation, set as a menu with tabs.
   menu: {
     meta: {
       title: "Меню кофеен «Как дела?»: завтраки весь день, кофе и десерты",
       description:
         "Всё меню «Как дела?» в Нальчике и Владикавказе: завтраки весь день, кофе, чай, лимонады и десерты. Цены для вашего города, объёмы и КБЖУ.",
     },
+    kicker: "Кофе, завтраки весь день и десерты",
     q: "Меню",
+    // The waiter's line over the title (the café's voice, in the serif).
     a: "Что будете?",
-    lead: "Всё, что мы готовим и варим, с ценами вашего города, объёмами и КБЖУ.",
-    // The answers index: its accessible name (the visible label is t.hero.q, or t.hero.yesterday).
-    answersNav: "Блюда по ответам",
-    // Under today's torn answer in the index. Never red.
-    today: "ваш ответ сегодня",
-    contents: "Содержание",
-    runNav: "Разделы меню",
-    count: {
-      kuhnya: (n: number) => `${n} ${plural(n, "блюдо", "блюда", "блюд")}`,
-      bar: (n: number) => `${n} ${plural(n, "напиток", "напитка", "напитков")}`,
-      deserty: (n: number) => `${n} ${plural(n, "десерт", "десерта", "десертов")}`,
-    },
-    everywhere: "во всех кофейнях",
-    // «в 3 из 7 кофеен»: after «из N» always the genitive plural; «3 из 7» never breaks.
-    kitchenShare: (n: number, total: number) => `в ${n}${NBSP}из ${total} кофеен`,
-    cityGen: { nalchik: "Нальчика", vladikavkaz: "Владикавказа" },
-    chapters: {
-      kuhnya: {
-        q: "Кухня",
-        a: "С чего начнём?",
-        // The rest: «в остальных» for several cafés, «в другой» for one, nothing when every café has the kitchen.
-        lead: (n: number, total: number, cityGen: string) =>
-          `Завтраки подаём весь день. Полная кухня есть в ${n}${NBSP}из ${total} кофеен ${cityGen}` +
-          (total - n > 1 ? ", в остальных меню лёгкое." : total - n === 1 ? ", в другой меню лёгкое." : "."),
-      },
-      bar: {
-        q: "Бар",
-        a: "Как обычно?",
-        lead: "Эспрессо, фильтр и авторские напитки, матча, чаи, лимонады и фреши. Во всех кофейнях по одной цене.",
-      },
-      deserty: {
-        q: "Десерты",
-        a: "К кофе что-нибудь?",
-        lead: (n: number) =>
-          `${n} ${plural(n, "десерт", "десерта", "десертов")} к любому кофе, есть без сахара и без глютена. Во всех кофейнях по одной цене.`,
-      },
-    },
+    count: (n: number) => `${n} ${plural(n, "позиция", "позиции", "позиций")}`,
+    tabsNav: "Разделы меню",
+    // On the photo of a house dish.
+    signature: "Фирменное",
     fullKitchen: "Полная кухня",
+    lightKitchen: "В остальных кофейнях меню лёгкое.",
+    // Each section: its tab and title, and the waiter's question beside it.
+    sections: {
+      zavtraki: { title: "Завтраки", line: "С чего начнём?" },
+      obed: { title: "Боулы и сэндвичи", line: "А на обед?" },
+      kofe: { title: "Кофе", line: "Как обычно?" },
+      "ne-kofe": { title: "Чай и матча", line: "А без кофе?" },
+      holodnoe: { title: "Лимонады и фреши", line: "Что-нибудь холодное?" },
+      deserty: { title: "Десерты", line: "К кофе что-нибудь?" },
+    } satisfies Record<MenuSectionId, { title: string; line: string }>,
+    cta: { q: "Что-нибудь ещё?", title: "Ждём вас в кофейне." },
     ml: (n: string) => `${n}${NBSP}мл`,
     kcal: (k: string) => `${k}${NBSP}ккал`,
     // Screen-reader form of a two-size price: «200 мл за 240 ₽, 300 мл за 270 ₽» (prices come from rub()).

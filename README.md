@@ -9,7 +9,7 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 - **Hero.** A paper notice whose headline is the real logo asks «Как дела?». The guest tears off an answer tab.
 - **The answer is the order.** The heavy answer lands, the dish with that name appears with its price, and the café replies.
 - **The page remembers.** The answer comes back in the locations reply, and the next day as «Вчера было «…». А сегодня?».
-- **The menu answers back.** `/menu` is the waiter's side: «Что будете?». Its cover lists the eight answers, each beside its dish; the dish carries the hero's dialogue («Как дела? Сонно.»), and the answer word turns red where the guest lands or what they tore today.
+- **The menu answers back.** `/menu` is the waiter's side: «Что будете?» over «Меню», then sticky tabs and six sections of photo cards, each titled with the waiter's question («С чего начнём?», «Как обычно?», «К кофе что-нибудь?»). The eight answer dishes carry the hero's dialogue («Как дела? Сонно.»), and the answer word turns red where the guest lands or on what they tore today.
 
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase), Motion 13 (`m.*` under `LazyMotion`), Lenis.
@@ -40,7 +40,7 @@ npm run assets:grain   # grain textures in public/tex
 | `src/i18n/ru.ts` | Every UI string (Russian-first; EN will mirror its shape) |
 | `src/components/hero/*` | The notice, the tear-off tabs and the answer stage |
 | `src/components/sections/*` | One server component per section, with client islands in subfolders |
-| `src/components/menu/*` | The `/menu` page: cover, running head, chapters and rows, with client islands in `islands/` |
+| `src/components/menu/*` | The `/menu` page: the top, the sticky tabs (`MenuTabs`), the sections and their cards, the last word; effect-only islands in `islands/` |
 | `src/components/brand/*` | The Wordmark (the traced logo, as SVG) and Photo |
 | `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup |
 | `src/styles/*` | Chrome, brand and hero styles, plus one CSS file per section |

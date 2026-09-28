@@ -10,7 +10,7 @@ The site reads like a well-set printed café menu: warm paper, black ink, one re
 
 ## Files and ownership
 - `src/app/page.tsx` composes the page: hero, team, breakfasts, coffee, locations, reviews, evening inside `<main>`, then the footer (the contentinfo landmark).
-- `src/app/menu/page.tsx` composes the menu the same way: its server components live in `src/components/menu/`, its client islands in `src/components/menu/islands/`, its stylesheet is `src/styles/sections/menu.css`, and its data is `src/content/full-menu.ts` (the full menu from the client's site; the dishes shown on the homepage are referenced from `menu.ts`, never copied).
+- `src/app/menu/page.tsx` composes the menu the same way: its server components live in `src/components/menu/` (with `MenuTabs`, the one client component that renders UI), its effect-only islands in `src/components/menu/islands/`, its stylesheet is `src/styles/sections/menu.css`, and its data is `src/content/full-menu.ts` (the full menu from the client's site; the dishes shown on the homepage are referenced from `menu.ts`, never copied).
 - Each section:
   - is `src/components/sections/<Name>.tsx`, a **server component** that renders all copy;
   - may add client islands next to it as `src/components/sections/<name>/<Island>.tsx` (motion, measurement, state);

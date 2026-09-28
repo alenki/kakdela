@@ -1,149 +1,72 @@
 /* ═════════════ MENU (/menu) «Что будете?»: the waiter's side of the conversation ═════════════
-   A cover set by answer (the eight answers from the hero's notice, each beside its dish as a real menu row),
-   the contents, a running head, then one café day in three chapters: Кухня and Бар on cream, Десерты on
-   ink. One three-tier type system, every tier a homepage geometry:
-     A  signature rows (the breakfasts / coffee lists): display name, leader, price; the kitchen's beside a
-        sticky photo, the bar's beside a bled photo
-     B  the card: secondary rows (.menu-row) in newspaper columns; the vitrine: the same rows with a thumbnail
-     C  the three house desserts in thirds (the evening)
-   The one signature moment: «Как дела? Сонно.» is printed over each answer dish, and the answer word turns
-   the page's one red at the dish the guest came for (html[data-pick]) or tore today (html[data-said]). */
+   The top on the centre line (what the café is and how many dishes, the waiter's line over «Меню», the hours
+   and the two ways to reach it), sticky tabs, then one café day in six sections: a title with the waiter's
+   question beside it, a grid of photo cards (name …… price, the description, the small print), the dishes
+   without a photo as rows under it. Cream by day, the desserts and the last word at night.
+   The one signature moment: «Как дела? Сонно.» is printed over each of the eight answer dishes, and the
+   answer word turns the page's one red where the guest lands (html[data-pick]) or on what they tore today
+   (html[data-said]). */
 .mn {
   --mn-run-h: 48px;
-  /* The sticky photo's distance from the chrome above it (the breakfasts' --bf-top). */
-  --mn-top: clamp(16px, 3vh, 2.5rem);
-  /* Where an anchor lands: under the header and the running head, with a little air. */
+  /* Where an anchor lands: under the header and the tabs, with a little air. */
   --mn-scroll: calc(var(--header-h) + var(--mn-run-h) + 1rem);
-  /* The card's thumbnail (72 to 96px, 120 from 1920) and the larger one of the signature rows and the vitrine
-     (the homepage breakfasts' thumb: never under 96px, so the stock badge always fits). */
-  --mn-thumb: clamp(4.5rem, 18vw, 6rem);
-  --mn-vthumb: clamp(96px, 27vw, 128px);
-  --mn-gap: 0.5rem;
-}
-@media (min-width: 480px) {
-  .mn { --mn-gap: 0.75rem; }
+  /* The waiter's lines, in the serif: the size of the hero's reply at its largest. */
+  --mn-voice: clamp(1.375rem, 1rem + 1.2vw, 2.5rem);
 }
 @media (min-width: 1024px) {
   .mn { --mn-run-h: 3.25rem; }
 }
-@media (min-width: 1920px) {
-  .mn { --mn-thumb: 7.5rem; --mn-vthumb: 8rem; }
-}
-@media (min-width: 1024px) and (max-width: 1279.98px) {
-  .mn { --mn-vthumb: 96px; }
-}
 .mn [id] { scroll-margin-top: var(--mn-scroll); }
-/* A chapter docks right under the running head: its own padding is the air. */
-.mn .mn-ch { scroll-margin-top: calc(var(--header-h) + var(--mn-run-h)); }
-/* Tab into a chapter: keep the control clear of the header and the running head. */
-.mn-ch :is(a[href], button, [tabindex="0"]) { scroll-margin-top: calc(var(--header-h) + var(--mn-run-h) + 8px); }
+/* A section docks right under the tabs: its own padding is the air. */
+.mn .mn-sec { scroll-margin-top: calc(var(--header-h) + var(--mn-run-h)); }
+/* Tab into a section: keep the control clear of the header and the tabs. */
+.mn-sec :is(a[href], button, [tabindex="0"]) { scroll-margin-top: calc(var(--header-h) + var(--mn-run-h) + 8px); }
 
-/* ═════════════ The cover ═════════════ */
-.mn-top {
-  padding-top: calc(var(--header-h) + var(--head-gap));
-  padding-bottom: var(--section-pad);
+/* ═════════════ The top ═════════════ */
+.mn-head {
+  padding-top: calc(var(--header-h) + clamp(16px, 3vh, 2.5rem));
+  padding-bottom: clamp(2.5rem, 7vh, 5.5rem);
+  text-align: center;
+}
+/* What the café is on the left edge, how many dishes on the right: two labels on one line. */
+.mn-head__top { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; text-align: left; }
+.mn-head__top p { margin: 0; }
+.mn-head__title { margin-top: clamp(2.5rem, 7vh, 5rem); }
+.mn-head__q { margin: 0 0 0.25em; font-size: var(--mn-voice); }
+.mn-head__h1 { margin: 0; font-size: var(--h2); }
+/* The hours, a dot, then the two ways to reach the café. Phones: the hours over the buttons. */
+.mn-head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+}
+.mn-head__hours { margin: 0; font-size: var(--fs-small); font-weight: 500; color: var(--fg-soft); }
+.mn-head__dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.35; }
+.mn-head__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0; }
+@media (max-width: 639.98px) {
+  .mn-head__meta { flex-direction: column; }
+  .mn-head__dot { display: none; }
 }
 
-/* Whose prices (the homepage breakfasts bar). Without JS the switch can't switch: it goes, and the label
-   names the city whose prices show. */
-.mn-prices { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+/* Whose prices (the homepage breakfasts bar): in the top below 1024, in the tabs from there. Without JS the
+   switch can't switch: it goes, and the label names the city whose prices show. */
+.mn-prices { display: flex; align-items: center; gap: 12px; }
 .mn-prices .label { margin: 0; }
+.mn-head__prices { justify-content: center; margin-top: 1.5rem; }
+@media (min-width: 1024px) {
+  .mn-head__prices { display: none; }
+}
 .mn-prices__static { display: none; }
 html:not(.js) .mn-prices__static { display: inline; }
 html:not(.js) .mn-prices__switch { display: none; }
 
-/* ── The answers index: «СОННО | Эспрессо-тоник ……… 290 ₽» ── */
-/* «Как дела?» in the hero's own dialogue size; the day after a tear, yesterday's question instead. */
-.mn-answers__q { margin: 0 0 1rem; font-size: var(--lead); font-weight: 500; line-height: 1.2; }
-.mn-answers__yd { display: none; }
-html[data-yesterday]:not([data-said]) [data-mn-q] { display: none; }
-.mn-answers__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
-/* The whole row is the link: 56px at least, the answer, then its dish as a menu row. */
-.mn-ans {
-  position: relative;
-  display: grid;
-  row-gap: 0.25rem;
-  min-height: 56px;
-  padding-block: 0.875rem;
-  border-top: var(--rule) solid var(--line);
-}
-.mn-ans__a { white-space: nowrap; }
-.mn-ans__row { font-size: var(--fs-body); }
-.mn-ans__today { display: none; }
-/* The focus ring on the whole row, reaching a little into the gutter so it clears the type. */
-.mn-ans:focus-visible { outline: none; }
-.mn-ans::after { content: ""; position: absolute; inset: 0 -0.625rem; pointer-events: none; border-radius: 2px; }
-.mn-ans:focus-visible::after { outline: 2px solid var(--focus); outline-offset: -2px; }
-.mn-ans:active > * { opacity: 0.6; }
-/* From 640: a two-column table, every answer in one column and every dish in the other, on one baseline. */
-@media (min-width: 640px) {
-  .mn-answers__list {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: var(--grid-gap);
-  }
-  .mn-answers__item,
-  .mn-ans {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: subgrid;
-    align-items: last baseline;
-  }
-  .mn-ans__a { grid-column: 1; }
-  .mn-ans__row,
-  .mn-ans__today { grid-column: 2; }
-}
-/* While the pointer reads the index, the other rows step back (the homepage breakfasts). No red here. */
-@media (hover: hover) and (pointer: fine) {
-  .mn-ans > * { transition: opacity 240ms var(--ease-kd-ui); }
-  .mn-answers__list:hover .mn-ans:not(:hover) > * { opacity: 0.45; }
-}
-
-/* ── Contents: the three chapters, what each holds in the guest's city, every category ── */
-.mn-toc { margin-top: var(--head-gap); }
-.mn-toc__title { margin: 0 0 0.75rem; }
-.mn-toc__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
-.mn-toc__ch { display: grid; align-content: start; justify-items: start; gap: 0.25rem; padding-block: 0.75rem 1rem; border-top: var(--rule) solid var(--line); }
-/* The dialog's service links: Onest 500 at the lead size, a 44px target. */
-.mn-toc__link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: var(--lead);
-  font-weight: 500;
-  line-height: 1.2;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-  transition: opacity 150ms var(--ease-kd-ui);
-}
-.mn-toc__link:active { opacity: 0.6; }
-.mn-toc__count { margin: 0; }
-.mn-toc__cats { margin-top: 0.5rem; font-size: var(--fs-small); column-gap: 1.25rem; }
-@media (hover: hover) and (pointer: fine) {
-  .mn-toc__link:hover { text-decoration-line: underline; }
-}
-@media (min-width: 640px) and (max-width: 1023.98px) {
-  .mn-toc__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--grid-gap); }
-}
-
-/* ≥1024: the index takes columns 1–7, whose prices and the contents 9–12, from the same top line. */
-@media (min-width: 1024px) {
-  .mn-top__body {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: auto 1fr;
-    column-gap: var(--grid-gap);
-    align-items: start;
-  }
-  .mn-answers { grid-column: 1 / span 7; grid-row: 1 / -1; }
-  .mn-prices { grid-column: 9 / -1; grid-row: 1; margin-bottom: 0; }
-  .mn-toc { grid-column: 9 / -1; grid-row: 2; margin-top: 2rem; }
-}
-
-/* ═════════════ The running head ═════════════ */
-/* Sticky under the header, in the colours of the chapter beneath (RunningHeadController). When the header
-   tucks away on the way down, the head rides up with it (the header's own 350ms), so there is never a gap. */
-.mn-run {
+/* ═════════════ The tabs ═════════════ */
+/* Sticky under the header, in the colours of the section beneath (MenuTabs). When the header tucks away on
+   the way down, the bar rides up with it (the header's own 350ms), so there is never a gap. */
+.mn-tabs {
   position: sticky;
   top: var(--header-h);
   z-index: 45;
@@ -158,18 +81,34 @@ html[data-yesterday]:not([data-said]) [data-mn-q] { display: none; }
     border-top-color 250ms var(--ease-kd-ui);
 }
 /* Stuck under the header: the header's own hairline is the top line. */
-.mn-run[data-stuck] { border-top-color: transparent; }
-html:has(.site-header[data-hidden]:not(:focus-within)) .mn-run[data-stuck] { transform: translateY(calc(-1 * var(--header-h))); }
-/* Keyboard focus in the stuck head: the header tucks away, so it never covers the focus. */
-html:has(.mn-run[data-stuck] :focus-visible) .site-header:not(:focus-within) { transform: translateY(calc(-100% - 1px)); }
-html:has(.mn-run[data-stuck] :focus-visible) .mn-run[data-stuck] { transform: translateY(calc(-1 * var(--header-h))); }
-/* Without JS the header scrolls away with the page (chrome.css): the head sticks to the top. */
-html:not(.js) .mn-run { top: 0; }
+.mn-tabs[data-stuck] { border-top-color: transparent; }
+html:has(.site-header[data-hidden]:not(:focus-within)) .mn-tabs[data-stuck] { transform: translateY(calc(-1 * var(--header-h))); }
+/* Keyboard focus in the stuck bar: the header tucks away, so it never covers the focus. */
+html:has(.mn-tabs[data-stuck] :focus-visible) .site-header:not(:focus-within) { transform: translateY(calc(-100% - 1px)); }
+html:has(.mn-tabs[data-stuck] :focus-visible) .mn-tabs[data-stuck] { transform: translateY(calc(-1 * var(--header-h))); }
+/* Without JS the header scrolls away with the page (chrome.css): the bar sticks to the top. */
+html:not(.js) .mn-tabs { top: 0; }
 
-.mn-run__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.mn-run__links { display: flex; gap: clamp(16px, 2vw, 2.5rem); margin: 0; padding: 0; list-style: none; }
-/* The header's link metrics; the chapter being read keeps its underline. */
-.mn-run__link {
+.mn-tabs__inner { height: 100%; display: flex; align-items: stretch; justify-content: space-between; gap: 16px; }
+/* Phones and tablets: the tabs run out to the screen's edges and scroll sideways, fading at the gutters. */
+.mn-tabs__list {
+  position: relative;
+  display: flex;
+  gap: clamp(20px, 2.4vw, 3rem);
+  min-width: 0;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+}
+.mn-tabs__list::-webkit-scrollbar { display: none; }
+.mn-tabs__item { flex: none; display: flex; }
+/* The header's link metrics; the tab being read in the text colour, underlined at the bar's foot. */
+.mn-tab {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -177,337 +116,182 @@ html:not(.js) .mn-run { top: 0; }
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1;
-  text-decoration: underline 1px;
-  text-decoration-color: transparent;
-  text-underline-offset: 0.3em;
-  transition: text-decoration-color 200ms var(--ease-kd-ui), opacity 150ms var(--ease-kd-ui);
+  white-space: nowrap;
+  color: var(--fg-soft);
+  transition: color 200ms var(--ease-kd-ui), opacity 150ms var(--ease-kd-ui);
 }
-.mn-run__link[aria-current="location"] { text-decoration-color: currentColor; }
-.mn-run__link:active { opacity: 0.6; }
-.mn-run__link:focus-visible { outline-offset: -2px; }
-/* «Бар» is narrower than 44px: widen the hit area to 44px (and 6px either side of any word) without moving
-   it; with 16px between the links the areas never overlap. */
-.mn-run__link::before { content: ""; position: absolute; inset: 0 min(-6px, calc(50% - 22px)); }
+.mn-tab[aria-current] { color: var(--fg); }
+.mn-tab:active { opacity: 0.6; }
+.mn-tab:focus-visible { outline-offset: -2px; }
+.mn-tab__line { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor; }
 @media (hover: hover) and (pointer: fine) {
-  .mn-run__link:not([aria-current]):hover { text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
-}
-.mn-run__prices { display: flex; align-items: center; gap: 12px; }
-.mn-run__label { margin: 0; }
-/* Phones: the switch speaks for itself (its label stays its accessible name). */
-@media (max-width: 639.98px) {
-  .mn-run__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+  .mn-tab:hover { color: var(--fg); }
 }
 @media (max-width: 419.98px) {
-  .mn-run__link { font-size: var(--fs-small); }
-  /* The chapters and both cities in 358px, inside the gutters. */
-  .mn-run__switch .city-switch__opt { padding-inline: 0.5rem; }
+  .mn-tab { font-size: var(--fs-small); }
 }
-/* Phones under 390: the chapters only (the cover's switch still sets the city). */
-@media (max-width: 389.98px) {
-  .mn-run__prices { display: none; }
-}
+.mn-tabs__prices { display: none; align-items: center; gap: 12px; flex: none; }
+.mn-tabs__label { margin: 0; }
 @media (min-width: 1024px) {
-  .mn-run__inner { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
-  .mn-run__links { grid-column: 1 / 9; }
-  .mn-run__prices { grid-column: 9 / -1; }
+  .mn-tabs__list { margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; overflow: visible; }
+  .mn-tabs__prices { display: flex; }
+}
+/* Wide screens: the tabs on the centre line, as the top is; whose prices at the right edge. */
+@media (min-width: 1440px) {
+  .mn-tabs__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .mn-tabs__list { grid-column: 2; }
+  .mn-tabs__prices { grid-column: 3; justify-self: end; }
 }
 
-/* ═════════════ Rows ═════════════ */
+/* ═════════════ Sections ═════════════ */
+/* The shared section head: the title in columns 1–8, the waiter's question in 9–12 on its last baseline. */
+.mn-sec__line { margin: 0; font-size: var(--mn-voice); color: var(--fg); }
+
+/* Where the kitchen dishes are cooked, and whether that café is open now. */
+.mn-kitchen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  margin: 0 0 clamp(2rem, 3.4vw, 3.5rem);
+}
+.mn-kitchen__label,
+.mn-kitchen__note { margin: 0; }
+.mn-kitchen__list { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin: 0; padding: 0; list-style: none; }
+.mn-kitchen__cafe { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.mn-kitchen__addr { font-size: var(--fs-small); font-weight: 500; }
+.mn-kitchen .status { color: var(--fg-soft); }
+
+/* ── The grid: two cards across on phones and tablets, three from 1024, four from 1920 ── */
+.mn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem var(--grid-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 1024px) {
+  .mn-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1920px) {
+  .mn-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+/* Each card runs on the grid's own rows (photo, dialogue, name …… price, description, small print), so the
+   cards side by side share their lines even where one carries «Как дела? …» and its neighbour does not (the
+   homepage team cards). The step between rows of cards is the card's own foot. */
+.mn-grid { row-gap: 0; }
+.mn-grid > .mi {
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  align-content: start;
+  padding-bottom: 2.5rem;
+}
+.mn-grid > .mi > .mi__text { display: contents; }
+.mn-grid .mi__media { grid-row: 1; margin-bottom: clamp(0.75rem, 1.2vw, 1.25rem); }
+.mn-grid .mn-said { grid-row: 2; }
+.mn-grid .mi__row { grid-row: 3; }
+.mn-grid .mi__desc { grid-row: 4; }
+.mn-grid .mi__facts { grid-row: 5; }
+/* The last row's foot is the section's own: no double step before the next section. */
+.mn-grid:last-child { margin-bottom: -2.5rem; }
+@media (min-width: 1024px) {
+  .mn-grid > .mi { padding-bottom: clamp(3rem, 4vw, 5rem); }
+  .mn-grid:last-child { margin-bottom: calc(-1 * clamp(3rem, 4vw, 5rem)); }
+}
+
+/* ── A card: the photo, then the dish as a menu row with its description and small print ── */
 .mi { position: relative; min-width: 0; }
-/* After a jump, focus lands on the row: the ring hugs it, inside the neighbours' rules. */
-.mi:focus-visible { outline-offset: 2px; }
-.mi__name { margin: 0; }
+/* After a jump, focus lands on the dish. */
+.mi:focus-visible { outline-offset: 4px; }
+.mi__media { position: relative; }
+/* «Фирменное»: the stock badge's plate (brand.css), in the photo's top corner. */
+.mi__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 0.1875rem 0.4375rem;
+  border-radius: 2px;
+  background: rgb(20 18 16 / 0.64);
+  color: var(--color-milk);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  pointer-events: none;
+}
 .mi__desc {
   max-width: 60ch;
-  margin: 0.5rem 0 0;
+  margin: 0.375rem 0 0;
   font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--fg-soft);
   text-wrap: pretty;
 }
 .mi__facts { margin: 0.375rem 0 0; }
-@media (min-width: 640px) {
-  .mi--a .mi__desc,
-  .mi--c .mi__desc { font-size: var(--fs-body); }
+@media (min-width: 1024px) {
+  .mi__desc { font-size: var(--fs-body); }
+}
+
+/* The dish as a menu row (MenuRowLine): the name may wrap, the leader runs on from its last line; where the
+   city on show has no price, «уточняйте в кофейне» takes a line of its own, with no leader. */
+.mn-row { flex-wrap: wrap; font-size: var(--fs-body); }
+.mn-row__ask { flex-basis: 100%; font-size: var(--fs-small); font-weight: 400; color: var(--fg-soft); }
+/* In narrow cards a balanced name leaves its last line too long for the leader: fill the first lines. */
+.mn .menu-row__name { text-wrap: pretty; }
+/* Phones: a card is half the screen, too narrow for a whole name («Станция Мир», «Эспрессо-тоник») and its
+   price on one line. The price goes under the name, and the leader, with nothing to lead to, goes. */
+@media (max-width: 479.98px) {
+  .mn-grid .mi__row { flex-direction: column; align-items: flex-start; row-gap: 0.125rem; }
+  .mn-grid .menu-row__name { flex: none; overflow-x: visible; }
+  .mn-grid .menu-row__lead { display: none; }
 }
 
 /* The hero's dialogue over each answer dish: graphite, always; the answer word takes the one red. */
-.mn-said { margin: 0 0 0.375rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.3; color: var(--fg-soft); }
+.mn-said { margin: 0 0 0.25rem; font-size: var(--fs-small); font-weight: 500; line-height: 1.3; color: var(--fg-soft); }
 .mn-said__a { transition: color 400ms var(--ease-kd-out); }
 
-/* ── Tier A: name, dotted leader, price; the description and the small print under them ── */
-.mi--a {
-  display: grid;
-  grid-template-columns: minmax(0, max-content) minmax(1.5rem, 1fr) auto;
-  grid-template-areas:
-    "said said said"
-    "name leader price"
-    "desc desc ."
-    "facts facts .";
-  align-items: baseline;
-  column-gap: 0.75rem;
-  padding-block: 1rem;
-  border-top: var(--rule) solid var(--line);
-}
-.mi--a .mn-said { grid-area: said; }
-.mi--a .mi__name { grid-area: name; white-space: nowrap; }
-.mi--a .mi__leader { grid-area: leader; min-width: 0; }
-.mi--a .mi__price {
-  grid-area: price;
-  margin: 0;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  white-space: nowrap;
-  text-align: right;
-}
-.mi--a .mi__desc { grid-area: desc; }
-.mi--a .mi__facts { grid-area: facts; }
-/* The kitchen's rows carry their photo below 1024px (the homepage breakfasts' rows). */
-@media (max-width: 1023.98px) {
-  .mi--a.mi--thumb {
-    grid-template-columns: calc(var(--mn-vthumb) + 4px) minmax(0, max-content) minmax(1rem, 1fr) auto;
-    grid-template-rows: auto auto auto 1fr;
-    grid-template-areas:
-      "thumb said said said"
-      "thumb name leader price"
-      "thumb desc desc desc"
-      "thumb facts facts facts";
-    column-gap: var(--mn-gap);
-  }
-  .mi--a .mi__thumb { grid-area: thumb; align-self: start; width: var(--mn-vthumb); }
-}
-@media (min-width: 1024px) {
-  .mi--a { padding-block: clamp(1.25rem, 1.7vw, 2.25rem); }
-  .mi--a .mi__desc { margin-top: 0.625rem; }
-  .mi--a .mi__thumb { display: none; }
-}
-/* Under 360px the longest name and its price can't share a line: the price goes under the name. */
-@media (max-width: 359.98px) {
-  .mi--a {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "said" "name" "price" "desc" "facts";
-  }
-  .mi--a.mi--thumb {
-    grid-template-columns: calc(var(--mn-vthumb) + 4px) minmax(0, 1fr);
-    grid-template-rows: auto auto auto auto 1fr;
-    grid-template-areas: "thumb said" "thumb name" "thumb price" "thumb desc" "thumb facts";
-  }
-  .mi--a .mi__leader { display: none; }
-  .mi--a .mi__price { margin-top: 0.25rem; text-align: left; }
-}
-/* A city without a price: the price slot says to ask, quietly (the homepage's .bf-price__ask). */
-.mi__ask {
-  display: inline-flex;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  line-height: 1.3;
-  white-space: normal;
-  color: var(--fg-soft);
-  text-wrap: balance;
-}
-@media (max-width: 389.98px) {
-  .mi--a .mi__ask { width: min-content; }
-}
-
-/* ── Tier B: secondary rows (.menu-row), a thumbnail only where the row has a photo ── */
-.mi--b { padding-block: 0.75rem; border-top: var(--rule) solid var(--line); }
-.mi--b.mi--thumb {
-  display: grid;
-  grid-template-columns: var(--mn-thumb) minmax(0, 1fr);
-  column-gap: 0.75rem;
-  align-items: start;
-}
-.mi--b.mi--vit { grid-template-columns: var(--mn-vthumb) minmax(0, 1fr); }
-.mi--b .mi__thumb { width: 100%; }
-.mi__text { min-width: 0; }
-.mi--b .mn-said { margin-bottom: 0.25rem; }
-.mi--b .mi__desc { margin-top: 0.25rem; }
-.mi--b .mi__facts { margin-top: 0.25rem; }
-/* The row itself (MenuRowLine): the name may wrap; where the city on show has no price, «уточняйте в
-   кофейне» takes a line of its own under the name, with no leader (the hero's dish row). */
-.mn-row { flex-wrap: wrap; font-size: var(--fs-body); }
-/* In narrow columns a balanced name leaves its last line too long for the leader: fill the first lines. */
-.mn .menu-row__name { text-wrap: pretty; }
-.mn-row__ask { flex-basis: 100%; font-size: var(--fs-small); font-weight: 400; color: var(--fg-soft); }
-
-/* ── Tier C: the three house desserts in thirds, a photo over each (the evening) ── */
-.mn-thirds {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem var(--grid-gap);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.mi--c .mi__body { margin-top: 1rem; }
-.mi__line { display: flex; align-items: baseline; column-gap: 0.75rem; }
-.mi--c .mi__name { white-space: nowrap; }
-.mi--c .mi__price { flex: none; margin: 0; font-size: var(--fs-body); font-weight: 500; white-space: nowrap; }
-@media (min-width: 640px) {
-  .mn-thirds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .mi--c .mi__body { margin-top: clamp(1rem, 1.4vw, 1.75rem); }
-}
-/* Below 1200 a third is too narrow for «Сан-Себастьян», its leader and its price on one line. */
-@media (min-width: 640px) and (max-width: 1199.98px) {
-  .mi__line { flex-direction: column; align-items: flex-start; row-gap: 0.375rem; }
-  .mi--c .mi__leader { display: none; }
-}
-@media (min-width: 1024px) {
-  .mi--c .mi__desc { margin-top: 0.625rem; }
-}
-
-/* ═════════════ Chapters ═════════════ */
-.mn-sig__label,
-.mn-more__title { margin: 0 0 0.75rem; }
-.mn-sig__list,
-.mn-more__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
-.mn-more { margin-top: clamp(2.5rem, 3.4vw, 4rem); }
-
-/* ── Кухня: where the full kitchen is, and whether it is open now ── */
-.mn-kitchen {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5rem 2rem;
-  margin-bottom: clamp(2.5rem, 3.4vw, 4rem);
-}
-.mn-kitchen__label { margin: 0; }
-.mn-kitchen__list { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin: 0; padding: 0; list-style: none; }
-.mn-kitchen__cafe { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
-.mn-kitchen__addr { font-size: var(--fs-small); font-weight: 500; }
-.mn-kitchen .status { color: var(--fg-soft); }
-
-/* ── Кухня: the six breakfasts beside a sticky photo of the dish being read (≥1024) ── */
-.mn-preview { display: none; }
-@media (min-width: 1024px) {
-  .mn-sig--kitchen {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-  }
-  .mn-sig--kitchen .mn-sig__main { grid-column: 1 / 8; grid-row: 1; min-width: 0; }
-  /* A container, so the photo can know the column's width (100cqi). */
-  .mn-preview { display: block; grid-column: 9 / -1; grid-row: 1; min-width: 0; container-type: inline-size; }
-}
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  /* While the pointer reads the list, the other dishes step back evenly, so the row and the photo pair up. */
-  .mn-sig--kitchen[data-js] .mi--a > * { transition: opacity 240ms var(--ease-kd-ui); }
-  .mn-sig--kitchen[data-js] .mn-sig__list:hover .mi--a:not([data-active]):not(:focus-within) > :not(.mi__thumb) { opacity: 0.45; }
-}
-.mn-preview__sticky {
-  /* The caption under the photo: the dish's name. */
-  --mn-cap: 2.5rem;
-  position: sticky;
-  top: calc(var(--header-h) + var(--mn-run-h) + var(--mn-top));
-  display: grid;
-  gap: 1rem;
-  /* 4:5, as wide as the column unless the screen is too short to hold it, the caption and the chrome. */
-  width: min(100cqi, (100svh - var(--header-h) - var(--mn-run-h) - 2 * var(--mn-top) - var(--mn-cap)) * 0.8);
-}
-.mn-stage { position: relative; aspect-ratio: 4 / 5; }
-/* Crossfade: the new photo fades in on top; the old one waits under it, then drops. */
-.mn-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0s linear 420ms; }
-.mn-slide[data-active] { z-index: 1; opacity: 1; transition: opacity 420ms var(--ease-kd-out); }
-/* Captions stacked in one cell, so swapping never shifts the layout. */
-.mn-caps { display: grid; }
-.mn-cap { grid-area: 1 / 1; visibility: hidden; }
-.mn-cap[data-active] { visibility: visible; }
-.mn-cap__name { margin: 0; font-weight: 500; }
-
-/* ── Бар: the house signatures beside one drink photo run out to the left edge (the homepage coffee) ── */
-.mn-sig--bar { display: grid; }
-.mn-bar-photo { margin: 0 0 2rem; }
-@media (min-width: 480px) and (max-width: 1023.98px) {
-  .mn-bar-photo .photo { aspect-ratio: 3 / 2; }
-}
-@media (min-width: 1024px) {
-  .mn-sig--bar { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
-  .mn-bar-photo { grid-column: 1 / span 6; grid-row: 2; margin: 0 0 0 calc(-1 * var(--gutter)); container-type: inline-size; }
-  .mn-sig--bar .mn-sig__label { grid-column: 8 / -1; grid-row: 1; }
-  .mn-sig--bar .mn-sig__list { grid-column: 8 / -1; grid-row: 2; align-self: start; }
-  /* As tall as the list, capped at 2:3 and 2:1; square where it meets the screen edge. */
-  .mn-bar-photo .photo {
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 50cqi;
-    max-height: 150cqi;
-    border-radius: 0 2px 2px 0;
-  }
-  .mn-bar-photo .photo__img { object-position: 50% 65%; }
-}
-@media (min-width: 1280px) {
-  .mn-bar-photo { grid-column: 1 / span 7; }
-  .mn-sig--bar .mn-sig__label,
-  .mn-sig--bar .mn-sig__list { grid-column: 9 / -1; }
-}
-
-/* ── The card: the rest of a chapter in newspaper columns; each category stays whole ──
-   One column on phones, two on tablets, the thirds from 1024 (three columns with the grid gap are exactly
-   the 4/4/4 of the 12), the quarters from 1920. */
-.mn-card {
-  margin-top: var(--head-gap);
-  /* The last category's closing step is the section's own foot. */
-  margin-bottom: calc(-1 * var(--foot-gap));
-  column-gap: var(--grid-gap);
-}
-@media (min-width: 640px) {
-  .mn-card { columns: 2; }
-}
-@media (min-width: 1024px) {
-  .mn-card { columns: 3; }
-}
-/* A third of a small laptop is too narrow for a thumbnail beside its row: the kitchen's card takes halves
-   there (six columns each), the bar's type-only card keeps the thirds. */
-@media (min-width: 1024px) and (max-width: 1279.98px) {
-  .mn-card--thumbs { columns: 2; }
-}
-@media (min-width: 1920px) {
-  .mn-card { columns: 4; }
-}
-/* A category may run on into the next column, as in print (whole categories left holes of up to 600px under
-   the shortest column); a row never splits and a title never ends a column. */
-.mn-card__cat { padding-bottom: var(--foot-gap); }
-.mn-card .mi { break-inside: avoid; }
-.mn-card .mn-cat__title { break-after: avoid; }
-.mn-cat__title { margin: 0 0 0.75rem; }
-.mn-cat__list { list-style: none; margin: 0; padding: 0; border-bottom: var(--rule) solid var(--line); }
-
-/* ── Десерты: the three in thirds, then the vitrine on the same thirds ── */
-.mn-vit { margin-top: var(--head-gap); }
-.mn-vit + .mn-vit { margin-top: clamp(2.5rem, 3.4vw, 4rem); }
-.mn-vit__list {
+/* ── Dishes without a photo: rows under the grid, on its columns ── */
+.mn-rest {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   column-gap: var(--grid-gap);
+  /* The cards' foot above is the step. */
   margin: 0;
   padding: 0;
   list-style: none;
   border-bottom: var(--rule) solid var(--line);
 }
 @media (min-width: 640px) {
-  .mn-vit__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mn-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (min-width: 1280px) {
-  .mn-vit__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 1024px) {
+  .mn-rest { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-/* Two columns from 640 to 1279 leave a narrow text column: a smaller thumbnail there. */
-@media (min-width: 640px) and (max-width: 1279.98px) {
-  .mn-vit { --mn-vthumb: 96px; }
+.mi--row { padding-block: 0.875rem; border-top: var(--rule) solid var(--line); }
+.mi--row .mi__text { margin-top: 0; }
+
+/* ═════════════ The last word ═════════════ */
+.mn-cta {
+  padding-block: var(--section-pad) calc(var(--section-pad) * 1.15);
+  text-align: center;
+  /* Ink after ink: one hairline across the gutters, as between the cream sections. */
+  background-image: linear-gradient(var(--line), var(--line));
+  background-size: calc(100% - 2 * var(--gutter)) 1px;
+  background-position: var(--gutter) 0;
+  background-repeat: no-repeat;
 }
-.mn-foot { display: grid; gap: 1rem; margin-top: var(--foot-gap); }
-.mn-note { margin: 0; max-width: 60ch; }
+.mn-cta__inner { display: grid; justify-items: center; }
+.mn-cta__q { margin: 0 0 0.25em; font-size: var(--mn-voice); }
+.mn-cta__title { margin: 0; font-size: var(--h2); }
+.mn-cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: clamp(1.5rem, 4vh, 2.5rem) 0 0; }
+.mn-cta__note { margin: 1.25rem 0 0; max-width: 60ch; }
 
 /* ═════════════ The one red ═════════════
-   The current answer is the one the guest came with or picked on this page (html[data-pick], never
-   stored), else the one torn on the homepage today (html[data-said]). Its word turns red at its dish; the
-   index only says «ваш ответ сегодня», quietly. Without JS the anchor target is the pick. */
+   The current answer is the one the guest came with or landed on (html[data-pick], never stored), else the one
+   torn on the homepage today (html[data-said]). Its word turns red at its dish. Without JS the anchor target
+   is the pick. */
 html:not(.js) .mi:target .mn-said__a,
 html:not([data-pick])[data-said="luchshe-vseh"] .mi[data-answer="luchshe-vseh"] .mn-said__a,
 html[data-pick="luchshe-vseh"] .mi[data-answer="luchshe-vseh"] .mn-said__a,
@@ -525,23 +309,3 @@ html:not([data-pick])[data-said="sonno"] .mi[data-answer="sonno"] .mn-said__a,
 html[data-pick="sonno"] .mi[data-answer="sonno"] .mn-said__a,
 html:not([data-pick])[data-said="tak-sebe"] .mi[data-answer="tak-sebe"] .mn-said__a,
 html[data-pick="tak-sebe"] .mi[data-answer="tak-sebe"] .mn-said__a { color: var(--accent-ink); }
-
-/* Today's tear, quietly, in the index. */
-html[data-said="luchshe-vseh"] .mn-ans[data-answer="luchshe-vseh"] .mn-ans__today,
-html[data-said="kak-v-skazke"] .mn-ans[data-answer="kak-v-skazke"] .mn-ans__today,
-html[data-said="vsyo-shik"] .mn-ans[data-answer="vsyo-shik"] .mn-ans__today,
-html[data-said="10-iz-10"] .mn-ans[data-answer="10-iz-10"] .mn-ans__today,
-html[data-said="est-hochu"] .mn-ans[data-answer="est-hochu"] .mn-ans__today,
-html[data-said="normalno"] .mn-ans[data-answer="normalno"] .mn-ans__today,
-html[data-said="sonno"] .mn-ans[data-answer="sonno"] .mn-ans__today,
-html[data-said="tak-sebe"] .mn-ans[data-answer="tak-sebe"] .mn-ans__today { display: block; }
-
-/* Yesterday's question stands in for «Как дела?» until today's tear. */
-html[data-yesterday="luchshe-vseh"]:not([data-said]) [data-mn-yd="luchshe-vseh"],
-html[data-yesterday="kak-v-skazke"]:not([data-said]) [data-mn-yd="kak-v-skazke"],
-html[data-yesterday="vsyo-shik"]:not([data-said]) [data-mn-yd="vsyo-shik"],
-html[data-yesterday="10-iz-10"]:not([data-said]) [data-mn-yd="10-iz-10"],
-html[data-yesterday="est-hochu"]:not([data-said]) [data-mn-yd="est-hochu"],
-html[data-yesterday="normalno"]:not([data-said]) [data-mn-yd="normalno"],
-html[data-yesterday="sonno"]:not([data-said]) [data-mn-yd="sonno"],
-html[data-yesterday="tak-sebe"]:not([data-said]) [data-mn-yd="tak-sebe"] { display: inline; }

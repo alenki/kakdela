@@ -11,14 +11,17 @@ import {
   menuCategories,
   menuItemById,
   menuItems,
+  menuCount,
+  menuSections,
+  sectionCount,
 } from "./full-menu";
 import { breakfasts, cherryPie, desserts, extras, signatureDrinks } from "./menu";
 import type { City, MenuItem } from "./types";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
 
-/** The page's own ids (SPEC §2.2) besides the chapters (kuhnya, bar, deserty) and their `-title` headings. */
-const PAGE_IDS = ["soderzhanie", "main", "menu-title", "mn-toc-title", "mn-prices-label", "mn-run-prices", "mn-kitchen-label", "mn-more-title"];
+/** The page's own ids besides the sections, their headings and the dishes. */
+const PAGE_IDS = ["soderzhanie", "main", "menu-title", "mn-prices-label", "mn-tabs-prices", "mn-cta-title"];
 
 /** КБЖУ that is not shown until the client checks it (SPEC §8.2.5). */
 const DROPPED_NUTRITION = [
@@ -42,18 +45,49 @@ describe("full menu: structure", () => {
     for (const ch of fullMenu) expect(chapterById[ch.id]).toBe(ch);
   });
 
-  test("ids are unique across items, categories, chapters and the page", () => {
+  test("ids rendered on the page are unique: dishes, sections and their headings", () => {
     const ids = [
       ...PAGE_IDS,
-      ...fullMenu.map((ch) => ch.id),
-      ...fullMenu.map((ch) => `${ch.id}-title`),
-      ...menuCategories.map((c) => c.id),
-      ...menuCategories.map((c) => `${c.id}-title`),
+      ...menuSections.map((s) => s.id),
+      ...menuSections.map((s) => `${s.id}-title`),
+      ...menuSections.filter((s) => s.servedAt === "full-kitchen").map((s) => `${s.id}-kitchen`),
       ...menuItems.map((i) => i.id),
     ];
     const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
     expect(dupes).toEqual([]);
     expect(Object.keys(menuItemById)).toHaveLength(menuItems.length);
+  });
+
+  test("data ids (chapters, categories, dishes) are unique among themselves", () => {
+    const ids = [...fullMenu.map((ch) => ch.id), ...menuCategories.map((c) => c.id), ...menuItems.map((i) => i.id)];
+    expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([]);
+  });
+
+  test("the six sections hold every category once, in the order of a café day", () => {
+    expect(menuSections.map((s) => s.id)).toEqual(["zavtraki", "obed", "kofe", "ne-kofe", "holodnoe", "deserty"]);
+    const grouped = menuSections.flatMap((s) => s.categories.map((c) => c.id));
+    expect([...grouped].sort()).toEqual(menuCategories.map((c) => c.id).sort());
+    expect(new Set(grouped).size).toBe(grouped.length);
+    expect(menuSections.map((s) => s.theme)).toEqual(["cream", "cream", "cream", "cream", "cream", "ink"]);
+    expect(menuSections.map((s) => s.servedAt)).toEqual(["full-kitchen", "full-kitchen", "every-cafe", "every-cafe", "every-cafe", "every-cafe"]);
+  });
+
+  test("counts per city: 93 in Нальчик, 88 in Владикавказ", () => {
+    expect(menuSections.map((s) => [s.id, sectionCount(s, "nalchik"), sectionCount(s, "vladikavkaz")])).toEqual([
+      ["zavtraki", 14, 13],
+      ["obed", 12, 8],
+      ["kofe", 20, 20],
+      ["ne-kofe", 11, 11],
+      ["holodnoe", 15, 15],
+      ["deserty", 21, 21],
+    ]);
+    expect(menuCount("nalchik")).toBe(93);
+    expect(menuCount("vladikavkaz")).toBe(88);
+  });
+
+  test("every dish has a photo but the six the client has none for", () => {
+    const without = menuItems.filter((i) => !i.photo).map((i) => i.id).sort();
+    expect(without).toEqual(["granola", "kinder-kantri", "malinovyj-muss", "mini-pankejki", "shokoladnaya-pp-granola", "shu-s-funduchnym-kremom"]);
   });
 
   test("bar and dessert categories in the agreed order", () => {

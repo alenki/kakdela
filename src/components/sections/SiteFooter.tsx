@@ -9,9 +9,9 @@ import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { FooterMotion } from "./footer/FooterMotion";
 
-// Split as in the «Разделы» dialog: the four places set large, the services in the text face.
-const PLACES: RouteKey[] = ["menu", "locations", "events", "about"];
-const SERVICES: RouteKey[] = ["delivery", "catering", "bonus", "certificates", "careers", "feedback"];
+// Split as in the «Разделы» dialog: the five places set large, the services in the text face.
+const PLACES: RouteKey[] = ["home", "menu", "about", "locations", "feedback"];
+const SERVICES: RouteKey[] = ["delivery", "catering", "bonus", "certificates", "careers"];
 const linkLabel = (key: RouteKey) => typograf(t.nav.links.find((l) => l.key === key)?.label ?? key);
 
 /** The city's main line is its flagship's: Байсултанова, 1 in Nalchik, Куйбышева, 3 in Vladikavkaz. */

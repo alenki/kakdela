@@ -21,12 +21,9 @@ export const street: { city: City; cafes: Cafe[] }[] = CITIES.map((city) => ({
   cafes: [...cafesByCity(city)].sort((a, b) => Number(!a.photo.sign) - Number(!b.photo.sign)),
 }));
 
-/** The opening's detail: the kitchen door at Лермонтова, 59 asks the kitchen «Как дела на кухне?». */
-export const kitchenDoor: { photo: Photo; focus: { x: number; y: number }; zoom: number } = {
-  photo: photos.kitchenDoor,
-  focus: { x: 0.823, y: 0.53 },
-  zoom: 2.5,
-};
+/** The opening's door: behind it, the room at Лермонтова, 59, where the kitchen door asks «Как дела на
+ *  кухне?» and the bar's sign asks the guest. Its points are measured in src/lib/door.ts (ROOM). */
+export const doorway: { photo: Photo } = { photo: photos.lermontova59Room };
 
 const byId = <T extends { id: string }>(list: T[], id: string) => {
   const found = list.find((x) => x.id === id);
@@ -80,3 +77,6 @@ export const house: { name: string; where: string }[] = [
 
 /** The guest's words over the list: the warmth at the door. */
 export const welcomeQuote = byId(reviews, "warmth");
+
+/** «Отзывы», the homepage's pile, less the words the welcome's note already says. */
+export const aboutReviews = reviews.filter((r) => r.id !== welcomeQuote.id);

@@ -3,28 +3,15 @@
 import { useRef, useState } from "react";
 import type { City } from "@/content/types";
 import { BtnLabel } from "@/components/chrome/BtnLabel";
-import { haversineKm } from "@/lib/geo";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { kd } from "@/lib/store";
-import { groupDigits, km } from "@/lib/format";
+import { distLabel as dist, FAR_KM, GEO_TIMEOUT as TIMEOUT, nearestTag, rank, type Ranked as RankedBy } from "@/lib/nearest";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 
 export type NearPoint = { id: string; city: City; lat: number; lon: number; address: string };
-type Ranked = NearPoint & { d: number };
+type Ranked = RankedBy<NearPoint>;
 type State = { kind: "idle" } | { kind: "locating" } | { kind: "error" } | { kind: "done"; text: string };
-
-const TIMEOUT = 8000;
-/** Beyond this the guest is clearly out of town: no «ближе всех», just an honest distance. */
-const FAR_KM = 60;
-/** Under a kilometre, metres (rounded to 50: GPS is not more precise than that); then «1,4 км», «34 км», «1 234 км». */
-const isNear = (d: number) => d < 0.975;
-const metres = (d: number) => Math.max(50, Math.round((d * 1000) / 50) * 50);
-const kmNum = (d: number) => (d < 1000 ? km(d) : groupDigits(Math.round(d)));
-const dist = (d: number) => (isNear(d) ? t.locations.metres(metres(d)) : t.locations.km(kmNum(d)));
-/** «ближе всех · 1,4 км»: typograf holds «·» to the words before it and the unit to its number. */
-const nearestTag = (d: number) =>
-  typograf(isNear(d) ? t.locations.nearestTagMetres(metres(d)) : t.locations.nearestTag(kmNum(d)));
 
 /**
  * Re-order the server-rendered rows with CSS `order` (no React re-render of café content), tag the
@@ -43,11 +30,11 @@ function applyRanking(ranked: Ranked[]) {
   gsap.set(all, { opacity: 1, y: 0, clearProps: "opacity,transform" });
   const first = new Map(all.map((r) => [r, r.getBoundingClientRect().top]));
 
-  const rank: Record<City, number> = { nalchik: 0, vladikavkaz: 0 };
+  const order: Record<City, number> = { nalchik: 0, vladikavkaz: 0 };
   for (const p of ranked) {
     const row = rows.get(p.id);
     if (!row) continue;
-    const r = rank[p.city]++;
+    const r = order[p.city]++;
     row.style.order = String(r);
     row.toggleAttribute("data-nearest", r === 0);
     const tag = row.querySelector<HTMLElement>("[data-near]");
@@ -91,7 +78,7 @@ export function NearestButton({ points }: { points: NearPoint[] }) {
       (pos) => {
         window.clearTimeout(guard);
         const here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-        const ranked = points.map((p) => ({ ...p, d: haversineKm(here, p) })).sort((a, b) => a.d - b.d);
+        const ranked = rank(points, here);
         if (!ranked.length) return;
         const n = ranked[0];
         // Out of town, ranking by metres of a 1 400 km trip means nothing: just say how far, honestly.

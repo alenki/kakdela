@@ -83,3 +83,48 @@ export function tornSheet(id: string, { points = 26, depth = 0.36, amp = 0.1 }: 
     lean,
   };
 }
+
+/** A point on a rip across a sheet: x in % of its width, y in px off the rip's line (down is +). */
+export type RipPoint = [x: number, y: number];
+
+/**
+ * The «Разделы» roll's rip (menu-roll.ts): the torn bottom edge of the menu's sheet, across its whole
+ * width, one jag every 22px or so (18 to 80 of them), wandering up to 10px off its line, a long sway
+ * under the jags. `edge` is the paper's outline; `rim` is the lighter rim of the rip just under it
+ * (three nicks per jag, 0.8 to 2.6px proud of the edge). Seeded, and deterministic like `tornEdge`.
+ */
+export function rollRip(seed: number, width: number) {
+  const rnd = mulberry32(seed);
+  const n = Math.max(18, Math.min(80, Math.round(width / 22)));
+  const phase1 = rnd() * Math.PI * 2, phase2 = rnd() * Math.PI * 2;
+  const waves1 = 0.6 + rnd() * 1.1, waves2 = 2.5 + rnd() * 3;
+  const edge: RipPoint[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    // The jags aren't evenly spaced; the ends stay on the sheet's sides.
+    const x = i === 0 || i === n ? t : t + (rnd() - 0.5) * (0.7 / n);
+    const y = 4.6 * Math.sin(2 * Math.PI * waves1 * t + phase1) + 2.2 * Math.sin(2 * Math.PI * waves2 * t + phase2) + (rnd() - 0.5) * 2 * 3.1;
+    edge.push([x * 100, y]);
+  }
+  const rim: RipPoint[] = [];
+  for (let i = 0; i < n; i++) {
+    const [x0, y0] = edge[i], [x1, y1] = edge[i + 1];
+    for (let k = 0; k < 3; k++) rim.push([x0 + ((x1 - x0) * k) / 3, y0 + ((y1 - y0) * k) / 3 + 0.8 + rnd() * 1.8]);
+  }
+  rim.push([100, edge[n][1] + 1.2]);
+  return { edge, rim };
+}
+
+/**
+ * A clip-path polygon for a box whose bottom edge is a rip, running `at` px up from the box's bottom:
+ * measured from the bottom, it stays on the box's edge when the box changes height (the menu's sheet
+ * follows the window).
+ */
+export function ripClip(edge: RipPoint[], at: number) {
+  const x = (v: number) => `${Math.round(v * 100) / 100}%`;
+  const up = (v: number) => {
+    const d = Math.round(v * 10) / 10;
+    return d >= 0 ? `calc(100% - ${d}px)` : `calc(100% + ${-d}px)`;
+  };
+  return `polygon(0% 0px, 100% 0px, ${[...edge].reverse().map(([ex, ey]) => `${x(ex)} ${up(at - ey)}`).join(", ")})`;
+}

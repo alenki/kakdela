@@ -90,7 +90,6 @@ export function Street() {
       <div className="wrap">
         <header className="section-head" data-ab-rise>
           <DialogueHeading id="dveri-title" q={t.about.street.ask} ask={typograf(t.about.street.ask)} a={typograf(t.about.street.a)} />
-          <p className="lead">{typograf(t.about.street.lead)}</p>
         </header>
       </div>
 

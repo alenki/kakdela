@@ -35,8 +35,15 @@ describe("the policy tells the truth about the browser", () => {
   it("says so when the site starts setting cookies or calling out", () => {
     expect(code).not.toMatch(/document\.cookie|cookies\(\)\.set/);
     expect(code).not.toMatch(/mc\.yandex|metrika|gtag\(|googletagmanager|<iframe/i);
-    // The browser's position is only ever asked for on the «Какая ближе ко мне?» click.
-    expect(code.match(/geolocation\.getCurrentPosition/g)).toHaveLength(1);
+    // The browser's position is only ever asked for on a «Какая ближе ко мне?» click: the homepage's button and
+    // /locations' own. Same label, same promise in the policy: the coordinates stay on the device.
+    const asking = files(SRC).filter((f) => /geolocation\.getCurrentPosition/.test(readFileSync(f, "utf8")));
+    expect(asking.map((f) => path.basename(f)).sort()).toEqual(["LocationsNearest.tsx", "NearestButton.tsx"]);
+    for (const f of asking) {
+      const src = readFileSync(f, "utf8");
+      expect(src.match(/geolocation\.getCurrentPosition/g)).toHaveLength(1);
+      expect(src).toContain("t.locations.nearest");
+    }
   });
   it("never sends a note abroad: no foreign delivery left in the form's action", () => {
     const action = readFileSync(path.join(SRC, "app/feedback/actions.ts"), "utf8");

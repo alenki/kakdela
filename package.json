@@ -15,6 +15,8 @@
     "assets:paper": "node scripts/make-paper.mjs",
     "assets:grain": "node scripts/make-grain.mjs",
     "assets:puzzles": "node --no-warnings scripts/fetch-puzzles.mjs",
+    "assets:plans": "node --no-warnings scripts/fetch-plans.mjs",
+    "assets:plan-card": "node --no-warnings scripts/make-plan-card.mjs",
     "shot": "node scripts/shot.mjs",
     "perf": "node scripts/perf.mjs"
   },

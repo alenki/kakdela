@@ -202,7 +202,9 @@ html:not(.js) .fb-cafes { row-gap: 1em; }
 html:not(.js) .fb-cafes__name { display: block; }
 
 /* ── The words, on ruled lines ──
-   One rule under every line, drawn in the text's own pitch, and scrolled with it. The field grows with
+   One rule under every line, drawn in the text's own pitch, and scrolled with it. The rule lies inside
+   each line's tile, never on its edge: a tile a fraction of a pixel tall would drop an edge rule now and
+   then, and a line would go missing. The field grows with
    what is written (field-sizing), five lines at least. */
 .fb-lines {
   --ln: 2em;
@@ -216,8 +218,13 @@ html:not(.js) .fb-cafes__name { display: block; }
   resize: none;
   field-sizing: content;
   background:
-    repeating-linear-gradient(to bottom, transparent 0 calc(var(--ln) - 1px), var(--ruled) calc(var(--ln) - 1px) var(--ln))
-    0 -0.28em / 100% var(--ln) local;
+    linear-gradient(
+        to bottom,
+        transparent calc(var(--ln) - 0.28em - 1px),
+        var(--ruled) 0 calc(var(--ln) - 0.28em),
+        transparent 0
+      )
+    0 0 / 100% var(--ln) local;
   color: var(--color-ink);
   font: inherit;
   font-weight: 500;
@@ -279,9 +286,7 @@ html:not(.js) .fb-cafes__name { display: block; }
   align-items: center;
   justify-content: space-between;
   gap: 16px 24px;
-  margin-top: calc(var(--px) * 1.1);
-  padding-top: calc(var(--px) * 0.6);
-  border-top: 1px solid var(--ruled);
+  margin-top: calc(var(--px) * 1.4);
 }
 .fb-sheet__failed { flex-basis: 100%; }
 
@@ -509,20 +514,96 @@ html:not(.js) .fb-cafes__name { display: block; }
 }
 
 /* ═════════════ «Уже спрашивали.»: the questions answered, set like a menu ═════════════
-   The question in the display face, the café's answer beside it (from 1024: cols 1–6 and 7–11), a hairline
-   between rows. */
-.fb-qa { margin: 0; border-top: 1px solid var(--line); }
-.fb-qa__row {
-  display: grid;
-  row-gap: 0.75rem;
-  padding-block: clamp(20px, 2.6vw, 2.25rem);
+   A page of the café's menu where the guest's question is the dish and the café's answer is the price.
+   Each entry: the question in the thin display voice (the guest asking, as on the about page), the
+   café's short answer in heavy caps where a price stands (flush right, on the question's last baseline,
+   at least 1.5rem from it, as .menu-row sets a price), and the rest of the answer under it as the dish's
+   description, its link on the words that say it or at its end. Read down the right edge, the answers
+   alone are the café talking. Every entry is an anchor (#voprosy-<id>).
+     phone, tablet  one menu column: the question and the answer on a line, the rest under both
+     1024–1439      a table: the question on cols 1–5, the answer on 6–8, the rest on 9–12 under the lead
+     ≥1440          two menu columns, cols 1–6 and 7–12 (the left one a gap short of the fold), read down
+                    like a menu page; every row as tall as the tallest, so the questions and the rules run
+                    level across the fold, and the lead stands over the right column on col 7 */
+.fb-qa {
+  margin: 0;
   border-bottom: 1px solid var(--line);
 }
-.fb-qa__q { margin: 0; font-size: var(--h3); text-wrap: balance; }
-.fb-qa__a { display: grid; justify-items: start; row-gap: 0.5rem; margin: 0; max-width: 44ch; }
-.fb-qa__a p { margin: 0; }
-@media (min-width: 1024px) {
-  .fb-qa__row { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: first baseline; }
-  .fb-qa__q { grid-column: 1 / 7; }
-  .fb-qa__a { grid-column: 7 / 12; font-size: var(--lead); line-height: 1.45; }
+/* A line that wraps: the question takes what the answer leaves and wraps first; only when even its
+   longest word and the answer can't share a line (large text on a phone) does the answer go under it,
+   still flush right. */
+.fb-qa__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: last baseline;
+  align-content: start;
+  column-gap: 1.5rem;
+  padding-block: clamp(1.125rem, 1.7vw, 2.25rem) clamp(1.25rem, 1.9vw, 2.5rem);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+/* The guest's question: in the guest's own words, sentence case in the café's face, so it reads as a
+   question asked, set apart from the café's answer in heavy condensed caps beside it. */
+.fb-qa__q {
+  flex: 1 1 0;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.1875rem, 0.95rem + 0.75vw, 1.75rem);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+/* The café's answer: the price column, a word or a time on one line. */
+.fb-qa__a {
+  flex: 0 1 auto;
+  margin: 0 0 0 auto;
+  font-size: var(--h3);
+  text-align: right;
+  text-wrap: balance;
+}
+/* The rest of the answer: a dish's description line, its link in ink. It always starts a line of its own
+   (a full-width basis), and its measure is kept to 60ch by padding, which a flex basis can't undo. */
+.fb-qa__more {
+  flex: 1 0 100%;
+  padding-inline-end: max(0px, 100% - 60ch);
+  margin: 0.75rem 0 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+.fb-qa__more .dlink { color: var(--fg); }
+/* A link and the mark after it («записку:») keep to one line; the link's own words may still wrap. */
+.fb-qa__glue { white-space: nowrap; }
+.fb-qa__glue > .dlink { white-space: normal; }
+/* A table: the answer never drifts off its question, and the rest stands under the lead. The answer
+   stops growing with the text size here, so the widest («Спрашивайте.») keeps inside cols 6–8. */
+@media (min-width: 1024px) and (max-width: 1439.98px) {
+  .fb-qa__item {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: first baseline;
+  }
+  .fb-qa__q { grid-column: 1 / 6; }
+  .fb-qa__a { grid-column: 6 / 9; margin: 0; font-size: min(var(--h3), 3.5vw); text-align: left; }
+  .fb-qa__more { grid-column: 9 / -1; grid-row: 1; margin: 0; }
+}
+@media (min-width: 1440px) {
+  /* The title on cols 1–6 (it clears col 7 from here), the lead over the right column. */
+  .fb-asked .section-head > .dlg { grid-column: 1 / 7; }
+  .fb-asked .section-head > .lead { grid-column: 7 / -1; }
+  .fb-qa {
+    display: grid;
+    /* The right column is exactly cols 7–12; the left gives the fold one more gap. */
+    grid-template-columns: minmax(0, 1fr) calc((100% - var(--grid-gap)) / 2);
+    grid-template-rows: repeat(var(--fb-qa-rows, 5), 1fr);
+    grid-auto-flow: column;
+    column-gap: calc(var(--grid-gap) * 2);
+    border-bottom: 0;
+  }
+  /* Each entry closes itself; the next one's top rule lies on it. */
+  .fb-qa__item { border-bottom: 1px solid var(--line); margin-bottom: -1px; }
+  .fb-qa__more { margin-top: 0.875rem; }
 }

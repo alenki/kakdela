@@ -23,6 +23,9 @@ export type Photo = {
   placeholder?: boolean;
   /** The café's sign in this photo (café photos only). Re-measure it when the photo changes. */
   sign?: SignBox;
+  /** Where a small crop centres (0 to 1 across and down), when the middle of the photo is the wrong part: the
+   *  /locations thumbnails. Re-measure it when the photo changes. */
+  thumb?: { x: number; y: number };
 };
 
 export type AnswerId =

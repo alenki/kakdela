@@ -4,7 +4,7 @@ import { isOpen, minutesInMoscow, pickByHour, toMinutes } from "./time";
 import { haversineKm } from "./geo";
 import { groupDigits, km, plural, rub, rubSpoken } from "./format";
 import { bindLastWord, keepWhole, NBSP, quote, typograf, WJ } from "./typograf";
-import { tornEdge, tornSheet, tornStrip } from "./tear";
+import { ripClip, rollRip, tornEdge, tornSheet, tornStrip } from "./tear";
 import { mulberry32 } from "./seed";
 import { cafes } from "@/content/cafes";
 import { answerById, answers } from "@/content/answers";
@@ -298,5 +298,49 @@ describe("head script: today's tear", () => {
     expect(run({ id: "sonno", day: day(-864e5) }).said).toBeUndefined();
     expect(run(null).said).toBeUndefined();
     expect(run({ id: "<img>", day: day(0) }).said).toBeUndefined();
+  });
+});
+
+describe("the «Разделы» roll's rip", () => {
+  it("tears the same rip for the same seed", () => {
+    expect(rollRip(7, 1440)).toEqual(rollRip(7, 1440));
+    expect(rollRip(7, 1440).edge).not.toEqual(rollRip(8, 1440).edge);
+  });
+  it("has a jag every 22px or so, 18 to 80 of them, from side to side", () => {
+    expect(rollRip(1, 390).edge).toHaveLength(19);
+    expect(rollRip(1, 1440).edge).toHaveLength(66);
+    expect(rollRip(1, 5120).edge).toHaveLength(81);
+    for (const seed of [1, 2, 3, 0x6b64, 4294967295]) {
+      for (const width of [320, 390, 1024, 1440, 1920, 2560]) {
+        const { edge } = rollRip(seed, width);
+        expect(edge[0][0]).toBe(0);
+        expect(edge[edge.length - 1][0]).toBe(100);
+        // Left to right, never doubling back, and never more than 10px off the line.
+        edge.slice(1).forEach(([x], i) => expect(x).toBeGreaterThan(edge[i][0]));
+        edge.forEach(([, y]) => expect(Math.abs(y)).toBeLessThan(10));
+      }
+    }
+  });
+  it("puts the lighter rim just under the paper's edge", () => {
+    for (const seed of [1, 2, 3, 0x6b64]) {
+      const { edge, rim } = rollRip(seed, 1440);
+      expect(rim).toHaveLength((edge.length - 1) * 3 + 1);
+      // Every third nick sits on a jag, 0.8 to 2.6px under it.
+      edge.slice(0, -1).forEach(([, y], i) => {
+        expect(rim[i * 3][1] - y).toBeGreaterThanOrEqual(0.8);
+        expect(rim[i * 3][1] - y).toBeLessThanOrEqual(2.6);
+      });
+      // The rim, like the paper, stays inside the sheet's 30px band for its rip (15px either side).
+      rim.forEach(([, y]) => expect(Math.abs(y)).toBeLessThan(15));
+    }
+  });
+  it("clips the rip from the box's bottom, so the sheet can change height", () => {
+    const { edge } = rollRip(3, 1440);
+    const clip = ripClip(edge, 15);
+    expect(clip).toMatch(/^polygon\(0% 0px, 100% 0px, 100% calc\(100% [-+] [\d.]+px\)/);
+    expect(clip.endsWith("px))")).toBe(true);
+    expect(clip).not.toMatch(/- -/);
+    // A rip deeper than its band flips the sign instead of writing «- -».
+    expect(ripClip([[0, 20], [100, 20]], 15)).toBe("polygon(0% 0px, 100% 0px, 100% calc(100% + 5px), 0% calc(100% + 5px))");
   });
 });

@@ -9,7 +9,7 @@ export const cafes: Cafe[] = [
     coords: { lat: 43.478967, lon: 43.585515 }, open: "07:30", close: "23:00",
     phone: "+79280826111", phoneDisplay: "+7 (928) 082-61-11",
     rating: 5.0, ratingsCount: 626, yandexOrgId: "231916384633",
-    tags: ["все завтраки", "летняя веранда", "можно с ноутбуком"], kitchen: "full",
+    tags: ["все завтраки", "летняя веранда"], kitchen: "full",
     photo: photos.cafeBajsultanova1, verify: { verified: false, note: "Закрытие 23:00 или 00:00" },
   },
   {

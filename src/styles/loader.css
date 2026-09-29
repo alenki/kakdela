@@ -1,0 +1,137 @@
+/* ═════════════ «Шаг назад»: the loader ═════════════
+   The homepage's first load (docs/CONVENTIONS.md, «Шаг назад: the loader»). No loading screen of its
+   own: the hero is filmed in close-up, the notice filling the screen and its tear line punched hole by
+   hole as the page really loads, then the camera takes one step back to the page. Every rule is gated
+   on a class on <html>: ld-loading from the head script; ld-cam (the camera has the hero), ld-fonts (the
+   words' faces are in), ld-reveal (the step back) and ld-measure from the camera, LOADER_SCRIPT
+   (src/components/loader/loader-script.ts). Without JS none of them is ever set. The camera writes its
+   numbers (each layer's scale, origin and translate, the needle's place, --ld-k: 0.7 on a later visit
+   this session) into stylesheets of its own; everything timed here scales with --ld-k. */
+
+/* ── The frame ── */
+/* Until the hero has been parsed (a few ms on a warm load): a blank sheet of the notice's paper. The
+   page doesn't scroll under the camera; the gutter stays, so nothing reflows when it goes. */
+html.ld-loading {
+  background: var(--paper-tex), var(--paper);
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+html.ld-loading:not(.ld-cam) body { visibility: hidden; }
+/* The hero plays over everything after it, and nothing in it takes a tap until the page is live. */
+html.ld-loading .hero { z-index: 3; pointer-events: none; }
+/* The notice is nearest the lens; the answer and the buttons are the wall behind it. */
+html.ld-cam .notice { z-index: 2; }
+html.ld-cam :is(.stage, .hero__actions) { position: relative; z-index: 1; }
+/* The camera re-measuring the hero, untransformed (it wins over its own animations too). */
+html.ld-measure :is(.notice, .stage, .hero__actions) { transform: none !important; }
+/* The gutter (the scrollbar's, kept) turns to the wall once the paper has left it. */
+html.ld-reveal { background-color: var(--color-cream); transition: background-color 700ms var(--ease-kd-out) 250ms; }
+
+/* ── The close-up ── */
+/* The question comes up out of the paper; the words wait for their faces, then print, left to right.
+   What the frame would crop prints as the step back brings it into view: the tab words at the bottom
+   edge of a wide screen (ld-wide), the prompt at the sides of a tall one (ld-tall). */
+html.ld-cam .notice__logo { animation: ld-ink calc(600ms * var(--ld-k, 1)) var(--ease-kd-out) both; }
+html.ld-cam:not(.ld-fonts) :is(.notice__prompt, .tab__text),
+html.ld-wide:not(.ld-reveal) .tab__text,
+html.ld-tall:not(.ld-reveal) .notice__prompt { opacity: 0; }
+html.ld-fonts.ld-loading:not(.ld-tall) .notice__prompt,
+html.ld-fonts.ld-loading:not(.ld-wide) .tab__text { animation: ld-ink 420ms var(--ease-kd-out) calc(var(--ld-i, 0) * 35ms) both; }
+html.ld-wide.ld-reveal .tab__text,
+html.ld-tall.ld-reveal .notice__prompt {
+  animation: ld-ink calc(500ms * var(--ld-k, 1)) var(--ease-kd-out) calc((560ms + var(--ld-i, 0) * 35ms) * var(--ld-k, 1)) both;
+}
+/* The café's guess is already red on its tab, from the close-up until HeroController marks it
+   data-current (hero.css), however early the show ends. */
+html.js .hero:not([data-js]) .tab:has(.tab__input:checked):not([data-torn]) .tab__text { color: var(--color-tomato-ink); }
+/* Scaled up, the tabs' abutting edges antialias into seams the wall behind would show through: paper
+   behind them until they sway apart. */
+html.ld-cam:not([data-loader="calm"]):not(.ld-reveal) .pad__tabs { background-color: var(--paper); }
+html.ld-reveal:not([data-loader="calm"]) .pad__tabs { animation: ld-unback calc(1000ms * var(--ld-k, 1)) step-end both; }
+
+/* ── The tear line, the progress ── */
+/* Blank paper until the needle punches it. The punched holes are hero.css's own tiling, darker while
+   the camera is close (--ld-cut: how far along they are punched, px), and the needle sits on the next
+   (--ld-nx). At the reveal the line's own holes come back under them and the dark ones fade to them. */
+html.ld-cam .pad__perf { position: relative; }
+html.ld-cam:not(.ld-reveal) .pad__perf { background: var(--paper-tex), var(--paper); }
+html.ld-cam .pad__perf::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--color-ink) 1.7px, transparent 2.3px) 50% 50% / 10px 10px space no-repeat;
+  opacity: 0.3;
+  clip-path: inset(0 calc(100% - var(--ld-cut, 0px)) 0 0);
+}
+html.ld-reveal .pad__perf::before { clip-path: none; animation: ld-fade 600ms var(--ease-kd-out) both; }
+html.ld-cam:not([data-loader="calm"]) .pad__perf::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  pointer-events: none;
+  translate: var(--ld-nx, 5px) 0;
+  transition: translate 90ms cubic-bezier(0.2, 0, 0, 1), opacity 160ms var(--ease-kd-ui);
+}
+html.ld-reveal .pad__perf::after { opacity: 0; }
+
+/* ── Held back for the reveal ── */
+/* The header is the screen's, not the scene's: out of frame until the camera has stepped back (the
+   phones' action bar only shows once the hero has gone), and out of reach too, so no focus or tap
+   lands on it unseen. The answer's slip and reply wait to land on the dish. */
+html.ld-cam:not([data-loader="calm"]) .site-header { translate: 0 -110%; }
+html.ld-cam:not(.ld-reveal) .site-header,
+html[data-loader="calm"].ld-cam:not(.ld-reveal) .hero__actions { visibility: hidden; }
+html.ld-cam:not([data-loader="calm"]) :is(.panel__slip, .panel__reply, .panel__price) { opacity: 0; }
+/* Reduced motion: no camera. The notice and its answer stand on the wall while the line fills; the
+   camera fades the header and the buttons in (WAAPI: the reduced-motion rule in globals.css cuts CSS
+   animations to 1ms). The photo is never held back: it is the page's largest paint. */
+html[data-loader="calm"].ld-cam :is(.hero__actions, .site-header) { opacity: 0; }
+
+/* ── The step back ── */
+/* The dolly itself is the camera's (WAAPI, 1.6s). Timed off its curve: the header drops in as the
+   notice leaves the top edge, the tab lands on the dish as the photo settles (the hero's own landing),
+   the reply follows, and the tabs sway once in the draught as the notice meets the wall. */
+html.ld-reveal:not([data-loader="calm"]) .site-header {
+  animation: ld-drop calc(650ms * var(--ld-k, 1)) var(--ease-kd-out) calc(700ms * var(--ld-k, 1)) both;
+}
+html.ld-reveal:not([data-loader="calm"]) .panel__slip {
+  animation: ld-land calc(550ms * var(--ld-k, 1)) cubic-bezier(0.18, 0.9, 0.32, 1.04) calc(880ms * var(--ld-k, 1)) both;
+}
+html.ld-reveal:not([data-loader="calm"]) :is(.panel__reply, .panel__price) {
+  animation: ld-rise calc(600ms * var(--ld-k, 1)) var(--ease-kd-out) calc(1000ms * var(--ld-k, 1)) both;
+}
+html.ld-reveal:not([data-loader="calm"]) .panel__price { animation-delay: calc(1060ms * var(--ld-k, 1)); }
+/* A damped swing from rest, each tab 30ms after its neighbour, alternate tabs the other way. */
+html.ld-reveal:not([data-loader="calm"]) .tab__paper {
+  animation: ld-sway calc(1150ms * var(--ld-k, 1)) ease-in-out calc((1000ms + var(--ld-i, 0) * 30ms) * var(--ld-k, 1)) both;
+}
+.tab { --ld-a: -1.6deg; }
+.tab:nth-child(even) { --ld-a: 1.6deg; }
+.tab:nth-child(2) { --ld-i: 1; }
+.tab:nth-child(3) { --ld-i: 2; }
+.tab:nth-child(4) { --ld-i: 3; }
+.tab:nth-child(5) { --ld-i: 4; }
+.tab:nth-child(6) { --ld-i: 5; }
+.tab:nth-child(7) { --ld-i: 6; }
+.tab:nth-child(8) { --ld-i: 7; }
+
+@keyframes ld-ink { from { opacity: 0; } }
+@keyframes ld-fade { to { opacity: 0; } }
+@keyframes ld-unback { from { background-color: var(--paper); } to { background-color: transparent; } }
+@keyframes ld-drop { from { translate: 0 -110%; } to { translate: 0 0; } }
+@keyframes ld-land { from { opacity: 0; translate: 0 -26px; scale: 1.05; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes ld-rise { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@keyframes ld-sway {
+  0% { rotate: 0deg; }
+  18% { rotate: var(--ld-a); }
+  46% { rotate: calc(var(--ld-a) * -0.5); }
+  72% { rotate: calc(var(--ld-a) * 0.18); }
+  100% { rotate: 0deg; }
+}

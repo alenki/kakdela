@@ -1,0 +1,538 @@
+/* ═════════════ CAFÉS (/locations) «Где встретимся?»: nine addresses on a printed plan ═════════════
+   The third line of the conversation (the homepage asks «Как дела?», the menu «Что будете?»). One cream section:
+   the title, the tools, the legend (the cafés) and the foot on columns 1–7, and beside them from the top the city's
+   pocket plan, stuck under the header while the legend is read. Phones: title, tools, plan, legend.
+   The page's one signature is the plan (a declared exception, CONVENTIONS «The plan»): a folded sheet of the
+   notice's paper with the real streets engraved in ink (OpenStreetMap, scripts/fetch-plans.mjs), the cafés as
+   numbered marks keyed to the legend. Its one red is the café in question: the one pointed at or read, a friend's
+   pick, or the answer to «Какая ближе ко мне?». The paper never moves; only the red does. */
+.lc {
+  /* The stuck plan's distance from the header; the sheet's paper margin and the credit's row under the print. */
+  --lc-top: clamp(16px, 3vh, 2.5rem);
+  --lc-pad: clamp(10px, 1vw, 1.25rem);
+  --lc-foot: 2.25rem;
+  /* A mark: 20px on a small sheet, growing with it (the plan's own container queries, below). */
+  --lc-mk: 20px;
+  --lc-on-scale: 1.08;
+  /* The row's photo beside its words below 1024px (the homepage breakfasts' thumb). */
+  --lc-thumb: clamp(96px, 27vw, 128px);
+  /* Held upright: the sheet runs gutter to gutter, or (tablets) only as wide as lets all of it fit on a screen. */
+  --lc-sheet-w: calc(100vw - 2 * var(--gutter));
+  --lc-plan-gap: clamp(1.75rem, 4vw, 2.5rem);
+  /* Where a picked row lands on a phone: under the plan, so the red mark and its row share the screen. */
+  --lc-land: min(
+    calc(var(--header-h) + 0.75rem + (var(--lc-sheet-w) - 2 * var(--lc-pad)) * 1.25 + var(--lc-pad) + var(--lc-foot) + 2px + var(--lc-plan-gap)),
+    100svh - 12rem
+  );
+}
+@media (min-width: 640px) {
+  .lc {
+    --lc-sheet-w: min(100vw - 2 * var(--gutter), max(300px, (100svh - var(--header-h) - 2 * var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
+  }
+}
+/* A café reached by a link lands under the header, with a little air (phones: under the plan, see --lc-land). */
+.lc [id] { scroll-margin-top: calc(var(--header-h) + 1rem); }
+
+.lc-top {
+  padding-top: calc(var(--header-h) + var(--head-gap));
+  padding-bottom: calc(var(--section-pad) * 1.15);
+}
+
+/* ═════════════ The grid ═════════════
+   Two compositions. Held upright below 1024px: the title, the tools, the plan, the legend. Wide (a desktop, or
+   anything from 640px held on its side): the title, the tools, the legend and the foot on columns 1 to 7, the
+   plan on 8 to 12 from the section's top, stuck under the header while the legend is read. */
+.lc-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+/* The heading, stacked: the title, then the lead under it (the plan takes the lead's usual place). */
+.lc-head { display: grid; row-gap: 1.25rem; margin-bottom: clamp(1.75rem, 3vw, 2.75rem); }
+.lc-head .lead { margin: 0; }
+.lc-plans { margin-bottom: var(--lc-plan-gap); }
+.lc-plans__sticky { width: var(--lc-sheet-w); }
+@media (min-width: 1024px), (min-width: 640px) and (orientation: landscape) {
+  .lc-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: start;
+  }
+  .lc-head,
+  .lc-tools,
+  .lc-lists,
+  .lc-foot { grid-column: 1 / 8; }
+  .lc-plans {
+    grid-column: 8 / -1;
+    grid-row: 1 / span 4;
+    align-self: stretch;
+    margin: 0;
+    container-type: inline-size;
+  }
+  .lc-plans__sticky {
+    position: sticky;
+    top: calc(var(--header-h) + var(--lc-top));
+    /* 4:5 and its margins, as wide as the column unless the screen is too short to hold all of it, from where it
+       first stands (under the section's top gap) to where it sticks. */
+    width: min(100cqi, max(240px, (100svh - var(--header-h) - var(--head-gap) - var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
+    margin-left: auto;
+  }
+}
+
+/* ── Tools: the city switch, «Какая ближе ко мне?» and its answer ── */
+.lc-tools {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  margin-bottom: clamp(24px, 2.2vw, 2.5rem);
+}
+.lc-tools__switch { display: flex; }
+.lc-tools__switch .city-switch__opt { flex: 1 1 0; justify-content: center; }
+.lc-near[data-busy] { cursor: progress; }
+.lc-near__msg {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+/* On this page the plan's mark is the one red: the message stays in ink, even when it can't find the guest. */
+.lc-near__msg[data-state="done"],
+.lc-near__msg[data-state="error"] { color: var(--fg); }
+/* Held upright, the answer is read under the plan: the plan above it never moves while its line is drawn, and
+   the legend under it is re-ordering anyway. The tools' parts join the page's grid for that. */
+@media (max-width: 639.98px), (max-width: 1023.98px) and (orientation: portrait) {
+  .lc-tools { display: contents; }
+  .lc-tools__switch { margin-bottom: 10px; }
+  .lc-near { justify-self: stretch; margin-bottom: clamp(24px, 4vw, 2.5rem); }
+  .lc-near__msg { order: 1; }
+  .lc-near__msg:not(:empty) { margin: calc(-0.4 * var(--lc-plan-gap)) 0 var(--lc-plan-gap); }
+  .lc-lists,
+  .lc-foot,
+  #lc-said { order: 2; }
+}
+/* A tablet held upright: the switch and the button share a row. */
+@media (min-width: 640px) and (max-width: 1023.98px) and (orientation: portrait) {
+  .lc-grid { grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; }
+  .lc-grid > * { grid-column: 1 / -1; }
+  .lc-tools > .lc-tools__switch { grid-column: 1; display: inline-flex; margin-bottom: 0; }
+  .lc-tools__switch .city-switch__opt { flex: none; }
+  .lc-tools > .lc-near { grid-column: 2; justify-self: start; }
+  .lc-tools > .lc-near__msg { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px), (min-width: 640px) and (orientation: landscape) {
+  .lc-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .lc-tools__switch { display: inline-flex; }
+  .lc-tools__switch .city-switch__opt { flex: none; }
+  /* The answer arrives seconds after the click: two lines are kept for it, so the legend under it doesn't jump. */
+  .lc-near__msg { flex: 1 1 100%; min-height: calc(2 * 1.45em); }
+}
+
+/* ═════════════ The plan ═════════════ */
+.lc-plan { margin: 0; }
+/* The notice's paper, folded once: its edge, its shadow, and the crease, felt more than seen. */
+.lc-plan__sheet {
+  position: relative;
+  padding: var(--lc-pad) var(--lc-pad) 0;
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  box-shadow: var(--paper-shadow);
+  color: var(--color-ink);
+}
+.lc-plan__sheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent calc(50% - 1px),
+    rgb(20 18 16 / 0.07) calc(50% - 1px),
+    rgb(20 18 16 / 0.07) 50%,
+    rgb(255 248 238 / 0.6) 50%,
+    rgb(255 248 238 / 0.6) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+/* The print, exactly 4:5, inside its neatline (drawn over it, never as a border that would shrink the box). */
+.lc-plan__map { position: relative; aspect-ratio: 4 / 5; container-type: inline-size; }
+.lc-plan__map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1px solid var(--color-ink);
+  pointer-events: none;
+}
+.lc-plan__print { user-select: none; pointer-events: none; }
+.lc-plan__marks { position: absolute; inset: 0; z-index: 2; }
+
+/* The credit under the print, in the paper's margin. */
+.lc-plan__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: var(--lc-foot);
+  margin: 0;
+  color: var(--color-graphite);
+}
+.lc-plan__foot .dlink { font-weight: 500; }
+
+/* The cartouche: the city's name and the scale, in the corner the generator found clear of cafés. */
+.lc-plan__cartouche {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  justify-items: start;
+  gap: 1.6cqi;
+  padding: 2.6cqi 3.2cqi 2.8cqi;
+  background: var(--paper-tex), var(--paper);
+  color: var(--color-ink);
+}
+.lc-plan__cartouche[data-corner="br"] { right: 0; bottom: 0; border-top: 1px solid var(--color-ink); border-left: 1px solid var(--color-ink); }
+.lc-plan__cartouche[data-corner="bl"] { left: 0; bottom: 0; border-top: 1px solid var(--color-ink); border-right: 1px solid var(--color-ink); }
+.lc-plan__cartouche[data-corner="tr"] { right: 0; top: 0; border-bottom: 1px solid var(--color-ink); border-left: 1px solid var(--color-ink); }
+.lc-plan__cartouche[data-corner="tl"] { left: 0; top: 0; border-bottom: 1px solid var(--color-ink); border-right: 1px solid var(--color-ink); }
+.lc-plan__title { font-size: clamp(1.25rem, 7cqi, 3rem); }
+.lc-plan__scale { display: grid; gap: 0.3em; color: var(--color-graphite); font-size: clamp(0.6875rem, 2.3cqi, var(--fs-label)); line-height: 1; }
+/* |▆▆▆|   |: two segments, the bar's length true to the print. */
+.lc-plan__bar {
+  width: calc(var(--bar) * 100cqi);
+  height: 5px;
+  border: 1px solid var(--color-ink);
+  background: linear-gradient(90deg, var(--color-ink) 50%, transparent 50%);
+}
+.lc-plan__ticks { display: flex; justify-content: space-between; gap: 0.5em; width: calc(var(--bar) * 100cqi + 1.5em); margin-left: -0.25em; }
+
+/* ── The marks: numbered discs keyed to the legend ── */
+.lc-mk {
+  --lc-disc: var(--color-ink);
+  --lc-num: var(--color-milk);
+  --lc-ring: transparent;
+  --lc-scale: 1;
+  --lc-lab-o: 0;
+  --lc-lab-dx: -4px;
+  position: absolute;
+  display: block;
+  /* Centred on its point by margins, not a transform: a mark is no stacking context of its own, so every disc
+     can stand over every name (below), and a neighbour's number is never hidden by the current café's name. */
+  margin: calc(var(--lc-mk) / -2) 0 0 calc(var(--lc-mk) / -2);
+  -webkit-tap-highlight-color: transparent;
+}
+/* A small sheet sets the closest marks a few pixels apart (lib/plan spread), as a printed plan would; a larger
+   one puts every mark on its true point and grows the discs with it. Read from the sheet, not the screen. */
+.lc-mk { left: var(--xs); top: var(--ys); }
+@container (min-width: 421px) {
+  .lc-mk { --lc-mk: 24px; left: var(--x); top: var(--y); }
+}
+@container (min-width: 500px) {
+  .lc-mk { --lc-mk: clamp(26px, 5cqi, 2.25rem); --lc-on-scale: 1.14; }
+}
+.lc-mk[data-side="w"] { --lc-lab-dx: 4px; }
+/* The night shift: a café closed for the night is a ring, and the plan shows at a glance which are still open. */
+.lc-mk[data-closed] { --lc-disc: var(--color-milk); --lc-num: var(--color-ink); --lc-ring: var(--color-ink); }
+.lc-mk[data-current] { --lc-disc: var(--color-tomato); --lc-num: var(--color-milk); --lc-ring: transparent; --lc-scale: var(--lc-on-scale); --lc-lab-o: 1; --lc-lab-dx: 0px; }
+/* A finger's reach round a disc, without moving it. */
+.lc-mk::before { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; translate: -50% -50%; border-radius: 50%; }
+.lc-mk:focus-visible { outline: none; }
+.lc-mk__drop { display: block; }
+/* The plan's layers, bottom up: the guest's way, the names, the discs, the guest. */
+.lc-mk__disc { position: relative; z-index: 2; }
+.lc-mk__label { z-index: 1; }
+.lc-mk__disc {
+  display: grid;
+  place-items: center;
+  width: var(--lc-mk);
+  height: var(--lc-mk);
+  border-radius: 50%;
+  background: var(--lc-disc);
+  color: var(--lc-num);
+  /* A ring of paper cuts the disc from the streets under it. */
+  box-shadow: 0 0 0 2px var(--color-milk), inset 0 0 0 1.5px var(--lc-ring);
+  font-size: calc(var(--lc-mk) * 0.64);
+  /* The display face's caps sit high in their line: a little more on top centres the figure. */
+  padding-top: 0.1em;
+  scale: var(--lc-scale);
+  transition:
+    background-color 240ms var(--ease-kd-ui),
+    color 240ms var(--ease-kd-ui),
+    scale 420ms var(--ease-kd-out);
+}
+/* The café in question, named on the plan as a printed plan names a place: display caps on a small plate of the
+   sheet's paper, so no street shows between the letters (a glyph halo let «ЛЕНИНА, 32» read «ЛЕНИНА; 32»). */
+.lc-mk__label {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.45rem);
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--color-ink);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: var(--lc-lab-o);
+  translate: var(--lc-lab-dx) -50%;
+  padding: 0.14em 0.3em 0.04em;
+  background: var(--paper);
+  transition:
+    opacity 160ms var(--ease-kd-ui),
+    translate 160ms var(--ease-kd-ui);
+}
+.lc-mk[data-side="w"] .lc-mk__label { left: auto; right: calc(100% + 0.45rem); }
+/* Crowded on both sides: the name reads above the disc, or below it. */
+.lc-mk:is([data-side="n"], [data-side="s"]) { --lc-lab-dx: 0px; }
+.lc-mk[data-side="n"] .lc-mk__label { top: auto; bottom: calc(100% + 0.4rem); left: 50%; translate: -50% 0; }
+.lc-mk[data-side="s"] .lc-mk__label { top: calc(100% + 0.4rem); left: 50%; translate: -50% 0; }
+/* The old label is gone before the new one arrives. */
+.lc-mk[data-current] .lc-mk__label {
+  transition:
+    opacity 260ms var(--ease-kd-out) 80ms,
+    translate 420ms var(--ease-kd-out) 80ms;
+}
+@container (min-width: 421px) {
+  .lc-mk__label { font-size: clamp(1.125rem, 3.4cqi, 1.75rem); }
+}
+
+/* ── The guest, and the way to the café as the crow flies: dotted, like the notice's perforation ── */
+.lc-plan__way {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.lc-plan__line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 0 7;
+}
+/* Nothing to draw until there is an answer (a line without ends is a dot in the corner). */
+.lc-plan__line:not([x1]),
+[data-lc-reveal]:not([x1]) { display: none; }
+.lc-you { position: absolute; left: var(--x); top: var(--y); z-index: 3; width: 0; height: 0; }
+.lc-you[hidden] { display: none; }
+.lc-you__ring,
+.lc-you__dot { position: absolute; border-radius: 50%; translate: -50% -50%; }
+.lc-you__ring { width: 28px; height: 28px; border: 1px solid rgb(20 18 16 / 0.5); }
+.lc-you__dot { width: 12px; height: 12px; background: var(--color-ink); box-shadow: 0 0 0 2px var(--color-milk); }
+.lc-you__label {
+  position: absolute;
+  left: 0;
+  bottom: 18px;
+  translate: -50% 0;
+  color: var(--color-ink);
+  white-space: nowrap;
+  padding: 0.1em 0.3em 0.05em;
+  background: var(--paper);
+}
+.lc-you[data-lab="s"] .lc-you__label { bottom: auto; top: 18px; }
+.lc-you[data-lab="e"] .lc-you__label { bottom: auto; top: 0; left: 18px; translate: 0 -50%; }
+.lc-you[data-lab="w"] .lc-you__label { bottom: auto; top: 0; left: auto; right: 18px; translate: 0 -50%; }
+.lc-you__label { transition: opacity 260ms var(--ease-kd-out); }
+.lc-you[data-lab="none"] .lc-you__label { opacity: 0; }
+
+/* ═════════════ The legend: one café per row between hairlines ═════════════ */
+.lc-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+  /* «Какая ближе ко мне?» re-orders rows with `order`; keep Tab and screen-reader order in step. */
+  reading-flow: flex-visual;
+}
+.lc-cafe {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--lc-thumb) minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+  align-items: start;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+/* A mark or a friend's link lands focus on the row: the ring hugs it, inside the neighbours' rules. */
+.lc-cafe:focus-visible { outline-offset: 2px; }
+.lc-cafe:focus:not(:focus-visible) { outline: none; }
+.lc-cafe__photo { grid-column: 1; grid-row: 1; }
+/* Where a small crop centres, when the photo says (photos.ts `thumb`): the storefront's sign, not the glass. */
+.lc-cafe__photo .photo__img { object-position: var(--lc-photo-pos, 50% 50%); }
+.lc-cafe__body { grid-column: 2; grid-row: 1; display: grid; row-gap: 0.5rem; align-content: start; min-width: 0; }
+
+/* The key (the plan's mark, in the text's colours) beside the address, centred on its first line. */
+/* The address never breaks (its prefix and house number are held to the street), so it is sized to its own column:
+   --h3 wherever that fits, smaller on a 320 to 360px phone or in the side-by-side band. 7.4em is the longest address
+   («пр. Шогенцукова, 19») and a little air: raise it if a longer one is ever added. */
+.lc-cafe__head {
+  --lc-addr: min(var(--h3), calc((100cqi - 2.75rem) / 7.4));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.625rem;
+  align-items: start;
+  container-type: inline-size;
+}
+.lc-key {
+  --k: 1.625rem;
+  display: grid;
+  place-items: center;
+  width: var(--k);
+  height: var(--k);
+  margin-top: calc(var(--lc-addr) * 0.43 - var(--k) / 2);
+  border-radius: 50%;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: calc(var(--k) * 0.64);
+  line-height: 1;
+  padding-top: 0.1em;
+}
+.lc-cafe__addr { grid-column: 2; margin: 0; font-size: var(--lc-addr); text-wrap: pretty; }
+.lc-cafe__pre { color: var(--fg-soft); }
+.lc-cafe__alias { grid-column: 2; margin-top: 0.375rem; font-size: var(--fs-small); color: var(--fg-soft); }
+
+.lc-cafe__when { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 0; }
+.lc-cafe .status { font-size: var(--fs-small); }
+.lc-cafe__invited { display: none; }
+/* Once asked «Какая ближе ко мне?», the invited row's distance line says it all («вас позвали сюда · 450 м»). */
+.lc-cafe[data-chosen] .lc-cafe__invited { display: none !important; }
+.lc-cafe__near[hidden] { display: none; }
+/* The answer's own row says so in ink, never in red: the red is its mark on the plan. */
+.lc-cafe[data-chosen] .lc-cafe__near { color: var(--fg); }
+.lc-cafe__feat,
+.lc-cafe__rating { margin: 0; }
+.lc-cafe__rating .dlink { font-weight: 500; }
+.lc-cafe__ways {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 1.5rem;
+  margin: 0.25rem 0 0;
+  font-size: var(--fs-small);
+}
+/* On touch the links' 44px reach never overlaps, row to row. */
+@media (pointer: coarse) {
+  .lc-cafe__ways { row-gap: max(8px, calc(44px - 1.4em)); }
+  .lc-cafe__rating { margin-bottom: calc(22px - 0.7em); }
+}
+
+/* The invitation: a text button in the links' clothes, its two words in one cell so it keeps its width. */
+.lc-invite { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.75rem; }
+.lc-invite__btn {
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.lc-invite__word { grid-area: 1 / 1; transition: opacity 200ms var(--ease-kd-ui); }
+.lc-invite__word + .lc-invite__word { opacity: 0; }
+.lc-invite__btn[data-state="copied"] .lc-invite__word:first-child { opacity: 0; }
+.lc-invite__btn[data-state="copied"] .lc-invite__word + .lc-invite__word { opacity: 1; }
+.lc-invite__fallback { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.4em; color: var(--fg); }
+.lc-invite__link {
+  field-sizing: content;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+html:not(.js) .lc-invite { display: none; }
+
+/* Phones: the thumb beside the address and the hours; what it has, the rating and the ways run under both. */
+@media (max-width: 639.98px) {
+  /* The photo's spare height falls under the features, never between the address and its hours. */
+  .lc-cafe { grid-template-rows: auto auto 1fr; }
+  .lc-cafe__body { display: contents; }
+  .lc-cafe__photo { grid-row: 1 / span 3; }
+  .lc-cafe__head,
+  .lc-cafe__when,
+  .lc-cafe__feat { grid-column: 2; }
+  .lc-cafe__rating,
+  .lc-cafe__ways { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+  /* The photo takes two of the legend's seven columns, the words the other five. */
+  .lc-cafe {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    padding-block: clamp(1.25rem, 1.7vw, 2.25rem);
+  }
+  .lc-cafe__photo { grid-column: 1 / 3; }
+  .lc-cafe__body { grid-column: 3 / -1; row-gap: 0.625rem; }
+  .lc-key { --k: 2rem; }
+}
+
+/* While the pointer reads the legend or points at the plan, the other rows step back (the homepage idiom). */
+@media (hover: hover) and (pointer: fine) {
+  .lc-cafe > :not(.lc-cafe__photo) { transition: opacity 240ms var(--ease-kd-ui); }
+  /* 0.78, not the homepage's 0.45: the dimmed rows' small words stay readable (graphite at 4.5:1). */
+  .lc-list[data-pointing] .lc-cafe:not([data-current]) > :not(.lc-cafe__photo) { opacity: 0.78; }
+  .lc-list[data-pointing] .lc-cafe:focus-within > * { opacity: 1; }
+}
+@media (forced-colors: active), (prefers-contrast: more) {
+  .lc-list[data-pointing] .lc-cafe:not([data-current]) > * { opacity: 1; }
+}
+
+/* The city's chain on Yandex Maps, under its legend. */
+.lc-city__maps { margin: 1rem 0 0; font-size: var(--fs-small); }
+
+/* ── Said once: what every café shares, and the way on ── */
+.lc-foot { display: grid; justify-items: start; gap: 12px; margin-top: var(--foot-gap); }
+.lc-foot__common { margin: 0; max-width: 60ch; color: var(--fg-soft); }
+
+/* ═════════════ Without JS: both cities, each under its heading, and nothing to switch ═════════════ */
+.lc-city__cap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html:not(.js) .lc-tools { display: none; }
+html:not(.js) .lc :is(.lc-city, .lc-plans__city) { display: block !important; }
+html:not(.js) .lc-city + .lc-city { margin-top: var(--head-gap); }
+html:not(.js) .lc-plans__city + .lc-plans__city { margin-top: 2rem; }
+html:not(.js) .lc-plans__sticky { position: static; }
+html:not(.js) .lc-city__cap { position: static; width: auto; height: auto; overflow: visible; clip-path: none; margin: 0 0 12px; }
+
+/* The plan is a picture: forced colours keep its paper and ink rather than blank out the baked-in streets. */
+@media (forced-colors: active) {
+  .lc-plan__sheet { forced-color-adjust: none; }
+  /* Filled, like the plan's marks (a ring on the plan means closed for the night). */
+  .lc-key { forced-color-adjust: none; background: CanvasText; color: Canvas; }
+}
+
+/* A phone or tablet held on its side, the plan beside the legend: the action bar would cover the foot of the stuck
+   plan and its credit. The header carries «Меню», and «Кофейни» is this page (the game's precedent, chrome.css). */
+@media (max-width: 1023.98px) and (min-width: 640px) and (orientation: landscape) {
+  html:has(main.lc) .action-bar { display: none; }
+}
+
+/* ═════════════ On paper: the page prints as a pocket plan and its legend ═════════════
+   The city on show, the plan full width, then the cafés; no chrome, no tools, nothing that needs a screen. */
+@media print {
+  html:has(main.lc) :is(.site-header, .action-bar, .skip-link, #footer) { display: none !important; }
+  .lc-top { padding-block: 0; }
+  .lc-tools,
+  .lc-invite,
+  .lc-city__maps,
+  .lc-plan__way,
+  .lc-you { display: none !important; }
+  .lc-grid { display: block; }
+  .lc-plans { margin-bottom: 1.5rem; }
+  .lc-plans__sticky { position: static; width: 100%; }
+  .lc-plan__sheet { box-shadow: none; break-inside: avoid; }
+  .lc-plan__sheet,
+  .lc-mk__disc,
+  .lc-key { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .lc-cafe { break-inside: avoid; grid-template-columns: 5rem minmax(0, 1fr); }
+  .lc-cafe__body { grid-column: 2; }
+  .lc-cafe__photo { grid-column: 1; }
+  .lc .dlink__ext { display: none; }
+}

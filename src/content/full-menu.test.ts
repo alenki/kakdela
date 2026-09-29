@@ -18,7 +18,7 @@ import type { City, MenuItem } from "./types";
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
 
 /** The page's own ids (SPEC §2.2) besides the chapters (kuhnya, bar, deserty) and their `-title` headings. */
-const PAGE_IDS = ["soderzhanie", "main", "menu-title", "mn-toc-title", "mn-prices-label", "mn-run-prices", "mn-kitchen-label", "mn-more-title"];
+const PAGE_IDS = ["soderzhanie", "main", "menu-title", "mn-prices-label"];
 
 /** КБЖУ that is not shown until the client checks it (SPEC §8.2.5). */
 const DROPPED_NUTRITION = [

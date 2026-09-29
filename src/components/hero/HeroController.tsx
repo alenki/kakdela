@@ -11,6 +11,8 @@ import { mulberry32, hashString } from "@/lib/seed";
 
 const TEAR_AT = 64; // px of downward pull that rips the tab
 const TENSION = 0.35;
+// hero.css: the answer stands beside the notice (a landscape screen from 1024px); anywhere else it is under it.
+const SIDE_BY_SIDE = "(min-width: 1024px) and (min-aspect-ratio: 6/5)";
 
 type Source = "pointer" | "drag" | "key-arrow" | "key";
 
@@ -174,9 +176,10 @@ export function HeroController() {
       revealOnPhone(id);
     }
 
-    // On phones the answer sits under the notice: after a tear, nudge it into view (never past the tabs).
+    // On phones (and any stacked screen) the answer sits under the notice: after a tear, nudge it into
+    // view (never past the tabs).
     function revealOnPhone(id: AnswerId) {
-      if (window.matchMedia("(min-width: 1024px)").matches) return;
+      if (window.matchMedia(SIDE_BY_SIDE).matches) return;
       const panel = panelOf(id);
       if (!panel) return;
       const r = panel.getBoundingClientRect();
@@ -208,15 +211,15 @@ export function HeroController() {
     pad.addEventListener("keyup", onKeyUp);
     pad.addEventListener("change", onChange);
 
-    // Desktop pull-to-tear on fine pointers.
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    // Pull-to-tear, with a mouse, pen or finger (an untorn tab has touch-action: none, so a finger
+    // on it pulls the strip instead of scrolling the page).
     let drag: { id: AnswerId; tab: HTMLElement; paper: HTMLElement; x0: number; y0: number; t: number; lx: number; ly: number; vx: number; vy: number; on: boolean } | null = null;
-    let suppressClick = false;
+    // A drag ends with a click on mouse, but often with none on touch: suppress only the one that
+    // follows straight after, never a later tap.
+    let suppressClickUntil = 0;
 
     const onPointerDown = (e: PointerEvent) => {
-      if (!fine || e.button !== 0 || reduced()) return;
-      // Touch on hybrid devices scrolls the page; only mouse/pen pull the tab.
-      if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
+      if (e.button !== 0 || !e.isPrimary || reduced()) return;
       const tab = (e.target as HTMLElement).closest<HTMLElement>(".tab");
       if (!tab) return;
       const id = tab.dataset.tab as AnswerId;
@@ -242,7 +245,7 @@ export function HeroController() {
       if (dy >= TEAR_AT) {
         const d = drag;
         drag = null;
-        suppressClick = true;
+        suppressClickUntil = performance.now() + 500;
         delete d.tab.dataset.pulling;
         const input = inputOf(d.id);
         if (input) input.checked = true;
@@ -256,7 +259,7 @@ export function HeroController() {
     const onPointerUp = () => {
       if (!drag) return;
       if (drag.on) {
-        suppressClick = true;
+        suppressClickUntil = performance.now() + 500;
         delete drag.tab.dataset.pulling;
         gsap.to(drag.paper, { y: 0, rotation: 0, duration: 0.35, ease: "kd.out", clearProps: "transform" });
       }
@@ -270,8 +273,8 @@ export function HeroController() {
     };
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (suppressClick) {
-        suppressClick = false;
+      if (performance.now() < suppressClickUntil) {
+        suppressClickUntil = 0;
         if (target.closest(".tab")) e.preventDefault();
         return;
       }

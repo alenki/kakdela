@@ -70,6 +70,11 @@ export const kd = {
     safe(() => localStorage.setItem("kd-city", city));
     kd.set({ city });
   },
+  /** A friend's link to a café: show its city without remembering it (html[data-city] and the store, never storage). */
+  showCity(city: City) {
+    document.documentElement.dataset.city = city;
+    kd.set({ city });
+  },
   setMotion(motion: MotionMode) {
     document.documentElement.dataset.motion = motion;
     kd.set({ motion });

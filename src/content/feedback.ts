@@ -78,61 +78,91 @@ export function cafeReply(note: Pick<NoteFields, "tone">, at: string | null, cha
 }
 
 // ── «Уже спрашивали.»: the questions answered under the pad ──
-// Only facts the site already states elsewhere (ru.ts, cafes, people): nothing here is new.
+// Only facts the site already states elsewhere (ru.ts, cafes, people): nothing here is new. Each answer is
+// said first in a word or a time (`short`, set where a menu sets the price), then the rest (`a`).
 
-type FaqLink = { to: RouteKey; label: string } | { href: string; label: string };
-export type FaqItem = { id: string; q: string; a: string; link?: FaqLink };
+/** A page of the site, an address outside it, or a place on this page (`anchor`, an id without the «#»). */
+export type FaqLink = { to: RouteKey; label: string } | { href: string; label: string } | { anchor: string; label: string };
+export type FaqItem = {
+  /** Its anchor is #voprosy-<id>. */
+  id: string;
+  /** The guest's question, in the guest's words. */
+  q: string;
+  /** The café's answer said first: a word or a time, at most three words. */
+  short: string;
+  /** The rest of the answer. A link whose label is found in it verbatim is set on those words; otherwise it follows. */
+  a: string;
+  link?: FaqLink;
+};
 
 export const faq: FaqItem[] = [
   {
     id: "chasy",
     q: "Во сколько вы открываетесь?",
-    a: "Каждый день в 07:30. Закрываемся в 23:00 или в полночь, смотря какая кофейня.",
+    short: "В 07:30.",
+    a: "Каждый день. Закрываемся в 23:00 или в полночь, смотря какая кофейня.",
     link: { to: "locations", label: "Часы каждой кофейни" },
   },
   {
     id: "zavtraki",
     q: "Завтраки только утром?",
-    a: "Нет, завтраки подаём весь день. Все завтраки есть не в каждой кофейне: в некоторых меню полегче.",
-    link: { to: "menu", label: "Меню" },
+    short: "Весь день.",
+    a: "Все завтраки есть не в каждой кофейне: в некоторых меню полегче.",
+    link: { to: "menu", label: "меню" },
   },
   {
     id: "noutbuk",
     q: "Можно с ноутбуком?",
-    a: "Да, во всех кофейнях есть Wi‑Fi и розетки.",
+    short: "Можно.",
+    a: "Во всех кофейнях есть Wi‑Fi и розетки.",
   },
   {
     id: "halyal",
     q: "У вас халяль?",
-    a: "Да. Халяль и намазхана во всех кофейнях.",
+    short: "Да.",
+    a: "Халяль и намазхана во всех кофейнях.",
   },
   {
     id: "english",
     q: "Есть меню на английском?",
-    a: "Да, во всех кофейнях.",
+    short: "Да.",
+    a: "Во всех кофейнях.",
   },
   {
     id: "dostavka",
     q: "Вы привозите?",
-    a: "Да, через Яндекс Еду.",
+    short: "Да.",
+    a: "Через Яндекс Еду.",
     link: { to: "delivery", label: "Доставка" },
   },
   {
     id: "blic",
     q: "Когда шахматный блиц?",
+    // «Объявим.» holds while chessEvent.when says the dates are announced; once it names a day, say that.
+    short: "Объявим.",
     a: `${chessEvent.when}. Несколько туров, партия до десяти минут.`,
     link: { href: external.telegram, label: "Telegram" },
   },
   {
     id: "keitering",
     q: "Приедете на наше мероприятие?",
-    a: "Да, у нас есть кейтеринг.",
-    link: { to: "catering", label: "Кейтеринг" },
+    short: "Приедем.",
+    a: "У нас есть кейтеринг.",
+    link: { to: "catering", label: "кейтеринг" },
   },
   {
     id: "rabota",
     q: "Хочу работать у вас.",
+    short: "Ждём.",
     a: "Будем рады знакомству.",
     link: { to: "careers", label: "Работа у нас" },
+  },
+  {
+    // The last line sends the guest back up to the pad, as the café's «Есть вопрос» line sends them down here.
+    id: "svoy",
+    q: "Не нашли свой вопрос?",
+    short: "Спрашивайте.",
+    a: "Напишите записку: ответим, если оставите телефон или почту.",
+    link: { anchor: "zapiska", label: "Напишите записку" },
   },
 ];

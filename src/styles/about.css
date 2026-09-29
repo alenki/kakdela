@@ -2,107 +2,287 @@
    One conversation in six chapters, one café day: cream from the opening to the café's own things, ink from
    the evening's welcome to the footer. Every heading is an exchange: the guest's question in the thin
    display voice (.dlg-ask), the café's answer in heavy caps (.dlg-title). Components: src/components/about.
-     #o-nas     the opening: «А у вас как дела?» / «Спасибо, что спросили.», gutter to gutter
+     #o-nas     the opening: «А у вас как дела?» / «Спасибо, что спросили.», its last word a door ajar
      #seychas   «А прямо сейчас?»: the part of the day it is in Moscow, and the day as a ruler
      #dveri     «Девять дверей, один вопрос.»: the street, every café's sign on one line (the moment)
      #svoyo     «Голландез, сироп из горных трав и названия.»: three menu entries
      #rady      «Всем, кто зайдёт.»: a guest's words on a note, what the cafés have (ink)
      #a-u-vas   «А у вас?»: the café asks back; the eight answers as slips, and its reply (ink) */
 
-/* ───────────────────────── The opening ───────────────────────── */
-.ab-open {
-  padding-top: calc(var(--header-h) + clamp(28px, 7vh, 6rem));
-  padding-bottom: calc(var(--section-pad) * 1.15);
-}
-/* The grid is the title's container: its size is the canvas less the gutters (cqi). */
-.ab-open__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  row-gap: clamp(2.25rem, 6vh, 5.5rem);
+/* ───────────────────────── The opening: the door in the answer ───────────────────────── */
+/* «Спасибо, что | спросили.»: the answer's last word is a door standing ajar onto the café (Opening.tsx).
+   Every number is src/lib/door.ts, written on the section as --open-* and --room-*: re-measure there when
+   the copy, the weight, the face or the room's photo changes. Two arrangements: the stack (the default,
+   «Спасибо, что» over the door) and the line (LINE_MQ: the answer on one line gutter to gutter, the door
+   rising from under the header to the floor). The leaf is the frame's direct child: never put a filter,
+   opacity, clip-path or a wrapper between them, or the frame's perspective no longer reaches it. */
+.ab-open { --travel: var(--open-travel-stack); padding-top: var(--header-h); }
+.ab-open__drive { position: relative; }
+.ab-open__stage {
+  position: relative;
   container-type: inline-size;
+  overflow-x: clip;
+  padding-block: clamp(1.25rem, 3svh, 2rem) calc(var(--section-pad) * 1.15);
+  --ajar: var(--open-ajar-stack);
+  --f: min(calc(100cqi / var(--open-stack-em)), 11rem);
+  --dw: calc(var(--open-door-em) * var(--f));
+  --dh: max(var(--open-stack-min), min(calc(var(--open-stack-door) * var(--f)), calc(100svh - var(--header-h) - var(--open-stack-leave))));
+  /* The photo's height when the doorway just holds the whole room (its end). */
+  --H: max(calc(var(--room-ar) * var(--dw)), var(--dh));
 }
-.ab-open__head { gap: clamp(0.75rem, 1.2vw, 1.75rem); }
+/* Driven (OpeningDoor, full motion, from the top): the stage sticks under the header for the drive. */
+.ab-open__travel { display: block; height: 0; }
+.ab-open[data-drive] .ab-open__travel { height: var(--travel); }
+.ab-open[data-drive] .ab-open__stage { position: sticky; top: var(--header-h); }
 
-/* The guest's line. Today's answer, if any, opens it in red: «Сонно. А у вас как дела?» (html[data-answer]
-   is a tear or a pick today; a time-of-day guess also sets data-guess and never shows). The words come
-   from the line's own data-said-* attributes (Opening.tsx), and they are read as part of the heading. */
-.ab-open__ask::before { color: var(--accent-ink); font-weight: 300; }
-html[data-answer="luchshe-vseh"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-luchshe-vseh) " "; }
-html[data-answer="kak-v-skazke"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-kak-v-skazke) " "; }
-html[data-answer="vsyo-shik"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-vsyo-shik) " "; }
-html[data-answer="10-iz-10"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-10-iz-10) " "; }
-html[data-answer="est-hochu"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-est-hochu) " "; }
-html[data-answer="normalno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-normalno) " "; }
-html[data-answer="sonno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-sonno) " "; }
-html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-tak-sebe) " "; }
+.ab-open__head { gap: 0.75rem; }
+/* The guest's line, on one line at every size. */
+.ab-open__ask {
+  font-size: min(calc(100cqi / var(--open-ask-em)), 2.25rem);
+  line-height: 1.05;
+  letter-spacing: 0.06em;
+}
+/* Today's torn answer opens it in red, at the weight of its mood (SAID_WEIGHT in door.ts), never the café's
+   860: «Сонно.» barely there, «Лучше всех.» at a speaking weight. html[data-answer] is a tear or a pick
+   today; a time-of-day guess also sets data-guess and never shows. The words come from the line's own
+   data-said-* attributes (Opening.tsx), and they are read as part of the heading. */
+.ab-open__ask::before { color: var(--accent-ink); font-weight: var(--said-w, 300); }
+html[data-answer="luchshe-vseh"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-luchshe-vseh) " "; --said-w: 460; }
+html[data-answer="kak-v-skazke"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-kak-v-skazke) " "; --said-w: 460; }
+html[data-answer="vsyo-shik"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-vsyo-shik) " "; --said-w: 460; }
+html[data-answer="10-iz-10"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-10-iz-10) " "; --said-w: 460; }
+html[data-answer="est-hochu"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-est-hochu) " "; --said-w: 320; }
+html[data-answer="normalno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-normalno) " "; --said-w: 200; }
+html[data-answer="sonno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-sonno) " "; --said-w: 110; }
+html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-tak-sebe) " "; --said-w: 200; }
+/* Hairlines lose more to antialiasing at phone sizes. */
+@media (max-width: 639.98px) {
+  .ab-open__ask::before { font-weight: max(var(--said-w, 300), 200); }
+}
 
-/* The café's answer. Phones and tablets: «Спасибо, | что спросили.», the longer half across the canvas
-   (it sets 5.17em wide). From 1024: one line gutter to gutter (8.63em wide, at 860), as the coffee
-   poster's answer. Re-measure both when the copy, the weight or the face changes. */
+/* The café's answer. The stack: «Спасибо, что» across the canvas, the door under it against the right gutter. */
 .ab-open__title {
-  font-size: min(calc(100cqi / 5.2), 11rem);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--f);
   line-height: 0.88;
   letter-spacing: -0.012em;
 }
-.ab-open__line { display: block; }
-.ab-open__words { display: inline-block; }
-@media (min-width: 1024px) {
-  .ab-open__title { font-size: min(calc(100cqi / 8.66), 14rem); white-space: nowrap; }
-  .ab-open__line { display: inline; }
+.ab-open__wall { white-space: nowrap; }
+.ab-open__door {
+  position: relative;
+  display: block;
+  align-self: flex-end;
+  width: var(--dw);
+  height: var(--dh);
+  margin-top: 0.06em;
 }
-
+/* The doorway: it clips the leaf and the room, and its perspective is the guest's eye. */
+.ab-open__frame {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  perspective: var(--open-persp-stack);
+  perspective-origin: 0 50%;
+}
+/* The steel frame: hairline jambs and head over the leaf's edges (the floor line is the sill). */
+.ab-open__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  pointer-events: none;
+}
+.ab-open__room { position: absolute; inset: 0; }
+/* The room at rest: the kitchen door's lettering on the anchor, the photo zoomed (never past 1.3 times its
+   pixels). The drive only ever scales it down from here (OpeningDoor). */
+.ab-open__pan {
+  --wz: min(calc(var(--open-zoom-stack) * var(--H) / var(--room-ar)), var(--room-max));
+  --ax: calc(var(--open-ax-stack) * var(--dw));
+  --ay: calc(var(--dh) / 2);
+  position: absolute;
+  width: var(--wz);
+  aspect-ratio: 1333 / 2000;
+  left: calc(var(--ax) - var(--room-kx) * var(--wz));
+  top: calc(var(--ay) - var(--room-ky) * var(--room-ar) * var(--wz));
+  transform-origin: 0 0;
+}
+.ab-open__img { object-fit: cover; }
+/* The leaf: the wall's own cream and grain, hung on its left edge, ajar. Its angle is CSS `rotate` alone
+   (--swing from the drive, --lift from the pointer), never a tweened transform. */
+.ab-open__leaf {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 50%;
+  rotate: y calc(var(--ajar) + var(--swing, 0deg) + var(--lift, 0deg));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  background: var(--bg);
+  box-shadow: inset -1px 0 0 var(--line-strong);
+}
+/* The wall's grain (.field::before), in phase with it (DOOR_SCRIPT), so the shut door shows no seam. */
+.ab-open__leaf::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain) calc(-1 * var(--open-gx, 0px)) calc(-1 * var(--open-gy, 0px)) / 128px 128px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.ab-open__leaf[data-gone] { visibility: hidden; }
+.ab-open__word {
+  position: absolute;
+  left: calc(var(--open-jamb-em) * 1em);
+  top: calc(0.15 * var(--dh));
+  white-space: nowrap;
+}
+/* The lever: a slim ink bar on a small rose at the free edge, pivoting at the rose. */
+.ab-open__lever {
+  position: absolute;
+  right: 0.16em;
+  top: 50%;
+  width: 0.36em;
+  height: max(2px, 0.012em);
+  background: currentColor;
+  translate: 0 -50%;
+  transform-origin: 100% 50%;
+  rotate: var(--lever, 0deg);
+}
+.ab-open__lever::after {
+  content: "";
+  position: absolute;
+  right: -0.015em;
+  top: 50%;
+  width: 0.045em;
+  height: 0.16em;
+  translate: 0 -50%;
+  border-radius: 0.015em;
+  background: currentColor;
+}
+/* Light, not decoration: one flat wash of ink, as much as the leaf has turned from the window (shade() in
+   door.ts: its rest value here, the drive's on the element). */
+.ab-open__shade {
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  opacity: var(--open-shade-stack);
+  pointer-events: none;
+}
 /* The founding line in the café's italic (the section's one italic moment), the rest in the text face. */
+.ab-open__story { margin-top: clamp(2.5rem, 8vw, 4rem); }
 .ab-open__founding {
   margin: 0;
   max-width: 30ch;
-  font-size: clamp(1.375rem, 0.62rem + 1.9vw, 3rem);
+  font-size: clamp(1.375rem, 0.62rem + 1.9vw, 2.25rem);
   line-height: 1.22;
   color: var(--fg);
   text-wrap: pretty;
 }
-.ab-open__lead {
-  max-width: 44ch;
-  margin: clamp(1.25rem, 2vw, 2rem) 0 0;
-  font-size: var(--lead);
-  line-height: 1.45;
-  color: var(--fg-soft);
-}
-/* The kitchen door, cut down to its «Как дела на кухне?» (FramedPhoto). */
-.ab-open__door { display: grid; gap: 0.75rem; justify-self: end; width: min(66%, 26rem); }
-.ab-open__caption { margin: 0; }
-@media (min-width: 640px) {
-  .ab-open__door { width: calc(50% - var(--grid-gap) / 2); }
-}
-@media (min-width: 1024px) {
-  .ab-open__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
-  .ab-open__head { grid-column: 1 / -1; }
-  .ab-open__story { grid-column: 1 / span 7; }
-  .ab-open__door { grid-column: 9 / -1; width: auto; justify-self: stretch; }
-}
-@media (min-width: 1280px) {
-  .ab-open__door { grid-column: 10 / -1; }
+/* Layers only while the drive moves: at rest the word and the photo raster crisp. */
+.ab-open[data-moving] .ab-open__leaf { will-change: rotate; }
+.ab-open[data-moving] .ab-open__pan { will-change: transform; }
+@media (hover: hover) and (pointer: fine) {
+  .ab-open[data-drive][data-rest] .ab-open__frame { cursor: pointer; }
 }
 
-/* The exchange lands at first paint, with no script: the guest asks, and after a beat the café answers,
-   each half of it rising out of its own slot (clipped to its line, the clip going with the words), then
-   the rest. The page is visible without it: reduced motion and a mid-visit switch never see it. */
+/* The line: «Спасибо, что спросили.» on one line gutter to gutter (the wall and the doorway, 8.84em), the
+   door from under the header down to the floor. The eye stands left of the hinge, level with the lever.
+   The ask is sized from the photo: at the drive's end the bar's sign stands on its baseline, at its cap
+   height (lockCrop in door.ts), so the café's «КАК ДЕЛА?» answers the guest's on one line. */
+@media (min-width: 640px) and (min-aspect-ratio: 4/3) {
+  .ab-open { --travel: var(--open-travel-line); padding-bottom: clamp(1rem, 3vh, 2.5rem); }
+  .ab-open__stage {
+    height: max(calc(100svh - var(--header-h)), 32rem);
+    container-type: size;
+    padding-block: 0;
+    --ajar: var(--open-ajar-line);
+    --f: min(calc(100cqi / var(--open-line-em)), 14rem, calc(100cqh / var(--open-fit)));
+    --eye: calc(var(--open-eye) * 1cqh);
+    --fh: calc(var(--open-floor) * 1cqh);
+    --wall: calc(var(--open-wall-em) * var(--f));
+    --askb: calc(var(--eye) - var(--open-ask-gap) * var(--f));
+    --H: max(
+      calc(var(--room-ar) * var(--dw)),
+      calc((var(--fh) - var(--askb)) / (1 - var(--room-sign-b))),
+      calc(var(--askb) / var(--room-sign-b))
+    );
+  }
+  /* Cap height = the sign's at the lock (its cap share of --H), baseline on --askb (line-height 1). */
+  .ab-open__ask {
+    position: absolute;
+    left: var(--gutter);
+    top: calc(var(--askb) - var(--open-base) * 1em);
+    font-size: calc(var(--room-sign-cap) * var(--H) / var(--open-cap));
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .ab-open__title { display: block; position: absolute; left: var(--gutter); top: var(--eye); white-space: nowrap; }
+  .ab-open__door { display: inline-block; vertical-align: top; height: 0.88em; margin: 0; }
+  .ab-open__frame {
+    inset: auto 0;
+    top: calc(-1 * var(--eye));
+    height: var(--fh);
+    perspective: var(--open-persp-line);
+    perspective-origin: var(--open-eye-x-line) calc(var(--eye) + var(--open-lever));
+  }
+  .ab-open__frame::after { border-top: 0; }
+  .ab-open__pan {
+    --wz: min(calc(var(--open-zoom-line) * var(--H) / var(--room-ar)), var(--room-max));
+    --ax: calc(var(--open-ax-line) * var(--dw));
+    --ay: calc(var(--eye) + 0.44em);
+  }
+  .ab-open__word { top: var(--eye); }
+  .ab-open__lever { top: calc(var(--eye) + var(--open-lever)); }
+  .ab-open__shade { opacity: var(--open-shade-line); }
+  /* The story on the wall under «Спасибо, что», its sizes held by the stage's height on short screens. */
+  .ab-open__story {
+    position: absolute;
+    margin: 0;
+    left: var(--gutter);
+    top: calc(var(--eye) + 0.88 * var(--f) + clamp(1.25rem, 4cqh, 3rem));
+    width: min(calc(var(--wall) - 2 * var(--grid-gap)), 40rem);
+  }
+  .ab-open__founding { font-size: min(clamp(1.25rem, 0.5rem + 1.35vw, 2.4rem), 3.4cqh); }
+}
+
+/* First paint, with no script: the guest asks (the line from the left), then the super and the story. On a
+   fresh load at the top (html[data-knock], DOOR_SCRIPT) the door is shut at first paint, and after a beat
+   the lever dips and it comes ajar, a hair past its rest, on kd.settle. Reduced motion never sees any of it;
+   a visit that isn't fresh opens on the door already ajar. */
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="reduced"]) .ab-open__ask { animation: ab-ask 760ms var(--ease-kd-out) 120ms both; }
-  html:not([data-motion="reduced"]) .ab-open__label { animation: ab-fade 600ms var(--ease-kd-out) both; }
-  html:not([data-motion="reduced"]) .ab-open__words {
-    animation: ab-slot 1000ms var(--ease-kd-out) calc(720ms + var(--i, 0) * 130ms) both;
+  html[data-knock]:not([data-motion="reduced"]) .ab-open__lever { animation: ab-latch 320ms 1080ms backwards; }
+  html[data-knock]:not([data-motion="reduced"]) .ab-open__leaf {
+    animation: ab-ajar 1150ms cubic-bezier(0.18, 0.9, 0.32, 1.04) 1240ms backwards;
   }
-  html:not([data-motion="reduced"]) :is(.ab-open__story, .ab-open__door) {
-    animation: ab-up 900ms var(--ease-kd-out) 1250ms both;
-  }
-  html:not([data-motion="reduced"]) .ab-open__door { animation-delay: 1380ms; }
+  html[data-knock]:not([data-motion="reduced"]) .ab-open__shade { animation: ab-fade 1150ms var(--ease-kd-out) 1240ms backwards; }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 640px) and (min-aspect-ratio: 4/3) {
+  html:not([data-motion="reduced"]) .ab-open__story { animation: ab-up 900ms var(--ease-kd-out) 1400ms both; }
 }
 @keyframes ab-fade { from { opacity: 0; } }
 @keyframes ab-ask { from { opacity: 0; translate: -0.8em 0; } }
 @keyframes ab-up { from { opacity: 0; translate: 0 22px; } }
-@keyframes ab-slot {
-  from { translate: 0 0.95em; clip-path: inset(-0.3em -0.2em 0.95em -0.2em); }
-  to { translate: 0 0; clip-path: inset(-0.3em -0.2em -0.3em -0.2em); }
+/* Backwards only: once it has played, the leaf's own rotate (with the drive's --swing) rules again. */
+@keyframes ab-ajar { from { rotate: y 0deg; } }
+@keyframes ab-latch {
+  0% { rotate: 0deg; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  47% { rotate: -22deg; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { rotate: 0deg; }
+}
+
+@media (forced-colors: active) {
+  .ab-open__shade,
+  .ab-open__leaf::before { display: none; }
+  .ab-open__leaf { background: Canvas; outline: 1px solid CanvasText; outline-offset: -1px; }
+  .ab-open__lever,
+  .ab-open__lever::after { background: CanvasText; }
+}
+/* On paper the headline prints whole. */
+@media print {
+  .ab-open__leaf { rotate: none; }
+  .ab-open__room { display: none; }
 }
 
 /* A photo cut by a crop (FramedPhoto): the image keeps its proportions, placed in % of the frame. */
@@ -423,7 +603,6 @@ html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-colo
   color: var(--color-ink);
 }
 .ab-note__quote { margin: 0; line-height: 1.24; }
-.ab-note__who { margin-top: 1.5rem; }
 
 /* What the cafés have: a timetable between hairlines, the thing in display type, where in the text face. */
 .ab-house__label { margin: 0 0 1rem; }
@@ -431,7 +610,7 @@ html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-colo
 .ab-house__row {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 0.25rem 1.5rem;
   padding-block: clamp(14px, 1.25vw, 1.6rem);

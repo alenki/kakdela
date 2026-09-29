@@ -78,6 +78,24 @@ function useScrollRefresh() {
   }, [pathname]); // observe the new page's <main>/footer after navigation
 }
 
+/** The canvas takes the footer's ink while the footer is on screen, so overscrolling past it never flashes cream. */
+function useFooterCanvas() {
+  const pathname = usePathname();
+  useEffect(() => {
+    const root = document.documentElement;
+    const footer = document.getElementById("footer");
+    if (!footer) return;
+    const io = new IntersectionObserver(([entry]) => {
+      root.toggleAttribute("data-canvas-ink", entry.isIntersecting);
+    });
+    io.observe(footer);
+    return () => {
+      io.disconnect();
+      root.removeAttribute("data-canvas-ink");
+    };
+  }, [pathname]); // observe the new page's footer after navigation
+}
+
 /** Motion follows the OS: keep a reduced-motion change made mid-visit in sync. */
 function useOsMotionSync() {
   useEffect(() => {
@@ -99,6 +117,7 @@ export function Providers({ children }: { children: ReactNode }) {
   useSmoothScroll(mode);
   usePour(mode);
   useScrollRefresh();
+  useFooterCanvas();
   useOsMotionSync();
   return (
     <MotionConfig reducedMotion={mode === "reduced" ? "always" : "never"}>

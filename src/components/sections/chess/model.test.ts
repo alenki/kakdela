@@ -17,13 +17,13 @@ const fen = (s: GameState) => toFen(s.pos);
 const fresh = () => initGame(PZ, 0, {});
 
 describe("puzzle model: the start", () => {
-  it("waits for White's first move, the café's last move marked", () => {
+  it("waits for White's first move, the café's last move arrowed and no square marked", () => {
     const s = fresh();
     expect(s.phase).toBe("play");
     expect(fen(s)).toBe(START);
     expect(logVM(s)).toEqual({ rows: [], pending: 1 });
     expect(boardVM(s).arrow).not.toBeNull();
-    expect(boardVM(s).marks.filter((m) => m.kind === "last").map((m) => m.sq).sort()).toEqual([sq("b8"), sq("c8")].sort());
+    expect(boardVM(s).marks).toEqual([]);
   });
   it("can replay Black's last move as its entrance", () => {
     const s = initGame(PZ, 0, { entrance: true });

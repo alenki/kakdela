@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { reviews } from "@/content/people";
 import { cafes } from "@/content/cafes";
 import { external } from "@/content/routes";
-import type { City } from "@/content/types";
+import type { City, Review } from "@/content/types";
 import { Slip } from "@/components/brand/Slip";
 import { BtnLabel } from "@/components/chrome/BtnLabel";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
@@ -31,10 +31,12 @@ const flagship = cafes.reduce((a, b) => (b.ratingsCount > a.ratingsCount ? b : a
 const said = (text: string) => quote(bindLastWord(keepWhole(typograf(text))));
 
 /** Each note's own rip along its top and its own small lean, seeded by the review. */
-const sheets = reviews.map((r) => {
-  const { clip, fibres, lean } = tornSheet(r.id);
-  return { "--rip": clip, "--fibres": fibres, "--lean": `${lean}deg` } as CSSProperties;
-});
+const sheets = new Map(
+  reviews.map((r) => {
+    const { clip, fibres, lean } = tornSheet(r.id);
+    return [r.id, { "--rip": clip, "--fibres": fibres, "--lean": `${lean}deg` } as CSSProperties];
+  }),
+);
 
 /** « ↗» and the screen-reader note after an external link. */
 function NewTab() {
@@ -61,10 +63,11 @@ function Arrow() {
  * The café asks in the title, and the flagship's 5,0 answers beside it on the notice's paper. Under it
  * the guests answer, verbatim, on notes of the same paper lying in a pile: one on top, the others under
  * it. Every note is server-rendered in its place (data-pos, 0 on top); ReviewsPile throws the top one
- * aside and brings the others up, and without JS the first note stays on top.
+ * aside and brings the others up, and without JS the first note stays on top. The about page lays its
+ * own choice of the notes (`notes`); the homepage lays them all.
  */
-export function ReviewsSection() {
-  const n = reviews.length;
+export function ReviewsSection({ notes = reviews }: { notes?: Review[] }) {
+  const n = notes.length;
   const many = n > 1;
   return (
     <section id="otzyvy" className="field section-pad rv" data-theme="cream" aria-label={t.reviews.q}>
@@ -78,14 +81,14 @@ export function ReviewsSection() {
         <div className="rv-pile">
           {/* All the notes in one cell, so the longest quote sets the pile's size. */}
           <ul className="rv-notes" id="rv-notes">
-            {reviews.map((r, i) => (
+            {notes.map((r, i) => (
               <li
                 key={r.id}
                 className="rv-note"
                 data-pos={i}
                 data-rv-say={t.reviews.shown(i + 1, n, r.text)}
                 data-permission={r.permission ? undefined : "pending"}
-                style={sheets[i]}
+                style={sheets.get(r.id)}
               >
                 {/* One motion per wrapper: the landing (ReviewsMotion), then the throw (ReviewsPile). */}
                 <div className="rv-note__land">

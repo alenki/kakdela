@@ -83,7 +83,8 @@ export const deviceStorage: { key: string; store: "localStorage" | "sessionStora
   { key: "kd-last", store: "localStorage", what: "Ответ, который вы оторвали на главной, и дата.", kept: "Пока вы не очистите данные сайта." },
   { key: "kd-puzzle", store: "localStorage", what: "Решение шахматной задачи недели.", kept: "Пока вы не очистите данные сайта; решение прошлой недели не показывается." },
   { key: "kd-runner", store: "localStorage", what: "Рекорд в игре со стаканчиком.", kept: "Пока вы не очистите данные сайта." },
-  { key: "kd-intro", store: "sessionStorage", what: "Что приветственная анимация уже показана.", kept: "Пока открыта вкладка." },
+  { key: "kd-intro", store: "sessionStorage", what: "Что приветственная анимация уже показана: дальше в этой вкладке она идёт короче.", kept: "Пока открыта вкладка." },
+  { key: "kd-scroll", store: "sessionStorage", what: "Докуда прокручена страница, когда вы с неё уходите: если вы были не в самом верху, после обновления анимация не показывается.", kept: "Пока открыта вкладка." },
 ];
 
 /** «Коротко»: the policy in six plain lines, on a note above it. */

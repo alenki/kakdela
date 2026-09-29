@@ -104,9 +104,7 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   .site-header__mark--full { display: block; }
   .site-header__mark--badge { display: none; }
 }
-.site-header__nav { display: flex; align-items: center; gap: clamp(20px, 2vw, 2.5rem); }
-/* Below 1024px the left column is too narrow for all four: only «Меню» stays. */
-@media (max-width: 1023.98px) { .hdr-link.hdr-link--wide { display: none; } }
+.site-header__nav { display: flex; align-items: center; gap: clamp(16px, 1.4vw, 1.75rem); }
 .hdr-link, .hdr-burger, .menu-dialog__close {
   position: relative;
   display: inline-flex;
@@ -124,6 +122,11 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   cursor: pointer;
   transition: opacity 150ms var(--ease-kd-ui);
 }
+/* Below 1024px the left column is too narrow for all five: only «Меню» stays. Below 1280px the five need
+   ~414px and the column has 390 to 470: «Главная» steps out (the logo is the way home) and the other
+   four fit. After the rule above, or its display wins. */
+@media (max-width: 1023.98px) { .hdr-link--wide { display: none; } }
+@media (max-width: 1279.98px) { .hdr-link--home { display: none; } }
 .hdr-link, .menu-dialog__close { text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 :is(.hdr-link, .hdr-burger, .menu-dialog__close):active { opacity: 0.6; }
 /* The page on show (/menu): its link stays underlined. */
@@ -136,17 +139,30 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   .hdr-burger:hover { opacity: 0.7; }
 }
 .hdr-burger__lines { display: inline-grid; gap: 0.3125rem; width: 1.25rem; }
-.hdr-burger__lines span { display: block; height: 1.5px; background: currentColor; }
+/* Borders, not 1.5px boxes: a box's edges snap to the pixel grid wherever the header happens to put
+   it, so two 1.5px lines came out 2px and 1px, and which one changed with the window. A border's width
+   is always a whole number of device pixels, so both lines match. 1.75px floors to the pixel nearest
+   1.5px (2 at 1.25x and 1.5x, 3 at 2x, 4 at 2.625x); on a 1x screen it would be a 1px hairline, so 2px. */
+.hdr-burger__lines span { display: block; border-top: 1.75px solid; }
+@media (max-resolution: 1.2dppx) { .hdr-burger__lines span { border-top-width: 2px; } }
 
 /* ───── «Разделы» dialog ───── */
 /*
- * Full screen, cream, set like the last page of a menu. The top bar is exactly the header's height, so
- * «Закрыть» lands where «Разделы» was. Then the four places in display type, the services in the text
- * face, and the city band: switch, cafés with their live status, contacts.
+ * Full screen, cream, set like the last page of a menu, on a sheet off the café's paper roll: it comes
+ * down with a torn bottom edge when opened and rolls back up when closed (menu-roll.ts; CONVENTIONS,
+ * «Разделы: the roll»). The top bar is exactly the header's height, so «Закрыть» lands where «Разделы»
+ * was. Then the four places in display type, the services in the text face, and the city band: switch,
+ * cafés with their live status, contacts.
  *   phone     one column
  *   ≥1024     the links take cols 1–7, the city band cols 9–12, both from the same top line
+ * Layers, bottom up: the sheet (everything that moves) holds a soft shade, the paper's shadow, the rim of
+ * its rip and the paper, and the paper holds the page's scroller. The sheet reaches --roll-over above
+ * the screen (so its small run past rest never shows an end) and --roll-jag below it, the band for its
+ * rip. Until a script clips it, it is a plain rectangle.
  */
 .menu-dialog {
+  --roll-over: 64px;
+  --roll-jag: 30px;
   position: fixed;
   inset: 0;
   width: 100%;
@@ -156,15 +172,51 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   margin: 0;
   padding: 0;
   border: 0;
+  /* clip, not hidden: nothing can scroll it, not even focus() bringing «Закрыть» into view. */
+  overflow: clip;
+  background: transparent;
+  color: var(--fg);
+  /* The dialog closes once the sheet is rolled up (MenuDialog). If the browser closes it first (it may
+     refuse to hold a second Esc), this keeps it painted, in the top layer, while the sheet rolls up,
+     where the browser can. Reduced motion cuts it to 1ms. */
+  transition: display 450ms allow-discrete, overlay 450ms allow-discrete;
+}
+.menu-dialog:not([open]) { pointer-events: none; }
+.menu-dialog::backdrop { background: transparent; }
+/* Focus lands on «Закрыть»; the dialog itself only holds it for a moment. */
+.menu-dialog:focus-visible { outline: none; }
+.menu-dialog__sheet {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(-1 * var(--roll-over));
+  height: calc(100% + var(--roll-over) + var(--roll-jag));
+}
+.menu-dialog__shadow, .menu-dialog__fibres, .menu-dialog__paper { position: absolute; inset: 0; }
+/* The paper's own crisp shadow, as under the notice; over the ink sections it has to be darker to show. */
+.menu-dialog__shadow { background: rgb(92 62 30 / 0.2); transform: translate(5px, 7px); }
+.menu-dialog[data-over="ink"] .menu-dialog__shadow { background: rgb(0 0 0 / 0.5); }
+/* The lighter rim of a real rip, just proud of the paper (the slips' --fibres). */
+.menu-dialog__fibres { background: color-mix(in srgb, var(--bg), #fff 72%); }
+.menu-dialog__paper { overflow: clip; }
+/* A soft shade on the page under the rip, only while the sheet moves (at rest it would be a line at
+   the screen's foot). */
+.menu-dialog__shade {
+  position: absolute;
+  inset: auto 0 -64px;
+  height: 96px;
+  background: linear-gradient(to bottom, rgb(46 30 12 / 0.16), rgb(46 30 12 / 0.05) 45%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.menu-dialog__scroll {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--roll-over);
+  height: calc(100% - var(--roll-over) - var(--roll-jag));
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  opacity: 1;
-  transition: opacity 280ms var(--ease-kd-ui), display 280ms allow-discrete, overlay 280ms allow-discrete;
 }
-.menu-dialog:not([open]) { opacity: 0; }
-@starting-style { .menu-dialog[open] { opacity: 0; } }
-.menu-dialog::backdrop { background: transparent; }
 .menu-dialog__inner {
   min-height: 100%;
   display: grid;
@@ -173,15 +225,13 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   padding-bottom: clamp(32px, 6vh, 4rem);
 }
 .menu-dialog__top { display: flex; align-items: center; justify-content: flex-end; height: var(--header-h); }
-.menu-dialog__x { position: relative; width: 1.125rem; height: 1.125rem; }
-.menu-dialog__x::before, .menu-dialog__x::after {
-  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor;
+/* As wide as the burger's lines: opening, they swing into this × (menu-roll.ts). */
+.menu-dialog__x { position: relative; width: 1.25rem; height: 1.25rem; }
+.menu-dialog__x > span {
+  position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor;
+  transform: rotate(45deg);
 }
-.menu-dialog__x::before { transform: rotate(45deg); }
-.menu-dialog__x::after { transform: rotate(-45deg); }
-/* One quiet entrance for the whole page. */
-.menu-dialog__nav, .menu-dialog__side { transform: none; transition: transform 500ms var(--ease-kd-out); }
-@starting-style { .menu-dialog[open] :is(.menu-dialog__nav, .menu-dialog__side) { transform: translateY(12px); } }
+.menu-dialog__x > span + span { transform: rotate(-45deg); }
 
 .menu-dialog__nav { display: grid; gap: clamp(28px, 4vh, 48px); align-content: start; padding-top: clamp(24px, 6vh, 72px); }
 .menu-link {

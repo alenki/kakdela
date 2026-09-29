@@ -1,13 +1,36 @@
-// Runs as the first child of /menu's <main>, before the page paints: a hash that names one of the eight
-// answer dishes (/menu#espresso-tonik, the hero's «В меню») sets html[data-pick], so the answer word at
-// that dish is already red at first paint. Only the eight anchors map (built from answers.ts); nothing is
-// stored. MenuNav keeps the attribute in step afterwards and removes it when the guest leaves /menu.
-// It also marks a hard load (window.__kdMenuLoad): an inline script never runs on a client navigation.
+// Before first paint the table must already hold the dish of the answer on show (html[data-answer], set by the
+// head script: today's torn tab, or the time of day's guess), and the notice's back must already know which of
+// its tabs is red and which one was torn off today (html[data-said]). None of that is stored by the menu: it is
+// read from the attributes the head script writes, by CSS generated here from answers.ts, so it is right at
+// first paint and on a client-side visit alike. TableController takes over once it is live
+// (.mn-table[data-live], .mn-back[data-live]).
 import { answers } from "@/content/answers";
+import { DEFAULT_TABLE_ITEM, itemForAnswer } from "./model";
 
-const PICKS = JSON.stringify(Object.fromEntries(answers.map((a) => [a.item.anchor, a.id])));
+const serve = (scope: string, key: string) =>
+  `${scope} .mn-table:not([data-live]) .mn-slide[data-key="${key}"]{display:block;opacity:1;z-index:1}` +
+  `${scope} .mn-table:not([data-live]) .mn-cap[data-key="${key}"]{visibility:visible}`;
 
-export const MENU_PICK_SCRIPT = `(function(){try{window.__kdMenuLoad=1;var m=${PICKS};var h=decodeURIComponent(location.hash.slice(1));if(Object.prototype.hasOwnProperty.call(m,h))document.documentElement.dataset.pick=m[h]}catch(e){}})();`;
+export const MENU_PICK_STYLE =
+  serve("html:not([data-answer])", DEFAULT_TABLE_ITEM) +
+  answers
+    .map(
+      ({ id }) =>
+        serve(`html[data-answer="${id}"]`, itemForAnswer[id].id) +
+        `html[data-answer="${id}"] .mn-back:not([data-live]) .mn-tab[data-tab="${id}"]{--mn-tab-ink:var(--color-tomato-ink)}` +
+        `html[data-said="${id}"] .mn-tab[data-tab="${id}"]{--mn-torn:1}` +
+        `html[data-said="${id}"] .mn-tab[data-tab="${id}"] .mn-tab__paper{clip-path:var(--stub)}` +
+        `html[data-said="${id}"] .mn-tab[data-tab="${id}"] .mn-tab__face{opacity:0}` +
+        `html[data-said="${id}"] .mn-tab[data-tab="${id}"] .mn-tab__torn{display:inline}`,
+    )
+    .join("");
 
-/** The same map for the islands: anchor → answer id. */
-export const PICK_BY_ANCHOR: Record<string, string> = Object.fromEntries(answers.map((a) => [a.item.anchor, a.id]));
+/** The answer's dish by answer id, for the priming below. */
+const DISH = JSON.stringify(Object.fromEntries(answers.map(({ id }) => [id, itemForAnswer[id].id])));
+
+/**
+ * Placed right after the table: its dish is the page's largest paint on a desktop. Its <img> stays lazy (the
+ * other slides must not load), so fetch the same candidate now, at high priority (the hero's PHOTO_SCRIPT). A
+ * detached Image: the server markup is never touched. Phones have no table and skip it.
+ */
+export const TABLE_SCRIPT = `(function(){try{if(!matchMedia('(min-width: 1024px)').matches)return;var m=${DISH};var a=document.documentElement.dataset.answer;var k=(a&&m[a])||${JSON.stringify(DEFAULT_TABLE_ITEM)};var i=document.querySelector('.mn-table .mn-slide[data-key="'+k+'"] img');if(!i||!i.srcset)return;var p=new Image();p.fetchPriority='high';p.sizes=i.sizes;p.srcset=i.srcset;p.src=i.src}catch(e){}})();`;

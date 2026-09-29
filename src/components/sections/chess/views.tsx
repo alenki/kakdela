@@ -98,8 +98,8 @@ type BoardProps = {
 };
 
 /**
- * Bottom to top: the checker (the board's own background), the marks (the last move, the selection, the
- * hint, where a piece can go), the coordinates, the pieces, the café's arrow, and on top the transparent
+ * Bottom to top: the checker (the board's own background), the marks (the selection, the hint, where a
+ * piece can go), the coordinates, the pieces, the café's arrow, and on top the transparent
  * grid of squares that takes the input, so a focus ring draws over the pieces while the tints stay under.
  */
 export function BoardView({ vm, grid, alt, boardRef, phase }: BoardProps) {

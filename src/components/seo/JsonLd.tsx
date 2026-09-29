@@ -1,8 +1,8 @@
 import { cafes } from "@/content/cafes";
-import { external, yandexOrg } from "@/content/routes";
+import { external, routes, SITE_URL, yandexOrg } from "@/content/routes";
 import { t } from "@/i18n";
 
-const BASE = "https://www.kakdelacoffee.ru";
+const BASE = SITE_URL;
 
 /** Structured data for the chain and its nine cafés. No self-served aggregateRating (Google policy). */
 export function JsonLd() {
@@ -39,6 +39,9 @@ export function JsonLd() {
           closes: c.close === "00:00" ? "23:59" : c.close,
         },
         hasMap: yandexOrg(c.yandexOrgId),
+        // Each café's own place on the site: its row on /locations, and its storefront (never a stock stand-in).
+        url: `${BASE}${routes.locations.href}#${c.id}`,
+        ...(c.photo.placeholder ? {} : { image: new URL(c.photo.src.src, BASE).href }),
       })),
     ],
   };

@@ -1,5 +1,7 @@
 // The pour on the page: every .btn's liquid (src/lib/pour.ts) drawn as a clip-path on its .btn__pour,
 // the layer that carries BtnLabel's copy of the label, so the words turn over exactly at the surface.
+// The pointer's x goes with every hover, press and leave, so the stream lands by the wall the pointer
+// came in at (the further in it came, the further in it lands) and a drain runs out by the one it left.
 // Delegated from the document in the capture phase (a component that stops an event can't hide it),
 // so a button rendered later (the runner's, the hero's reprint) needs nothing. One frame loop for all
 // of them, and only while one is moving: at rest a pill is either empty (no inline clip, the
@@ -52,7 +54,9 @@ export function bindPour(): () => void {
   const get = (el: HTMLElement) => {
     let b = btns.get(el);
     if (!b) {
-      b = { el, sim: pour(el.offsetWidth, el.offsetHeight), hover: false, press: false, focus: false, clip: "empty" };
+      // Each pill rolls its own dice, so no two pills (and no two visits) pour alike.
+      const seed = (Math.random() * 2 ** 32) >>> 0;
+      b = { el, sim: pour(el.offsetWidth, el.offsetHeight, seed), hover: false, press: false, focus: false, clip: "empty" };
       btns.set(el, b);
     }
     return b;

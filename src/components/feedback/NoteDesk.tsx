@@ -260,6 +260,8 @@ export function NoteDesk() {
       {/* The café's side: whom the note goes to, its photo, and the café's voice. */}
       <div className="fb-stage" ref={stageRef}>
         <div className="fb-stage__stick">
+          {/* Whom the note goes to, once a café is circled: its street and status. Empty, the line keeps
+              its height, so the photo never jumps. */}
           <p className="fb-stage__cafe label">
             {cafe ? (
               <>
@@ -268,11 +270,7 @@ export function NoteDesk() {
                 <CafeStatus cafe={cafe} />
               </>
             ) : (
-              CITIES.map((c) => (
-                <span key={c} data-city-only={c}>
-                  {typograf(t.feedback.all(t.city[c]))}
-                </span>
-              ))
+              "\u00a0"
             )}
           </p>
 

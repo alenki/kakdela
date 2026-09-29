@@ -85,8 +85,11 @@ export const photos = {
   vishnevyjPirog: { src: vishnevyjPirog, alt: "Вишнёвый пирог с шариком мороженого" },
   cafeBajsultanova1: { src: cafeBajsultanova1, alt: "Фасад кофейни с верандой на улице Байсултанова, 1", sign: { x: 0.588, y: 0.202, w: 0.563 } },
   cafeLermontova59: { src: cafeLermontova59, alt: "Интерьер кофейни на улице Лермонтова, 59: вывеска «Как дела?» над баром", sign: { x: 0.298, y: 0.343, w: 0.44 } },
-  // The same photo, cut down to the kitchen door at the back of the room (the about page's opening).
-  kitchenDoor: { src: cafeLermontova59, alt: "Дверь кухни в кофейне на улице Лермонтова, 59 с надписью «Как дела на кухне?»" },
+  // The same photo, the room behind the about page's opening door: the bar's sign and the kitchen door.
+  lermontova59Room: {
+    src: cafeLermontova59,
+    alt: "Кофейня на улице Лермонтова, 59: вывеска «Как дела?» над баром и дверь кухни с надписью «Как дела на кухне?»",
+  },
   cafeLenina32: { src: cafeLenina32, alt: "Кофейня на проспекте Ленина, 32", sign: { x: 0.45, y: 0.525, w: 0.594 } },
   cafeShogencukova14: { src: cafeShogencukova14, alt: "Кофейня на проспекте Шогенцукова, 14", sign: { x: 0.688, y: 0.325, w: 0.36 } },
   cafeAtazhukina10v: { src: cafeAtazhukina10v, alt: "Кофейня с верандой на улице Атажукина, 10В", sign: { x: 0.416, y: 0.288, w: 0.325 } },
@@ -101,7 +104,7 @@ export const photos = {
   team2: { src: team2, alt: "Холодный кофе наливают из бутылки в фирменный стакан «Как дела?» со льдом" },
   team3: { src: team3, alt: "Бариста в фартуке держит холдер со свежемолотым кофе у кофемолки" },
   team4: { src: team4, alt: "Гость в зелёном свитере держит фирменный стакан «Как дела?»" },
-  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19", sign: { x: 0.405, y: 0.308, w: 0.76 } },
+  cafeShogencukova19: { src: cafeShogencukova19, alt: "Вывеска «Как дела?» над стеклянной витриной кофейни на проспекте Шогенцукова, 19", sign: { x: 0.405, y: 0.308, w: 0.76 }, thumb: { x: 0.75, y: 0.5 } },
   // /menu kitchen card thumbnails (client)
   ovsyanayaKasha: { src: ovsyanayaKasha, alt: "Овсяная каша с бананом, клубникой и голубикой" },
   risovayaKasha: { src: risovayaKasha, alt: "Рисовая каша с клубникой и голубикой" },

@@ -5,18 +5,13 @@ import { CitySwitch } from "@/components/chrome/CitySwitch";
 import { CafeStatus } from "@/components/chrome/CafeStatus";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
+import { splitAddress } from "@/components/locations/address";
 import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { LocationsController } from "./locations/LocationsController";
 import { NearestButton, type NearPoint } from "./locations/NearestButton";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
-
-/** «ул.» stays quieter than the street: the name is what a guest reads on the sign. */
-function splitAddress(address: string) {
-  const m = /^(ул\.|пр\.)\s+(.+)$/.exec(address);
-  return m ? { pre: m[1], rest: m[2] } : { pre: "", rest: address };
-}
 
 /** «Все завтраки · летняя веранда»: the tags are stored lowercase, the line reads in sentence case. */
 function features(tags: string[]) {

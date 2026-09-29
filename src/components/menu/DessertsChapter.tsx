@@ -1,55 +1,40 @@
 import { chapterById } from "@/content/full-menu";
-import { RouteLink } from "@/components/chrome/RouteLink";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { ChapterHead } from "./ChapterHead";
-import { Vitrine } from "./MenuCard";
-import { ThirdRow } from "./MenuRows";
+import { rowsOf } from "./model";
+import { CategoryHead, ChapterHead, DishCard } from "./Rows";
+
+/** A vitrine card: three across from 1024px (four columns each), two on a tablet; a phone sets it as a row. */
+const CARD = "(min-width: 1024px) 31vw, (min-width: 640px) 46vw, 128px";
 
 /**
- * «Десерты» / «К кофе что-нибудь?», on ink: the page goes to night, as the homepage does. The three house
- * desserts in thirds, as the homepage evening sets them, then the rest as the vitrine (a thumbnail beside
- * every row) on the same thirds, and the way home or to a café.
+ * «Десерты» / «К кофе что-нибудь?»: the night chapter, on ink, as the homepage's evening is. A vitrine: shelves of
+ * three, every dessert on its plate at the same spot of its frame, the names, prices and descriptions level
+ * across each shelf. A dessert without a photo is served as its name. The chapter's foot says the menu changes.
  */
 export function DessertsChapter() {
-  const chapter = chapterById.deserty;
-  const [lead, ...rest] = chapter.categories;
-  const count = chapter.categories.reduce((n, c) => n + c.items.length, 0);
+  const ch = chapterById.deserty;
   const copy = t.menu.chapters.deserty;
-
+  const n = ch.categories.reduce((sum, c) => sum + c.items.length, 0);
   return (
-    <section id="deserty" className="field section-pad mn-ch mn-ch--desserts" data-theme="ink" aria-labelledby="deserty-title">
+    <section id={ch.id} className="field section-pad mn-ch mn-desserts" data-theme="ink" aria-labelledby={`${ch.id}-title`}>
       <div className="wrap">
-        <ChapterHead id="deserty" q={copy.q} a={copy.a}>
-          {typograf(copy.lead(count))}
+        <ChapterHead id={ch.id} q={copy.q} a={copy.a}>
+          <p className="lead">{typograf(copy.lead(n))}</p>
         </ChapterHead>
-
-        <div id={lead.id} className="mn-sig mn-sig--thirds">
-          <h3 id={`${lead.id}-title`} className="label mn-sig__label" data-mn-rise>
-            {typograf(lead.title)}
-          </h3>
-          <ul className="mn-thirds" role="list" aria-labelledby={`${lead.id}-title`}>
-            {lead.items.map((item) => (
-              <ThirdRow key={item.id} item={item} />
-            ))}
-          </ul>
-        </div>
-
-        {rest.map((c) => (
-          <Vitrine key={c.id} category={c} />
+        {ch.categories.map((cat) => (
+          <section key={cat.id} id={cat.id} className="mn-cat mn-shelf" aria-labelledby={`${cat.id}-title`}>
+            <CategoryHead category={cat} />
+            <ul className="mn-cards mn-cards--vitrine" role="list">
+              {rowsOf(ch, cat).map((row) => (
+                <DishCard key={row.item.id} row={row} sizes={CARD} />
+              ))}
+            </ul>
+          </section>
         ))}
-
-        <div className="mn-foot" data-mn-rise>
-          <p className="dlinks">
-            <RouteLink to="delivery" className="dlink">
-              {typograf(t.breakfasts.links.delivery)}
-            </RouteLink>
-            <RouteLink to="home" hash="gde" className="dlink">
-              {typograf(t.hero.actions.nearest)}
-            </RouteLink>
-          </p>
-          <p className="label mn-note">{typograf(t.menu.note)}</p>
-        </div>
+        <p className="label mn-note" data-mn-rise>
+          {typograf(t.menu.note)}
+        </p>
       </div>
     </section>
   );

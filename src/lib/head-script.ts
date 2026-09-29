@@ -8,6 +8,11 @@
 //   data-said       today's torn answer only (never a guess or an arrow-key preview); read by /menu
 //   data-yesterday  the answer from a previous day
 //   .intro          first visit this session → the hero's tabs sway once and settle
+//   .ld-loading + data-loader   the homepage's loader runs (full | brisk | calm): a fresh load or a
+//                   reload at the top of "/", with no hash and no Save-Data. brisk: a later load this
+//                   session; calm: reduced motion. The loader sways the tabs itself, so no .intro. The
+//                   camera itself is LOADER_SCRIPT (src/components/loader/loader-script.ts); this only
+//                   decides, and kills it if it never starts or runs past 15s.
 // Stored ids are whitelisted: a renamed answer or tampered storage must never reach the page.
 import { answers } from "@/content/answers";
 
@@ -28,7 +33,14 @@ var ids=${IDS},last=null,yd='';try{last=JSON.parse(g('localStorage','kd-last')||
 if(!last||typeof last!=='object'||ids.indexOf(last.id)<0)last=null;
 try{yd=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow'}).format(new Date(Date.now()-864e5))}catch(e){}
 if(last&&last.day===day){ds.answer=last.id;ds.said=last.id}else{if(last&&yd&&last.day===yd)ds.yesterday=last.id;ds.answer=guess;ds.guess='1'}
-if(ds.motion==='full'&&!location.hash&&!g('sessionStorage','kd-intro'))d.classList.add('intro');
+var nav='',sd=false;try{nav=performance.getEntriesByType('navigation')[0].type}catch(e){}
+try{sd=!!navigator.connection.saveData}catch(e){}
+var ld=location.pathname==='/'&&!location.hash&&!sd&&(nav==='navigate'||nav==='prerender'||nav===''||(nav==='reload'&&!(+g('sessionStorage','kd-scroll')>2)));
+if(ld){ds.loader=ds.motion==='reduced'?'calm':g('sessionStorage','kd-intro')?'brisk':'full';d.classList.add('ld-loading');
+var kill=function(){if(window.__kdLoader)window.__kdLoader();else{d.classList.remove('ld-loading','ld-cam','ld-fonts','ld-reveal','ld-measure','ld-wide','ld-tall');delete ds.loader}};
+document.addEventListener('DOMContentLoaded',function(){if(!d.classList.contains('ld-cam'))kill()});window.__kdKill=setTimeout(kill,15000)}
+try{window.addEventListener('pagehide',function(){try{sessionStorage.setItem('kd-scroll',String(Math.round(window.scrollY)))}catch(e){}})}catch(e){}
+if(ds.motion==='full'&&!ld&&!location.hash&&!g('sessionStorage','kd-intro'))d.classList.add('intro');
 setTimeout(function(){d.classList.remove('intro')},2600);
 })();`;
 
@@ -37,5 +49,6 @@ export const PAD_SCRIPT = `(function(){var id=document.documentElement.dataset.a
 
 /** Placed right after the answer panels: the photo on show is the hero's LCP. Its <img> stays lazy
  *  (the other seven must not load), so fetch the same candidate now, at high priority, instead of
- *  after the first layout. A detached Image: the server markup is never touched. */
-export const PHOTO_SCRIPT = `(function(){var id=document.documentElement.dataset.answer;var i=id&&document.querySelector('#hero [data-panel="'+id+'"] img');if(!i||!i.srcset)return;var p=new Image();p.fetchPriority='high';p.sizes=i.sizes;p.srcset=i.srcset;p.src=i.src})();`;
+ *  after the first layout. A detached Image: the server markup is never touched. The loader waits for
+ *  it (window.__kdLcp). */
+export const PHOTO_SCRIPT = `(function(){var id=document.documentElement.dataset.answer;var i=id&&document.querySelector('#hero [data-panel="'+id+'"] img');if(!i||!i.srcset)return;var p=new Image();p.fetchPriority='high';p.sizes=i.sizes;p.srcset=i.srcset;p.src=i.src;window.__kdLcp=p})();`;

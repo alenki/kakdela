@@ -39,7 +39,6 @@ export function Now() {
               <span className="ab-now__say ab-now__say--still">{typograf(t.about.now.fallback)}.</span>
             </span>
           </DialogueHeading>
-          <p className="lead">{typograf(t.about.now.lead)}</p>
         </header>
 
         {/* Decorative: the words under it say the same. */}

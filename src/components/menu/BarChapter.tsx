@@ -1,49 +1,47 @@
 import { chapterById } from "@/content/full-menu";
-import { photos } from "@/content/photos";
-import { Photo } from "@/components/brand/Photo";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
-import { ChapterHead } from "./ChapterHead";
-import { MenuCard } from "./MenuCard";
-import { SignatureRow } from "./MenuRows";
+import { rowsOf } from "./model";
+import { BoardLine, CategoryHead, ChapterHead, DishCard } from "./Rows";
+
+/** A house drink's card: six across from 1024px, three on a tablet, two on a phone. */
+const CARD = "(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 45vw";
 
 /**
- * «Бар» / «Как обычно?». The house signatures as the homepage coffee sets them (one drink photo run out to
- * the left edge beside the list), then the whole bar card in newspaper columns, type only.
+ * «Бар» / «Что будете пить?», in every café. The house drinks first, as cards with their photos (a drink without
+ * one is served as its name); then the rest of the bar as a board of type, the way a café prints it over the
+ * counter: the categories flow down three columns on a desktop, two on a tablet, one on a phone.
  */
 export function BarChapter() {
-  const chapter = chapterById.bar;
-  const [lead, ...rest] = chapter.categories;
+  const ch = chapterById.bar;
   const copy = t.menu.chapters.bar;
-
+  const [house, ...rest] = ch.categories;
   return (
-    <section id="bar" className="field section-pad mn-ch mn-ch--bar" data-theme="cream" aria-labelledby="bar-title">
+    <section id={ch.id} className="field section-pad mn-ch mn-bar" data-theme="cream" aria-labelledby={`${ch.id}-title`}>
       <div className="wrap">
-        <ChapterHead id="bar" q={copy.q} a={copy.a}>
-          {typograf(copy.lead)}
+        <ChapterHead id={ch.id} q={copy.q} a={copy.a}>
+          <p className="lead">{typograf(copy.lead)}</p>
         </ChapterHead>
-
-        <div id={lead.id} className="mn-sig mn-sig--bar">
-          <div className="mn-bar-photo" data-mn-photo>
-            {/* The coffee section's frame: 4:5 on a phone, the source's 3:2 from 480, as tall as the list from 1024. */}
-            <Photo
-              photo={photos.stanciyaMir}
-              aspect="4/5"
-              sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 49vw, (min-width: 480px) 54vw, 100vw"
-              loading="lazy"
-            />
-          </div>
-          <h3 id={`${lead.id}-title`} className="label mn-sig__label" data-mn-rise>
-            {typograf(lead.title)}
-          </h3>
-          <ol className="mn-sig__list" role="list" aria-labelledby={`${lead.id}-title`}>
-            {lead.items.map((item) => (
-              <SignatureRow key={item.id} item={item} />
+        <section id={house.id} className="mn-cat mn-house" aria-labelledby={`${house.id}-title`}>
+          <CategoryHead category={house} />
+          <ul className="mn-cards mn-cards--house" role="list">
+            {rowsOf(ch, house).map((row) => (
+              <DishCard key={row.item.id} row={row} sizes={CARD} />
             ))}
-          </ol>
+          </ul>
+        </section>
+        <div className="mn-board">
+          {rest.map((cat) => (
+            <section key={cat.id} id={cat.id} className="mn-cat mn-board__cat" aria-labelledby={`${cat.id}-title`}>
+              <CategoryHead category={cat} />
+              <ul className="mn-lines" role="list">
+                {rowsOf(ch, cat).map((row) => (
+                  <BoardLine key={row.item.id} row={row} />
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
-
-        <MenuCard categories={rest} />
       </div>
     </section>
   );

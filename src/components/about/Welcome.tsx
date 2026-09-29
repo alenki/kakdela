@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { house, welcomeQuote } from "@/content/about";
-import { cafes } from "@/content/cafes";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { tornSheet } from "@/lib/tear";
@@ -9,7 +8,6 @@ import { t } from "@/i18n";
 
 const note = tornSheet(welcomeQuote.id);
 const noteStyle = { "--rip": note.clip, "--fibres": note.fibres, "--lean": `${note.lean}deg` } as CSSProperties;
-const where = cafes.find((c) => c.id === welcomeQuote.cafeId);
 
 /**
  * «Кому у вас рады?» / «Всем, кто зайдёт.»: the page turns to evening (ink). A guest's own words about
@@ -34,17 +32,6 @@ export function Welcome() {
                 </blockquote>
               </div>
             </div>
-            {where && (
-              <figcaption className="ab-note__who label">
-                <a className="dlink" href={welcomeQuote.sourceUrl} target="_blank" rel="noreferrer">
-                  {typograf(t.about.welcome.said(where.address))}
-                  <span className="dlink__ext" aria-hidden="true">
-                    ↗
-                  </span>
-                  <span className="sr-only"> {t.a11y.newTab}</span>
-                </a>
-              </figcaption>
-            )}
           </figure>
 
           <div className="ab-house" data-ab-rise>

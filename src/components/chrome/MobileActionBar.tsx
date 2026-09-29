@@ -61,6 +61,7 @@ export function MobileActionBar() {
   const visible = heroGone && !footerIn;
   const home = pathname === "/";
   const onMenu = pathname === "/menu";
+  const onCafes = pathname === "/locations";
   return (
     <AnimatePresence>
       {visible && (
@@ -73,7 +74,8 @@ export function MobileActionBar() {
           exit={{ y: "100%" }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* On /menu, «Меню» goes back to its contents; «Кофейни» is a section of the homepage. */}
+          {/* On /menu, «Меню» goes back to its contents; on /locations, «Кофейни» back to the plan. The homepage keeps
+              its own «Кофейни» section; every other page goes to /locations. */}
           {onMenu ? (
             <a href="#soderzhanie" className="action-bar__btn" aria-current="page">{t.actionBar.menu}</a>
           ) : (
@@ -81,8 +83,10 @@ export function MobileActionBar() {
           )}
           {home ? (
             <a href="#gde" className="action-bar__btn">{t.actionBar.nearest}</a>
+          ) : onCafes ? (
+            <a href="#kofejni" className="action-bar__btn" aria-current="page">{t.actionBar.nearest}</a>
           ) : (
-            <RouteLink to="home" hash="gde" className="action-bar__btn">{t.actionBar.nearest}</RouteLink>
+            <RouteLink to="locations" className="action-bar__btn">{t.actionBar.nearest}</RouteLink>
           )}
           <RouteLink to="delivery" className="action-bar__btn">{t.actionBar.delivery}</RouteLink>
         </m.nav>

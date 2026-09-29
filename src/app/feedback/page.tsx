@@ -21,13 +21,11 @@ export default function FeedbackPage() {
       <main id="main" tabIndex={-1}>
         <section id="zapiska" className="field fb" data-theme="cream" aria-labelledby="fb-title">
           <div className="wrap">
-            {/* The shared section-head layout: the title on cols 1–8, the lead at 9–12 on its last baseline. */}
+            {/* The shared section-head layout: the title on cols 1–8. */}
             <header className="section-head">
               <h1 id="fb-title" className="dlg">
-                <span className="dlg-label label">{t.feedback.label}</span>{" "}
                 <span className="dlg-title display">{typograf(t.feedback.title)}</span>
               </h1>
-              <p className="lead">{typograf(t.feedback.lead)}</p>
             </header>
             <NoteDesk />
           </div>

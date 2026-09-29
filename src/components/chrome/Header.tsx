@@ -4,10 +4,12 @@ import { CurrentLink } from "./CurrentLink";
 import { MenuDialog } from "./MenuDialog";
 import { HeaderBehavior } from "./HeaderBehavior";
 import type { RouteKey } from "@/content/routes";
+import { cn } from "@/lib/format";
 import { t } from "@/i18n";
 
-// The four places, as in «Разделы». Phones keep only «Меню»: the action bar and the dialog carry the rest.
-const PRIMARY: RouteKey[] = ["menu", "locations", "events", "about"];
+// The five places, as in «Разделы». Phones keep only «Меню»: the action bar and the dialog carry the rest.
+// Below 1280px «Главная» steps out as well (the logo is the way home), or the other four wrap.
+const PRIMARY: RouteKey[] = ["home", "menu", "about", "locations", "feedback"];
 const primary = t.nav.links.filter((l) => PRIMARY.includes(l.key));
 
 export function Header() {
@@ -22,7 +24,11 @@ export function Header() {
         <div className="site-header__inner wrap">
           <nav className="site-header__nav" aria-label={t.a11y.mainNav}>
             {primary.map((l) => (
-              <CurrentLink key={l.key} to={l.key} className={l.key === "menu" ? "hdr-link" : "hdr-link hdr-link--wide"}>
+              <CurrentLink
+                key={l.key}
+                to={l.key}
+                className={cn("hdr-link", l.key !== "menu" && "hdr-link--wide", l.key === "home" && "hdr-link--home")}
+              >
                 {l.label}
               </CurrentLink>
             ))}

@@ -36,7 +36,7 @@ export type Phase = "intro" | "play" | "cafe" | "read" | "auto" | "done";
 export type Entry = { n: number; white: string; black: string | null; note: string | null; bad: boolean };
 
 /** What stands on the board, and what is marked on it. */
-type Snapshot = { pos: Position; ids: (string | null)[]; last: Move | null; arrow: Move | null };
+type Snapshot = { pos: Position; ids: (string | null)[]; arrow: Move | null };
 
 export type GameState = Snapshot & {
   pz: Puzzle;
@@ -138,7 +138,7 @@ export function initGame(
 ): GameState {
   const { before, setup, start } = startOf(pz);
   const idsBefore = assignIds(before);
-  const anchor: Snapshot = { pos: start, ids: trackIds(idsBefore, setup), last: setup, arrow: setup };
+  const anchor: Snapshot = { pos: start, ids: trackIds(idsBefore, setup), arrow: setup };
   const base: GameState = {
     ...anchor,
     pz,
@@ -167,7 +167,7 @@ export function initGame(
     for (const u of saved.line) s = advance(s, fromUci(s.pos, u)!);
     return { ...s, phase: "done", grade: saved.grade, arrow: null, restored: true };
   }
-  if (entrance) return { ...base, pos: before, ids: idsBefore, last: null, arrow: null, phase: "intro" };
+  if (entrance) return { ...base, pos: before, ids: idsBefore, arrow: null, phase: "intro" };
   return base;
 }
 
@@ -177,7 +177,7 @@ export function initGame(
  */
 function advance(s: GameState, m: Move): GameState {
   const next = play(s.pos, m);
-  const snap: Snapshot = { pos: next, ids: trackIds(s.ids, m), last: m, arrow: m.piece.c === "b" ? m : null };
+  const snap: Snapshot = { pos: next, ids: trackIds(s.ids, m), arrow: m.piece.c === "b" ? m : null };
   const line = [...s.line, uci(m)];
   if (m.piece.c === "b") {
     const row = s.log.at(-1)!;
@@ -232,7 +232,7 @@ function guestMove(s: GameState, m: Move): GameState {
   const n = s.line.length === 0 ? 1 : 2;
   const after = status(next);
   if (after === "mate") return finish(advance(moved, m), said);
-  const snap = { pos: next, ids: trackIds(s.ids, m), last: m, arrow: null };
+  const snap = { pos: next, ids: trackIds(s.ids, m), arrow: null };
   if (after === "stalemate") {
     const log = capTries([...s.log, { n, white: `${sanRu(s.pos, m)}?`, black: null, note: t.chess.stalemate, bad: true }]);
     return { ...moved, ...snap, log, mistakes: s.mistakes + 1, phase: "read", say: speak(s, `${said} ${t.chess.stalemate}`) };
@@ -258,7 +258,6 @@ function cafe(s: GameState): GameState {
     ...s,
     pos: play(s.pos, reply),
     ids: trackIds(s.ids, reply),
-    last: reply,
     arrow: reply,
     log: capTries(withLast(s.log, row)),
     mistakes: s.mistakes + 1,
@@ -338,7 +337,7 @@ export function reduce(s: GameState, a: Action): GameState {
 }
 
 // ── What the views draw ──
-export type MarkKind = "last" | "sel" | "hint" | "dot" | "ring";
+export type MarkKind = "sel" | "hint" | "dot" | "ring";
 export type BoardVM = {
   pieces: { id: string; c: Color; k: Kind; sq: Sq }[];
   marks: { sq: Sq; kind: MarkKind }[];
@@ -354,7 +353,6 @@ export function boardVM(s: GameState): BoardVM {
     .filter((p): p is BoardVM["pieces"][number] => p !== null)
     .sort((a, b) => a.id.localeCompare(b.id));
   const marks: BoardVM["marks"] = [];
-  if (s.last) marks.push({ sq: s.last.from, kind: "last" }, { sq: s.last.to, kind: "last" });
   const targets = s.selected !== null ? legalMoves(s.pos).filter((m) => m.from === s.selected && (!m.promo || m.promo === "q")) : [];
   if (s.selected !== null) marks.push({ sq: s.selected, kind: "sel" });
   for (const m of targets) marks.push({ sq: m.to, kind: m.captured ? "ring" : "dot" });

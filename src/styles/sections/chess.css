@@ -80,7 +80,6 @@
 }
 
 /* Marks: milk tints under the pieces. The hint is a dashed ring, never mistaken for the focus ring. */
-.mark--last { background: color-mix(in srgb, var(--fg) 11%, transparent); }
 .mark--sel { background: color-mix(in srgb, var(--fg) 22%, transparent); }
 .mark--dot::after,
 .mark--ring::after,

@@ -1,4 +1,5 @@
 import type { RouteKey } from "@/content/routes";
+import type { City } from "@/content/types";
 import { groupDigits, plural } from "@/lib/format";
 import { NBSP } from "@/lib/typograf";
 
@@ -10,6 +11,12 @@ import { NBSP } from "@/lib/typograf";
 
 const cafesCount = (n: number) => `${n} ${plural(n, "кофейня", "кофейни", "кофеен")}`;
 const metres = (n: number) => `${n}${NBSP}м`;
+/** «План Нальчика», «Кофейни Владикавказа»: the cities in the genitive, for /locations and /menu. */
+const cityGen = { nalchik: "Нальчика", vladikavkaz: "Владикавказа" } as const satisfies Record<City, string>;
+/** «в Нальчике», «во Владикавказе»: where a café is, for /locations. */
+const cityIn = { nalchik: "в Нальчике", vladikavkaz: "во Владикавказе" } as const satisfies Record<City, string>;
+/** When every café opens: the status line and the /locations lead say it the same way. */
+const everyDay = "Каждый день с 07:30";
 
 export const ru = {
   meta: {
@@ -32,7 +39,7 @@ export const ru = {
   },
   city: { nalchik: "Нальчик", vladikavkaz: "Владикавказ", count: { nalchik: 7, vladikavkaz: 2 } },
   status: {
-    everyDay: "Каждый день с 07:30",
+    everyDay,
     open: "открыто",
     until: "до",
     closed: "закрыто",
@@ -51,16 +58,16 @@ export const ru = {
     sections: "Разделы",
     close: "Закрыть",
     links: [
+      { key: "home", label: "Главная" },
       { key: "menu", label: "Меню" },
-      { key: "locations", label: "Кофейни" },
-      { key: "events", label: "События" },
       { key: "about", label: "О нас" },
+      { key: "locations", label: "Кофейни" },
+      { key: "feedback", label: "Обратная связь" },
       { key: "delivery", label: "Доставка" },
       { key: "catering", label: "Кейтеринг" },
       { key: "careers", label: "Работа у нас" },
       { key: "bonus", label: "Бонусная карта" },
       { key: "certificates", label: "Сертификаты" },
-      { key: "feedback", label: "Обратная связь" },
     ] satisfies { key: RouteKey; label: string }[],
     halal: "Халяль и намазхана во всех кофейнях",
   },
@@ -107,6 +114,50 @@ export const ru = {
     lead: "Эспрессо, фильтр, альтернатива и авторские напитки. Зёрна берём у обжарщиков, которым мы доверяем.",
     listTitle: "Фирменное",
     links: { menu: "Вся барная карта", delivery: "Доставка через Яндекс Еду" },
+  },
+  // The /menu page: the waiter's «Что будете?», the notice turned over, the table, three chapters.
+  menu: {
+    meta: {
+      title: "Меню кофеен «Как дела?»: завтраки весь день, кофе и десерты",
+      description:
+        "Всё меню «Как дела?» в Нальчике и Владикавказе: завтраки весь день, кофе, чай, лимонады и десерты. Цены для вашего города, объёмы и КБЖУ.",
+    },
+    q: "Меню",
+    a: "Что будете?",
+    lead: "Всё, что мы готовим и варим, с ценами вашего города, объёмами и КБЖУ.",
+    // The notice's back: its tabs and its sheet are the page's contents (the nav's name).
+    contents: "Содержание меню",
+    everywhere: "во всех кофейнях",
+    // «в 3 из 7 кофеен»: after «из N» always the genitive plural; «3 из 7» never breaks.
+    kitchenShare: (n: number, total: number) => `в ${n}${NBSP}из ${total} кофеен`,
+    // In the price slot of a dish served in one city only, while the other city is on show.
+    only: { nalchik: "только в Нальчике", vladikavkaz: "только во Владикавказе" } satisfies Record<City, string>,
+    chapters: {
+      kuhnya: {
+        q: "Кухня",
+        a: "С чего начнём?",
+        // The rest: «в остальных» for several cafés, «в другой» for one, nothing when every café has the kitchen.
+        lead: (n: number, total: number, city: City) =>
+          `Завтраки подаём весь день. Полная кухня есть в ${n}${NBSP}из ${total} кофеен ${cityGen[city]}` +
+          (total - n > 1 ? ", в остальных меню лёгкое." : total - n === 1 ? ", в другой меню лёгкое." : "."),
+      },
+      bar: {
+        q: "Бар",
+        a: "Что будете пить?",
+        lead: "Эспрессо, фильтр и авторские напитки, матча, чаи, лимонады и фреши. Во всех кофейнях по одной цене.",
+      },
+      deserty: {
+        q: "Десерты",
+        a: "К кофе что-нибудь?",
+        lead: (n: number) =>
+          `${n} ${plural(n, "десерт", "десерта", "десертов")} к любому кофе, есть без сахара и без глютена. Во всех кофейнях по одной цене.`,
+      },
+    },
+    ml: (n: string) => `${n}${NBSP}мл`,
+    kcal: (k: string) => `${k}${NBSP}ккал`,
+    // Screen-reader form of a two-size price: «200 мл за 240 ₽, 300 мл за 270 ₽» (prices come from rub()).
+    sizesSpoken: (ml1: number, p1: string, ml2: number, p2: string) => `${ml1}${NBSP}мл за ${p1}, ${ml2}${NBSP}мл за ${p2}`,
+    note: "Состав, КБЖУ и цены иногда меняются: уточняйте в кофейне.",
   },
   locations: {
     q: "Кофейни",
@@ -232,59 +283,6 @@ export const ru = {
         ? `Новый рекорд: ${groupDigits(score)}.`
         : `Стаканчик опрокинулся. Счёт ${groupDigits(score)}, рекорд ${groupDigits(best)}.`,
   },
-  // The /menu page: the waiter's side of the conversation.
-  menu: {
-    meta: {
-      title: "Меню кофеен «Как дела?»: завтраки весь день, кофе и десерты",
-      description:
-        "Всё меню «Как дела?» в Нальчике и Владикавказе: завтраки весь день, кофе, чай, лимонады и десерты. Цены для вашего города, объёмы и КБЖУ.",
-    },
-    q: "Меню",
-    a: "Что будете?",
-    lead: "Всё, что мы готовим и варим, с ценами вашего города, объёмами и КБЖУ.",
-    // The answers index: its accessible name (the visible label is t.hero.q, or t.hero.yesterday).
-    answersNav: "Блюда по ответам",
-    // Under today's torn answer in the index. Never red.
-    today: "ваш ответ сегодня",
-    contents: "Содержание",
-    runNav: "Разделы меню",
-    count: {
-      kuhnya: (n: number) => `${n} ${plural(n, "блюдо", "блюда", "блюд")}`,
-      bar: (n: number) => `${n} ${plural(n, "напиток", "напитка", "напитков")}`,
-      deserty: (n: number) => `${n} ${plural(n, "десерт", "десерта", "десертов")}`,
-    },
-    everywhere: "во всех кофейнях",
-    // «в 3 из 7 кофеен»: after «из N» always the genitive plural; «3 из 7» never breaks.
-    kitchenShare: (n: number, total: number) => `в ${n}${NBSP}из ${total} кофеен`,
-    cityGen: { nalchik: "Нальчика", vladikavkaz: "Владикавказа" },
-    chapters: {
-      kuhnya: {
-        q: "Кухня",
-        a: "С чего начнём?",
-        // The rest: «в остальных» for several cafés, «в другой» for one, nothing when every café has the kitchen.
-        lead: (n: number, total: number, cityGen: string) =>
-          `Завтраки подаём весь день. Полная кухня есть в ${n}${NBSP}из ${total} кофеен ${cityGen}` +
-          (total - n > 1 ? ", в остальных меню лёгкое." : total - n === 1 ? ", в другой меню лёгкое." : "."),
-      },
-      bar: {
-        q: "Бар",
-        a: "Как обычно?",
-        lead: "Эспрессо, фильтр и авторские напитки, матча, чаи, лимонады и фреши. Во всех кофейнях по одной цене.",
-      },
-      deserty: {
-        q: "Десерты",
-        a: "К кофе что-нибудь?",
-        lead: (n: number) =>
-          `${n} ${plural(n, "десерт", "десерта", "десертов")} к любому кофе, есть без сахара и без глютена. Во всех кофейнях по одной цене.`,
-      },
-    },
-    fullKitchen: "Полная кухня",
-    ml: (n: string) => `${n}${NBSP}мл`,
-    kcal: (k: string) => `${k}${NBSP}ккал`,
-    // Screen-reader form of a two-size price: «200 мл за 240 ₽, 300 мл за 270 ₽» (prices come from rub()).
-    sizesSpoken: (ml1: number, p1: string, ml2: number, p2: string) => `${ml1}${NBSP}мл за ${p1}, ${ml2}${NBSP}мл за ${p2}`,
-    note: "Состав, КБЖУ и цены иногда меняются: уточняйте в кофейне.",
-  },
   // «О нас» (/about, src/components/about): the guest asks back, «А у вас как дела?», and the café answers,
   // one chapter at a time. Every heading is an exchange: the guest's question in the thin display voice
   // (`ask`), the café's answer in heavy display (`a`).
@@ -294,18 +292,13 @@ export const ru = {
       description:
         "Девять кофеен «Как дела?» в Нальчике и Владикавказе: откуда название, что мы делаем сами и кому мы рады. Каждый день с 07:30.",
     },
-    label: "О нас",
     // The guest's line. After a tear today it opens with that answer: «Сонно. А у вас как дела?».
     ask: "А у вас как дела?",
     a: "Спасибо, что спросили.",
-    // After the founding line (t.team.lead), in the text face.
-    lead: "Поэтому вопрос у нас везде: на вывесках, в названиях завтраков и даже на двери кухни.",
-    door: "Дверь кухни · ул. Лермонтова, 59",
     now: {
       ask: "А прямо сейчас?",
       // The answer is the part of the day it is in Moscow (t.dayparts). Without JS the page can't know the hour.
       fallback: "Каждый день с 07:30",
-      lead: "Все девять кофеен открываются в 07:30. Время московское, как в Нальчике и Владикавказе.",
       // The ruler: a day from midnight to midnight, the red hand at the minute it is now.
       ruler: "Сутки в кофейнях",
       now: "сейчас",
@@ -313,7 +306,6 @@ export const ru = {
     street: {
       ask: "А где вы?",
       a: "Девять дверей, один вопрос.",
-      lead: "Семь кофеен в Нальчике и две во Владикавказе. Адреса разные, вопрос один.",
       // A café whose photo is still a stand-in: the sign on paper instead of someone else's street.
       soon: "Фото скоро",
       all: "Все кофейни",
@@ -322,7 +314,6 @@ export const ru = {
     own: {
       ask: "Что у вас своё?",
       a: "Голландез, сироп из горных трав и названия.",
-      lead: "Зёрна берём у обжарщиков, которым доверяем. А это делаем сами.",
       hollandaise: {
         name: "Голландез",
         desc: "Собственного приготовления. Под ним бриошь, сёмга и авокадо: это завтрак «10 из 10».",
@@ -341,8 +332,6 @@ export const ru = {
     welcome: {
       ask: "Кому у вас рады?",
       a: "Всем, кто зайдёт.",
-      // Under the guest's words: whose they are.
-      said: (address: string) => `Гость кофейни на ${address}, Яндекс Карты`,
       listLabel: "Что есть в кофейнях",
       everywhere: "во всех кофейнях",
       laptop: "можно с ноутбуком",
@@ -368,6 +357,63 @@ export const ru = {
       dish: "Смотреть в меню",
     },
   },
+  // The /locations page: «Кофейни» / «Где встретимся?», the third line of the conversation (the homepage asks
+  // «Как дела?», the menu «Что будете?»). Reused from elsewhere: the heading's label (t.locations.q), the city
+  // captions (t.city, t.locations.cafesCount), «Какая ближе ко мне?» with its messages and distances
+  // (t.locations.*), «Маршрут», «Позвонить», the line every café shares (t.locations.common), «Всё меню»
+  // (t.notFound.menu) and the share sheet's title (t.meta.cafeName).
+  locationsPage: {
+    meta: {
+      title: "Адреса кофеен «Как дела?» в Нальчике и Владикавказе",
+      description:
+        "Семь кофеен «Как дела?» в Нальчике и две во Владикавказе: адреса на плане города, часы работы, телефоны и маршрут до каждой. Каждый день с 07:30.",
+    },
+    a: "Где встретимся?",
+    // The café answers its own question, in the team's words («в любой из девяти кофеен»).
+    // Each count stays with its city.
+    lead: `В любой из девяти: семь${NBSP}в Нальчике, две${NBSP}во Владикавказе. ${everyDay}.`,
+    // The row's link to the café's reviews: «5,0 · 626 оценок на Яндекс Картах».
+    rating: (score: number, count: number) =>
+      `${score.toFixed(1).replace(".", ",")} · ${groupDigits(count)}${NBSP}${plural(count, "оценка", "оценки", "оценок")} на Яндекс${NBSP}Картах`,
+    plan: {
+      // The print's alt text. The list beside it is the readable version of the plan.
+      label: (city: City, n: number) => `План ${cityGen[city]}: ${cafesCount(n)} «Как дела?»`,
+      // The scale bar: «500 м», «1 км», «1,5 км».
+      scale: (m: number) => (m < 1000 ? metres(m) : `${String(m / 1000).replace(".", ",")}${NBSP}км`),
+      // The guest's mark, only where it falls on the sheet.
+      you: "Вы здесь",
+      // The ODbL credit as openstreetmap.org words it in Russian, linked to its copyright page.
+      credit: "© участники OpenStreetMap",
+    },
+    invite: {
+      // A text button among each row's ways. The question lives in the message, not on the button.
+      label: "Позвать сюда",
+      // The guest's own message, the address as friends say it («Лермонтова, 4»). Not typografed: the site doesn't set it.
+      text: (street: string) => `Встретимся в «Как дела?» на ${street}?`,
+      // No share sheet: the question and the link were copied together.
+      copied: "Скопировано",
+      // Neither the share sheet nor the clipboard worked: the link waits in a field beside the words, selected.
+      shareFailed: "Не получилось отправить. Вот ссылка:",
+      copyFailed: "Не получилось скопировать. Вот ссылка:",
+      linkLabel: "Ссылка для друга",
+    },
+    // The row of the café an invitation opened (/locations?vstrecha#id), in the tag slot. Never red.
+    invited: "вас позвали сюда",
+    invitedAway: (dist: string) => `вас позвали сюда · ${dist}`,
+    invitedFound: (address: string, dist: string) => `Вас позвали на ${address}. Отсюда ${dist}.`,
+    invitedFoundClosed: (address: string, dist: string, open: string) =>
+      `Вас позвали на ${address}. Отсюда ${dist}. Сейчас там закрыто до ${open}.`,
+    // «Какая ближе ко мне?» at night: the nearest café that is still open, and the one that is nearer but closed.
+    nearestOpenTag: (dist: string) => `ближе всех из открытых · ${dist}`,
+    foundOpen: (open: string, dist: string, close: string, closed: string) =>
+      `Ближе всех из открытых: ${open} (${dist}), до ${close}. Кофейня на ${closed} ближе, но уже закрыта.`,
+    foundAllClosed: (address: string, dist: string, open: string) =>
+      `Ближе всех: ${address} (${dist}). Сейчас мы закрыты, откроемся в ${open}.`,
+    // Out of town: which city, and how far (the homepage's «Но это ближе, чем кажется.» plays on its own title).
+    far: (city: City, dist: string) => `Ближайшая кофейня ${cityIn[city]}, до неё ${dist}.`,
+    // The city's chain on the map, under its list (without JS both cities show, so each names its own).
+    onMaps: (city: City) => `Кофейни ${cityGen[city]} на Яндекс${NBSP}Картах`,
+  },
   notFound: {
     label: "Ошибка 404",
     title: "Ещё варим. Загляните чуть позже.",
@@ -388,9 +434,7 @@ export const ru = {
       description:
         "Напишите кофейням «Как дела?» в Нальчике и Владикавказе: благодарность, идея, жалоба или вопрос. Мы читаем каждую записку.",
     },
-    label: "Обратная связь",
     title: "Скажите честно.",
-    lead: "Благодарность, идея, жалоба или вопрос: пишите как есть. Мы читаем каждую записку.",
     // The pad: the form's accessible name, then its printed rows.
     pad: "Записка для кофейни",
     tone: "О чём записка?",
@@ -415,8 +459,7 @@ export const ru = {
       missing: "Без согласия отправить записку не получится.",
       failed: "Не получилось отправить. Попробуйте ещё раз или позвоните в кофейню.",
     },
-    // The café's side: whom the note goes to, and the line to call if it can't wait.
-    all: (city: string) => `Все кофейни · ${city}`,
+    // The café's side: the line to call if it can't wait.
     urgent: "Если срочно",
     // After the café's reply: how it will answer, from the contact left on the note.
     answerBy: { phone: "Ответим по телефону.", email: "Ответим на почту." },
@@ -427,7 +470,7 @@ export const ru = {
     number: (no: string) => `№${NBSP}${no}`,
     // «Есть вопрос»: the café points at the questions already answered.
     asked: "Уже спрашивали",
-    faq: { q: "Вопросы", a: "Уже спрашивали.", lead: "То, о чём гости спрашивают чаще всего." },
+    faq: { q: "Вопросы", a: "Уже спрашивали.", lead: `Что гости спрашивают чаще${NBSP}всего и что мы отвечаем.` },
   },
   // The policy on personal data (/privacy) and the consent (/privacy/consent). Their text is
   // src/content/privacy.ts; these are the pages' own words.

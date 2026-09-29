@@ -5,6 +5,7 @@ import { LOOP_BOX, penLoop } from "./loop";
 import { tornSheet } from "./tear";
 import { cafes } from "@/content/cafes";
 import { cafeReply, faq, noTone, toneById, tones } from "@/content/feedback";
+import { chessEvent } from "@/content/people";
 import { routes } from "@/content/routes";
 import { ru } from "@/i18n/ru";
 
@@ -91,6 +92,23 @@ describe("the café's side", () => {
       expect(item.q.trim()).toBe(item.q);
     }
     expect(routes.feedback).toEqual({ href: "/feedback", status: "live" });
+  });
+  it("says each answer first, in a word or a time", () => {
+    for (const item of faq) {
+      expect(item.short.trim()).toBe(item.short);
+      expect(item.short.split(" ").length).toBeLessThanOrEqual(3);
+      expect(item.a.trim()).toBe(item.a);
+    }
+    expect(new Set(faq.map((x) => x.id)).size).toBe(faq.length);
+  });
+  it("links its entries and the pad both ways", () => {
+    for (const item of faq) expect(item.id).toMatch(/^[a-z0-9-]+$/);
+    const page = readFileSync("src/app/feedback/page.tsx", "utf8");
+    for (const item of faq) {
+      if (item.link && "anchor" in item.link) expect(page).toContain(`id="${item.link.anchor}"`);
+    }
+    // The blitz is answered from the chess section's own words, never a copy of them.
+    expect(faq.find((x) => x.id === "blic")?.a).toContain(chessEvent.when);
   });
 });
 

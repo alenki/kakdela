@@ -21,7 +21,6 @@ export function Own() {
       <div className="wrap">
         <header className="section-head" data-ab-rise>
           <DialogueHeading id="svoyo-title" q={t.about.own.ask} ask={typograf(t.about.own.ask)} a={typograf(t.about.own.a)} />
-          <p className="lead">{typograf(t.about.own.lead)}</p>
         </header>
 
         <ul className="ab-own__list" role="list" data-ab-rise>

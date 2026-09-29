@@ -1,12 +1,14 @@
 import { Fragment } from "react";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { RouteLink } from "@/components/chrome/RouteLink";
+import { LangSwitch } from "@/components/chrome/LangSwitch";
 import { flagship } from "@/content/cafes";
 import { operator } from "@/content/privacy";
 import { external, type RouteKey } from "@/content/routes";
 import type { City } from "@/content/types";
 import { NBSP, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
 import { FooterMotion } from "./footer/FooterMotion";
 
 // Split as in the «Разделы» dialog: the five places set large, the services in the text face.
@@ -23,7 +25,7 @@ const SOCIAL = [
 
 /** The operator as the site's owner: name, ИНН, ОГРН, address and the mailbox for requests, when known. */
 const owner = operator.name
-  ? [operator.name, operator.inn && `ИНН ${operator.inn}`, operator.ogrn && `ОГРН ${operator.ogrn}`, operator.address, operator.email]
+  ? [operator.name, operator.inn && `${EN ? "INN" : "ИНН"} ${operator.inn}`, operator.ogrn && `${EN ? "OGRN" : "ОГРН"} ${operator.ogrn}`, operator.address, operator.email]
       .filter(Boolean)
       .join(" · ")
   : null;
@@ -125,6 +127,8 @@ export function SiteFooter() {
               <RouteLink to="privacy" className="dlink">
                 {t.footer.privacy}
               </RouteLink>
+              {" · "}
+              <LangSwitch className="dlink" long />
             </p>
           </div>
         </div>

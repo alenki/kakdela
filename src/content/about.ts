@@ -70,9 +70,9 @@ export const house: { name: string; where: string }[] = [
   { name: t.about.welcome.house.prayer, where: t.about.welcome.everywhere },
   { name: t.about.welcome.house.wifi, where: t.about.welcome.laptop },
   { name: t.about.welcome.house.english, where: t.about.welcome.everywhere },
-  { name: t.about.welcome.house.kids, where: only(tagged(/детская комната/)) },
-  { name: t.about.welcome.house.verandas, where: t.about.welcome.inCafes(tagged(/веранд/).length) },
-  { name: t.about.welcome.house.blitz, where: only(tagged(/шахматный блиц/)) },
+  { name: t.about.welcome.house.kids, where: only(tagged(/детская комната|kids/)) },
+  { name: t.about.welcome.house.verandas, where: t.about.welcome.inCafes(tagged(/веранд|terrace/).length) },
+  { name: t.about.welcome.house.blitz, where: only(tagged(/шахматный блиц|blitz/)) },
 ];
 
 /** The guest's words over the list: the warmth at the door. */

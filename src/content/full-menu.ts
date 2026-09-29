@@ -26,6 +26,9 @@ import { cafes } from "./cafes";
 import { breakfasts, cherryPie, desserts, extras, signatureDrinks } from "./menu";
 import { photos } from "./photos";
 import type { Answer, Cafe, City, MenuCategory, MenuChapter, MenuChapterId, MenuItem, Photo, Price } from "./types";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { fullMenuEn } from "./en";
 
 // Builders: curated dishes are referenced from menu.ts. An overlay may only ADD what menu.ts lacks (volume,
 // КБЖУ, a description for items without one, `signature`, provenance), never change name, price or copy.
@@ -93,7 +96,7 @@ export const fullMenu: MenuChapter[] = [
           fromBreakfast("10-iz-10", { signature: true, nutrition: { kbju: { k: 609, b: 34.9, zh: 36.8, u: 34 }, verified: false }, seenAt: ALL_KITCHENS, draftNote: "Во Владикавказе (Куйбышева, 3) старый сайт даёт 840 ₽, в menu.ts цена намеренно null: оставлено null." }),
           fromBreakfast("kapitalnyj", { signature: true, nutrition: { kbju: { k: 701, b: 42.5, zh: 39, u: 45 }, verified: false, cities: ["nalchik"], note: "КБЖУ только у нальчикского рецепта. На Куйбышева, 3 другой состав (купаты из филе цыплёнка, французская булка, пармезан, грецкие орехи) и КБЖУ не указано." }, seenAt: ALL_KITCHENS }),
           fromExtra("shakshuka", extras.shakshuka, { desc: "Яйца, томаты, болгарский перец, лук, чеснок, креметте, зелень и французская булка.", nutrition: { kbju: { k: 588, b: 29.2, zh: 33.2, u: 43.2 }, verified: false }, seenAt: ALL_KITCHENS, draftNote: "Во Владикавказе (Куйбышева, 3) старый сайт даёт 550 ₽, в menu.ts цена намеренно null: оставлено null." }),
-          { id: "draniki-s-syomgoj", name: "Драники с сёмгой и яйцом пашот", price: p(null, null), nutrition: { kbju: { k: 603, b: 26, zh: 36.4, u: 43 }, verified: false }, seenAt: ALL_KITCHENS, verify: { verified: false, note: "Цена на старом сайте «0.00 р.» во всех трёх кофейнях: нужна цена. Состав не указан. КБЖУ только в Нальчике." } },
+          { id: "draniki-s-syomgoj", name: "Драники с сёмгой и яйцом пашот", price: p(null, null), nutrition: { kbju: { k: 603, b: 26, zh: 36.4, u: 43 }, verified: false, cities: ["nalchik"] }, seenAt: ALL_KITCHENS, verify: { verified: false, note: "Цена на старом сайте «0.00 р.» во всех трёх кофейнях: нужна цена. Состав не указан. КБЖУ только в Нальчике." } },
         ],
       },
       {
@@ -279,6 +282,9 @@ export const fullMenu: MenuChapter[] = [
     ],
   },
 ];
+
+// The English build lays its words over these (src/content/en), before the helpers below index them.
+if (EN) overlay(fullMenu, fullMenuEn);
 
 // Derived helpers for the page.
 

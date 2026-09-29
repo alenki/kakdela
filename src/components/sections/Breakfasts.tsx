@@ -4,14 +4,14 @@ import { DialogueHeading } from "@/components/type/DialogueHeading";
 import { Photo } from "@/components/brand/Photo";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { CitySwitch } from "@/components/chrome/CitySwitch";
-import { rub } from "@/lib/format";
+import { DECIMAL, rub } from "@/lib/format";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { BreakfastsPreview } from "./breakfasts/BreakfastsPreview";
 import { BreakfastsMotion } from "./breakfasts/BreakfastsMotion";
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
-const dec = (n: number) => String(n).replace(".", ",");
+const dec = (n: number) => String(n).replace(".", DECIMAL);
 const kbju = (k: NonNullable<Breakfast["kbju"]>) => typograf(t.breakfasts.kbju(k.k, dec(k.b), dec(k.zh), dec(k.u)));
 
 /** Both cities are rendered; CSS shows the active one. A city without a price says to ask. */

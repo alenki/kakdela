@@ -131,6 +131,8 @@ html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: 
   pointer-events: none;
 }
 .ab-open__leaf[data-gone] { visibility: hidden; }
+/* The word goes into the room with its door but never out of the heading: transparent, still read. */
+.ab-open__leaf[data-gone] .ab-open__word { visibility: visible; }
 .ab-open__word {
   position: absolute;
   left: calc(var(--open-jamb-em) * 1em);
@@ -142,8 +144,9 @@ html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: 
   position: absolute;
   right: 0.16em;
   top: 50%;
-  width: 0.36em;
-  height: max(2px, 0.012em);
+  width: 0.56em;
+  height: max(2px, 0.024em);
+  border-radius: 0.012em;
   background: currentColor;
   translate: 0 -50%;
   transform-origin: 100% 50%;
@@ -152,12 +155,12 @@ html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: 
 .ab-open__lever::after {
   content: "";
   position: absolute;
-  right: -0.015em;
+  right: -0.03em;
   top: 50%;
-  width: 0.045em;
-  height: 0.16em;
+  width: 0.1em;
+  height: 0.1em;
   translate: 0 -50%;
-  border-radius: 0.015em;
+  border-radius: 0.012em;
   background: currentColor;
 }
 /* Light, not decoration: one flat wash of ink, as much as the leaf has turned from the window (shade() in
@@ -248,15 +251,15 @@ html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: 
 
 /* First paint, with no script: the guest asks (the line from the left), then the super and the story. On a
    fresh load at the top (html[data-knock], DOOR_SCRIPT) the door is shut at first paint, and after a beat
-   the lever dips and it comes ajar, a hair past its rest, on kd.settle. Reduced motion never sees any of it;
+   the lever dips and it drifts ajar off its latch, a heavy leaf slowing to its rest. Reduced motion never sees any of it;
    a visit that isn't fresh opens on the door already ajar. */
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-motion="reduced"]) .ab-open__ask { animation: ab-ask 760ms var(--ease-kd-out) 120ms both; }
   html[data-knock]:not([data-motion="reduced"]) .ab-open__lever { animation: ab-latch 320ms 1080ms backwards; }
   html[data-knock]:not([data-motion="reduced"]) .ab-open__leaf {
-    animation: ab-ajar 1150ms cubic-bezier(0.18, 0.9, 0.32, 1.04) 1240ms backwards;
+    animation: ab-ajar 1300ms cubic-bezier(0.35, 0.45, 0.2, 1) 1240ms backwards;
   }
-  html[data-knock]:not([data-motion="reduced"]) .ab-open__shade { animation: ab-fade 1150ms var(--ease-kd-out) 1240ms backwards; }
+  html[data-knock]:not([data-motion="reduced"]) .ab-open__shade { animation: ab-fade 1300ms var(--ease-kd-out) 1240ms backwards; }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 640px) and (min-aspect-ratio: 4/3) {
   html:not([data-motion="reduced"]) .ab-open__story { animation: ab-up 900ms var(--ease-kd-out) 1400ms both; }
@@ -381,6 +384,9 @@ html[data-daypart="5"] .ab-ruler__part[data-dp="5"] { background-color: color-mi
   white-space: nowrap;
   color: var(--accent-ink);
   transition: left 600ms var(--ease-kd-out);
+}
+:lang(en) .ab-ruler__band::after {
+  content: "now " counter(kd-h, decimal-leading-zero) ":" counter(kd-m, decimal-leading-zero);
 }
 html[data-daypart] .ab-ruler__now,
 html[data-daypart] .ab-ruler__band::after { display: block; }

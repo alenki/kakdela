@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev.mjs",
+    "dev:en": "node scripts/dev-en.mjs",
     "build": "next build",
+    "build:lumako": "node scripts/build-lumako.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

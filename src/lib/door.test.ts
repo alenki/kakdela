@@ -99,7 +99,7 @@ describe("the door's arithmetic", () => {
   it("a word fades before it can smear", () => {
     expect(wordOpacity(DOOR.wordFade[0])).toBe(1);
     expect(wordOpacity(DOOR.wordFade[1])).toBe(0);
-    expect(wordOpacity(0.1)).toBe(0);
+    expect(wordOpacity(0.05)).toBe(0);
   });
 });
 

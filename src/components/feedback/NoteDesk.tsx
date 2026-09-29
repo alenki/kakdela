@@ -16,6 +16,7 @@ import { useKd } from "@/lib/store";
 import { useMotionMode } from "@/lib/motion";
 import { bindLastWord, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
 import { NoteRows, type Edit } from "./NoteRows";
 import { bringIntoView, FLIGHT_S, flyNote } from "./flight";
 
@@ -187,7 +188,7 @@ export function NoteDesk() {
             {/* For robots only: a person never sees it, a robot fills it in and is thanked and dropped. */}
             <div className="fb-hp" aria-hidden="true">
               <label>
-                Сайт <input name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+                {EN ? "Website" : "Сайт"} <input name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
               </label>
             </div>
             <div className="fb-sheet__foot">

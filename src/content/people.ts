@@ -1,6 +1,9 @@
 import { photos } from "./photos";
 import { yandexReviews } from "./routes";
 import type { Review, TeamMember } from "./types";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { peopleEn } from "./en";
 
 // Verbatim Yandex Maps quotes (trimmed with «…»). `permission` must be confirmed by the client.
 export const reviews: Review[] = [
@@ -74,3 +77,6 @@ export const chessEvent = {
   body: "Несколько туров, партия до десяти минут. Победитель получает сертификат на 5 000 ₽.",
   when: "Даты объявляем в Telegram",
 };
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay({ reviews, team, chessEvent }, peopleEn);

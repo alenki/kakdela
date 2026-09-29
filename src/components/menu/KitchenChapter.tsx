@@ -14,7 +14,8 @@ export function KitchenChapter() {
   const ch = chapterById.kuhnya;
   const copy = t.menu.chapters.kuhnya;
   return (
-    <section id={ch.id} className="mn-ch mn-kitchen" aria-labelledby={`${ch.id}-title`}>
+    // The region is named by the chapter («Кухня»), its heading asks the waiter's question.
+    <section id={ch.id} className="mn-ch mn-kitchen" aria-label={copy.q}>
       <ChapterHead id={ch.id} q={copy.q} a={copy.a}>
         <div className="mn-ch__lead">
           {CITIES.map((c) => {

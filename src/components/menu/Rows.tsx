@@ -18,6 +18,12 @@ function NameLink({ row }: { row: Row }) {
   );
 }
 
+/**
+ * Where a row's price slot shows: everywhere, unless the whole category is served in one city, whose head already
+ * says «только в Нальчике»; then only there (in the other city the name steps back and the slot is empty).
+ */
+const priceCity = (row: Row) => (!row.item.cities && row.category.cities?.length === 1 ? row.category.cities[0] : undefined);
+
 /** The row's own marks: a signature row is set large, a one-city row steps back in the other city. */
 const rowData = (row: Row) => ({
   id: row.item.id,
@@ -25,8 +31,8 @@ const rowData = (row: Row) => ({
   "data-only": onlyCity(row.cities) ?? undefined,
 });
 
-/** Phones and tablets (and every width without JS): the row's own photo, 96 to 128px square. */
-const THUMB = "(min-width: 480px) 128px, 27vw";
+/** Phones and tablets (and every width without JS): the row's own photo, 80 to 112px square (menu.css --mn-thumb). */
+const THUMB = "(min-width: 470px) 112px, 24vw";
 
 /**
  * A kitchen row, set as the homepage's breakfasts are: the name in the display face over its description, the
@@ -41,7 +47,7 @@ export function DishRow({ row }: { row: Row }) {
       <h4 className="mn-row__name mn-name display">
         <NameLink row={row} />
       </h4>
-      <p className="mn-row__price mono">
+      <p className="mn-row__price mono" data-city-only={priceCity(row)}>
         <Price item={item} cities={cities} />
       </p>
       <Desc item={item} className="mn-row__desc" />
@@ -66,7 +72,7 @@ export function DishCard({ row, sizes }: { row: Row; sizes: string }) {
       <h4 className="mn-card__name mn-name display">
         <NameLink row={row} />
       </h4>
-      <p className="mn-card__price mono">
+      <p className="mn-card__price mono" data-city-only={priceCity(row)}>
         <Price item={item} cities={cities} />
       </p>
       <Desc item={item} className="mn-card__desc" />
@@ -83,7 +89,7 @@ export function BoardLine({ row }: { row: Row }) {
       <h4 className="mn-line__name mn-name display">
         <NameLink row={row} />
       </h4>
-      <p className="mn-line__price mono">
+      <p className="mn-line__price mono" data-city-only={priceCity(row)}>
         <Price item={item} cities={cities} />
       </p>
       <Desc item={item} className="mn-line__desc" />

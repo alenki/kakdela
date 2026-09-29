@@ -143,3 +143,10 @@ next-env.d.ts
 .playwright-mcp/
 test-results/
 playwright-report/
+
+# Static build for lumako.ru/kakdela (npm run build:lumako)
+kakdela-lumako.zip
+
+# the English build's own folders (npm run dev:en, build:lumako)
+/.next-en/
+/out-ru/

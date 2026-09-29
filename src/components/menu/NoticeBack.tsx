@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { cafes } from "@/content/cafes";
 import { fullMenu } from "@/content/full-menu";
 import type { City, MenuChapter, Price } from "@/content/types";
 import { rub } from "@/lib/format";
@@ -6,15 +7,15 @@ import { tornEdge } from "@/lib/tear";
 import { keepWhole, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { answerDishes, CITIES, flipStub, servedAt } from "./model";
-import { cafes } from "@/content/cafes";
 
-/** A tab's price in the city on show; none where the dish has no price there yet (its row says to ask). */
+/** A tab's price in the city on show. Where the dish has no price there yet the tab is too narrow for «уточняйте в
+ *  кофейне»: the slot stays empty and only a screen reader hears it (the dish's row says it to everyone). */
 function TabPrice({ price }: { price: Price }) {
   return CITIES.map((c) => {
     const v = price[c];
     return (
       <span key={c} data-city-only={c}>
-        {v != null ? rub(v) : ""}
+        {v != null ? rub(v) : <span className="sr-only">{typograf(t.hero.askLater)}</span>}
       </span>
     );
   });
@@ -45,6 +46,8 @@ function Where({ chapter }: { chapter: MenuChapter }) {
 export function NoticeBack() {
   return (
     <nav id="soderzhanie" className="mn-back" aria-label={t.menu.contents} data-mn-back>
+      {/* The tabs and the perforation are one strip of the paper, as the front's pad is (one shadow). */}
+      <div className="mn-back__pad">
       <ul className="mn-tabs" role="list">
         {answerDishes.map(({ answer, item }) => {
           const stub = flipStub(tornEdge(answer.id).stub);
@@ -52,6 +55,8 @@ export function NoticeBack() {
           return (
             <li key={answer.id} className="mn-tab" data-tab={answer.id} style={{ "--stub": stub } as CSSProperties}>
               <a href={`#${item.id}`} className="mn-tab__paper" data-mn-serve={item.id}>
+                {/* The answer this dish stands for is on the front of the tab (and on the table's slip): heard first. */}
+                <span className="sr-only">{answer.label}: </span>
                 <span className="mn-tab__face">
                   <span className="mn-tab__name display">{keepWhole(typograf(item.name))}</span>
                   {price && (
@@ -60,14 +65,17 @@ export function NoticeBack() {
                     </span>
                   )}
                 </span>
-                {/* Read only once the tab is torn (pick-script.ts): «Эспрессо-тоник, оторвано». */}
-                <span className="mn-tab__torn sr-only">, {t.hero.torn}</span>
+                {/* Read only once the tab is torn (pick-script.ts), in place of the face: «Эспрессо-тоник, оторвано». */}
+                <span className="mn-tab__torn sr-only">
+                  {keepWhole(typograf(item.name))}, {t.hero.torn}
+                </span>
               </a>
             </li>
           );
         })}
       </ul>
       <div className="mn-back__perf" aria-hidden="true" />
+      </div>
       <div className="mn-back__sheet">
         {fullMenu.map((ch) => (
           <div key={ch.id} className="mn-toc" data-mn-toc={ch.id}>

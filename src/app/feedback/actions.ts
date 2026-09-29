@@ -5,6 +5,7 @@ import { cafes } from "@/content/cafes";
 import { toneById } from "@/content/feedback";
 import { EDITION_LABEL } from "@/content/privacy";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
 import { checkNote, contactKind, hasErrors, noteNumber, readNote, street, type Channel, type NoteFields, type NoteState } from "@/lib/feedback";
 
 const CAFE_IDS = new Set(cafes.map((c) => c.id));
@@ -27,6 +28,7 @@ async function deliver(id: string, note: NoteFields, channel: Channel | null): P
   const text = [
     `Записка № ${noteNumber(id)} (${id})`,
     `Отправлена: ${moscowTime.format(new Date())}, время московское`,
+    ...(EN ? ["Язык записки: английский (английская версия сайта)"] : []),
     `Тема: ${tone ?? "не отмечена"}`,
     `Кофейня: ${cafe ? `${cafe.address} (${t.city[cafe.city]})` : "не отмечена"}`,
     `Подпись: ${note.name || "без подписи"}`,

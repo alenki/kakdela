@@ -6,8 +6,9 @@ import type { City } from "@/content/types";
 import { external } from "@/content/routes";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
 
-export const metadata = { title: "Страница не найдена · «Как дела?»" };
+export const metadata = { title: EN ? "Page not found · “Kak dela?”" : "Страница не найдена · «Как дела?»" };
 
 const CITIES: City[] = ["nalchik", "vladikavkaz"];
 const MAPS: Record<City, string> = { nalchik: external.yandexNalchik, vladikavkaz: external.yandexVladikavkaz };

@@ -67,6 +67,9 @@ import syrokSoSgushchenkoj from "@/assets/photos/syrok-so-sgushchenkoj.jpg";
 import syrokShokoladnyj from "@/assets/photos/syrok-shokoladnyj.jpg";
 import finikiVShokolade from "@/assets/photos/finiki-v-shokolade.jpg";
 import moti from "@/assets/photos/moti.jpg";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { photosEn } from "./en";
 
 export const photos = {
   luchsheVseh: { src: luchsheVseh, alt: "Завтрак «Лучше всех»: глазунья, домашние колбаски, свежие овощи и грибной соус" },
@@ -137,3 +140,6 @@ export const photos = {
   finikiVShokolade: { src: finikiVShokolade, alt: "Финики в молочном шоколаде с фисташковой крошкой" },
   moti: { src: moti, alt: "Разноцветные моти на тарелке" },
 } satisfies Record<string, Photo>;
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay(photos, photosEn);

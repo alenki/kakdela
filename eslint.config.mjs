@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The English dev server's build (next.config.ts, `npm run dev`).
+    ".next-en/**",
   ]),
 ]);
 

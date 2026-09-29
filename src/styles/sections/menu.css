@@ -64,23 +64,35 @@ html:not(.js) .mn-prices__switch { display: none; }
   margin-top: clamp(2rem, 5vh, 3.5rem);
   color: var(--color-ink);
 }
-.mn-tabs,
+/* The tabs and the perforation are one strip, the sheet another, each with the paper's shadow (the front splits
+   its shadow the same way, so it follows a torn tab's stub). */
+.mn-back__pad,
 .mn-back__sheet { filter: drop-shadow(var(--paper-shadow)); }
 .mn-tabs { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .mn-tab { position: relative; height: var(--tab-h); }
+/* The link is the whole tab; its paper is ::before, so a torn tab's paper is clipped to its stub while the link
+   keeps its whole slot and its focus ring. */
 .mn-tab__paper {
   position: absolute;
   inset: 0;
+  /* Its own stacking context with the paper at its bottom, so the focus ring is drawn over the paper. */
+  z-index: 0;
   display: block;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+.mn-tab__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--paper-tex), var(--paper);
   /* Each strip is cut from its neighbour: one hairline between them, the paper's edge around. */
   border-top: 1px solid var(--edge);
   border-right: 1px solid var(--edge);
-  color: var(--color-ink);
   transition: background-color 200ms var(--ease-kd-ui);
-  -webkit-tap-highlight-color: transparent;
 }
-.mn-tab:first-child .mn-tab__paper { border-left: 1px solid var(--edge); }
+.mn-tab:first-child .mn-tab__paper::before { border-left: 1px solid var(--edge); }
 /* The price at the tab's free end, the name read from the foot up, as on the front. */
 .mn-tab__face {
   position: absolute;
@@ -89,10 +101,11 @@ html:not(.js) .mn-prices__switch { display: none; }
   grid-template-rows: auto minmax(0, 1fr);
   justify-items: center;
   padding-block: clamp(10px, 1.6cqi, 1.25rem) clamp(12px, 2.2cqi, 1.75rem);
+  transition: opacity 200ms var(--ease-kd-ui);
 }
 .mn-tab__price {
   grid-row: 1;
-  font-size: clamp(10px, 1.55cqi, 0.9375rem);
+  font-size: clamp(12px, 1.7cqi, 0.9375rem);
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
@@ -110,16 +123,16 @@ html:not(.js) .mn-prices__switch { display: none; }
 /* Once live, the red follows the dish on the table (TableController). */
 .mn-back[data-live] .mn-tab[data-current] { --mn-tab-ink: var(--color-tomato-ink); }
 @media (hover: hover) and (pointer: fine) {
-  .mn-tab__paper:hover { background-color: color-mix(in srgb, var(--paper), var(--color-ink) 3.5%); }
+  .mn-tab__paper:hover::before { background-color: color-mix(in srgb, var(--paper), var(--color-ink) 3.5%); }
 }
 .mn-tab__paper:focus-visible { outline: 2px solid var(--focus); outline-offset: -4px; }
-/* Torn today: only the stub is left (--stub, the front's stub seen from behind), the words go with the tab. */
-.mn-tab__face { transition: opacity 200ms var(--ease-kd-ui); }
+/* Torn today (pick-script.ts): the paper is clipped to its stub (--stub, the front's stub seen from behind) and the
+   words go with the tab. */
 .mn-tab__torn { display: none; }
 /* Below 384px eight across would be under 44px: the tabs hang in two rows of four. */
 @media (max-width: 383.98px) {
   .mn-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .mn-tab:nth-child(4n + 1) .mn-tab__paper { border-left: 1px solid var(--edge); }
+  .mn-tab:nth-child(4n + 1) .mn-tab__paper::before { border-left: 1px solid var(--edge); }
 }
 
 /* The tear line, as on the front. */
@@ -153,6 +166,7 @@ html:not(.js) .mn-prices__switch { display: none; }
 }
 /* The chapter: the display face's thin voice (the question's), tracked caps. */
 .mn-toc__chapter {
+  position: relative;
   font-family: var(--font-display);
   font-size: clamp(1rem, 2.2cqi, 1.75rem);
   font-weight: 300;
@@ -166,11 +180,14 @@ html:not(.js) .mn-prices__switch { display: none; }
 /* «·» between the categories, never at a line's start. */
 .mn-toc__cat:not(:last-child)::after {
   content: "·";
+  content: "·" / "";
   margin-inline: 0.3em;
   font-family: var(--font-display);
   font-weight: 860;
   color: color-mix(in srgb, var(--color-ink) 40%, transparent);
 }
+.mn-toc__link,
+.mn-toc__chapter { scroll-margin-bottom: 12px; }
 .mn-toc__link {
   position: relative;
   line-height: 0.95;
@@ -184,19 +201,22 @@ html:not(.js) .mn-prices__switch { display: none; }
 @media (hover: hover) and (pointer: fine) {
   .mn-toc__link:hover { text-decoration-color: currentColor; }
 }
-/* Touch: a 44px target at any size. */
+/* Touch: a 44px target at any size, and wrapped lines of categories 44px apart, so the targets never overlap. */
 @media (pointer: coarse) {
-  .mn-toc__link::before { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }
+  .mn-toc__link::before,
+  .mn-toc__chapter::before { content: ""; position: absolute; inset: calc(50% - 22px) -4px; }
+  .mn-toc__cats { row-gap: max(0.3em, calc(44px - 0.95em)); }
 }
 /* A category served in the other city only steps back (never hidden: its anchor holds). */
 html:not([data-city="vladikavkaz"]) .mn-toc__cat[data-only="vladikavkaz"] .mn-toc__link,
 html[data-city="vladikavkaz"] .mn-toc__cat[data-only="nalchik"] .mn-toc__link { color: var(--color-graphite); }
 
 /* ═════════════ «Стол»: the table ═════════════
-   One place at the table beside the notice and the kitchen: a 4:5 frame, sticky under the header, as wide as
-   its four columns unless the screen is too short to hold it with its caption. The slides are stacked; the new
-   one fades in on top while the old one waits under it (the homepage breakfasts' crossfade). The answer's slip
-   lies across the photo's top, as the torn tab lies on its dish in the hero. */
+   One place at the table beside the notice and the kitchen: a square frame, so the whole plate is in it and the
+   plate is seen to stand still (and the photos are drawn near their own size), sticky under the header, as wide as
+   its four columns unless the screen is too short to hold it with its caption. The slides are stacked; the new one
+   fades in on top while the old one waits under it (the homepage breakfasts' crossfade). The answer's slip lies
+   across the photo's top, as the torn tab lies on its dish in the hero. */
 .mn-table { display: none; }
 @media (min-width: 1024px) {
   .mn-table { display: block; min-width: 0; container-type: inline-size; }
@@ -211,10 +231,10 @@ html[data-city="vladikavkaz"] .mn-toc__cat[data-only="nalchik"] .mn-toc__link { 
   top: calc(var(--header-h) + var(--mn-top));
   display: grid;
   gap: 1rem;
-  width: min(100cqi, (100svh - var(--header-h) - 2 * var(--mn-top) - var(--mn-cap) - var(--mn-slip) * 0.5) * 0.8);
+  width: min(100cqi, (100svh - var(--header-h) - 2 * var(--mn-top) - var(--mn-cap) - var(--mn-slip) * 0.5) * 1);
 }
 html:not(.js) .mn-table__sticky { width: 100cqi; }
-.mn-table__stage { position: relative; aspect-ratio: 4 / 5; margin-top: calc(var(--mn-slip) * 0.5); }
+.mn-table__stage { position: relative; aspect-ratio: 1 / 1; margin-top: calc(var(--mn-slip) * 0.5); }
 .mn-slide { position: absolute; inset: 0; display: none; opacity: 0; transition: opacity 0s linear 440ms; }
 .mn-table[data-live] .mn-slide[data-near] { display: block; }
 .mn-table[data-live] .mn-slide[data-active] {
@@ -224,6 +244,9 @@ html:not(.js) .mn-table__sticky { width: 100cqi; }
   transition: opacity 440ms var(--ease-kd-out);
 }
 .mn-slide__plate { width: 100%; height: 100%; }
+@keyframes mn-slip-land {
+  from { translate: 0 -26px; scale: 1.05; opacity: 0; }
+}
 .mn-slide__slip {
   position: absolute;
   z-index: 2;
@@ -239,7 +262,7 @@ html:not(.js) .mn-table__sticky { width: 100cqi; }
 .mn-table[data-live] .mn-cap[data-active] { visibility: visible; }
 .mn-cap p { margin: 0; }
 .mn-cap__line { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; font-weight: 500; }
-.mn-cap__price { white-space: nowrap; }
+.mn-cap__price { white-space: nowrap; text-align: right; }
 .mn-cap__reply { font-size: var(--fs-small); color: var(--fg-soft); max-width: 44ch; }
 
 /* ═════════════ Chapters ═════════════ */
@@ -280,8 +303,14 @@ html:not(.js) .mn-table__sticky { width: 100cqi; }
 .mn-name__link::after { content: ""; position: absolute; inset: 0 -0.625rem; z-index: 1; }
 .mn-name__link:focus-visible { outline: none; }
 .mn-name__link:focus-visible::after { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 2px; }
+/* A card has no rules round it: its ring stands just outside it. */
+.mn-card .mn-name__link::after { inset: -0.5rem -0.625rem; }
+/* Below the table a tap on a dish goes nowhere (MenuMotion), so the row doesn't flash as if it had. */
+@media (max-width: 1023.98px) {
+  html.js .mn-name__link { -webkit-tap-highlight-color: transparent; }
+}
 /* The dish the guest came for (/menu#shakshuka): its name in red, the page's one highlight. */
-:target > .mn-name { color: var(--accent-ink); }
+:is(:target, [data-came]) > .mn-name { color: var(--accent-ink); }
 /* A dish served in the other city only steps back: its name in the soft ink, its price slot says where. */
 html:not([data-city="vladikavkaz"]) [data-only="vladikavkaz"] > .mn-name,
 html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg-soft); }
@@ -292,6 +321,11 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 .mn-rows,
 .mn-lines,
 .mn-cards { margin: 0; padding: 0; list-style: none; }
+/* From 1024 a category's rows are as tall as its tallest (the homepage breakfasts' stacked list), their text
+   centred. Narrower, the descriptions wrap to very different lengths: each row keeps its own height. */
+@media (min-width: 1024px) {
+  .mn-rows { display: grid; grid-auto-rows: 1fr; }
+}
 .mn-row {
   position: relative;
   display: grid;
@@ -319,6 +353,8 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 .mn-row__price { grid-area: price; margin: 0; font-weight: 500; text-align: right; white-space: nowrap; }
 .mn-row__price .mn-ask,
 .mn-row__price .mn-only { display: inline-block; max-width: 9.5em; text-align: right; line-height: 1.3; }
+/* «уточняйте / в кофейне» in two short lines, so the dish's name keeps its room on a phone. */
+.mn-row__price .mn-ask { max-width: 6em; }
 .mn-row__desc { grid-area: desc; max-width: 60ch; margin: 0.5rem 0 0; font-size: var(--fs-small); line-height: 1.45; color: var(--fg-soft); }
 .mn-row__facts { grid-area: facts; margin: 0.375rem 0 0; }
 @media (min-width: 640px) {
@@ -331,10 +367,11 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
   .mn-row__price { align-self: center; }
 }
 @media (min-width: 1024px) {
-  .mn-row { padding-block: clamp(1.25rem, 1.6vw, 2.25rem); column-gap: 2rem; scroll-margin-top: calc(var(--header-h) + 34svh); }
+  /* A row shorter than its category's tallest keeps its text centred, level with the price. */
+  .mn-row { align-content: center; padding-block: clamp(1.25rem, 1.6vw, 2.25rem); column-gap: 2rem; scroll-margin-top: calc(var(--header-h) + 34svh); }
   /* The table shows the dish (and its КБЖУ in the caption): the row's own photo goes, КБЖУ stays for screen readers. */
   html.js .mn-row .mn-row__photo { display: none; }
-  html.js .mn-row:has(.mn-row__photo) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name price" "desc price" "facts price"; }
+  html.js .mn-row:has(.mn-row__photo) { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: none; grid-template-areas: "name price" "desc price" "facts price"; }
   html.js .mn-row__facts {
     position: absolute;
     width: 1px;
@@ -354,10 +391,14 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 /* ── The bar ── */
 /* The house drinks: cards, two across on a phone, three on a tablet and a laptop, six from 1280. */
 .mn-cards--house {
+  --mn-shelf-gap: clamp(1.75rem, 3vw, 3rem);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1.75rem, 3vw, 3rem) var(--grid-gap);
+  /* No row gap: in a subgrid it would open between a card's own rows. The space between shelves is the cards'. */
+  row-gap: 0;
+  column-gap: var(--grid-gap);
   margin-top: clamp(1.25rem, 2vw, 2rem);
+  margin-bottom: calc(-1 * var(--mn-shelf-gap));
 }
 @media (min-width: 640px) {
   .mn-cards--house { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -388,6 +429,7 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 /* The house cards are narrow: the price goes under the name. */
 .mn-cards--house .mn-card {
   grid-row: span 5;
+  padding-bottom: var(--mn-shelf-gap);
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: "photo" "name" "price" "desc" "facts";
   grid-template-rows: subgrid;
@@ -396,15 +438,21 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 .mn-cards--house .mn-card__price { text-align: left; margin-top: 0.375rem; }
 
 /* The rest of the bar: a board of type, the categories flowing down the columns. */
-.mn-board { columns: 1; column-gap: calc(var(--grid-gap) * 2); margin-top: clamp(3rem, 5.5vw, 6rem); }
+/* On the 12-column grid: three columns of four (or two of six), the grid's own gap between them. */
+.mn-board { columns: 1; column-gap: var(--grid-gap); margin-top: clamp(3rem, 5.5vw, 6rem); }
 @media (min-width: 640px) {
   .mn-board { columns: 2; }
 }
 @media (min-width: 1024px) {
   .mn-board { columns: 3; }
 }
-.mn-board__cat { break-inside: avoid; padding-bottom: clamp(2.5rem, 4vw, 4.5rem); }
-.mn-board .mn-cat + .mn-cat { margin-top: 0; }
+/* The columns come out even: a long category may carry on at the next column's top, but its head never stands
+   alone at a column's foot and no line is split. */
+
+.mn-board .mn-cat__head { break-after: avoid; break-inside: avoid; }
+.mn-board .mn-line { break-inside: avoid; }
+/* The gap between categories is a margin, which a column's top drops, so the columns balance at every width. */
+.mn-board .mn-cat + .mn-cat { margin-top: clamp(2.5rem, 4vw, 4.5rem); }
 .mn-line {
   position: relative;
   display: grid;
@@ -442,10 +490,13 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 .mn-cards--vitrine .mn-card__photo { align-self: start; margin: 0 0.25rem 0 0; }
 @media (min-width: 640px) {
   .mn-cards--vitrine {
+    --mn-shelf-gap: clamp(2.5rem, 4vw, 4rem);
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--grid-gap);
-    row-gap: clamp(2.5rem, 4vw, 4rem);
+    /* No row gap (it would open inside the subgrid cards): the space between shelves is the cards' own. */
+    row-gap: 0;
     padding-top: clamp(1.5rem, 2.4vw, 2.5rem);
+    margin-bottom: calc(-1 * var(--mn-shelf-gap));
   }
   .mn-cards--vitrine .mn-card {
     grid-row: span 4;
@@ -456,15 +507,25 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
       "desc desc"
       "facts facts";
     grid-template-rows: subgrid;
-    /* The shelf's gap is between the cards; inside a card the rows sit close. */
     row-gap: 0;
-    padding-block: 0;
+    padding-block: 0 var(--mn-shelf-gap);
     border-bottom: 0;
   }
+  /* The ring ends at the card's content, not at the shelf's gap under it. */
+  .mn-cards--vitrine .mn-card .mn-name__link::after { bottom: calc(var(--mn-shelf-gap) - 0.5rem); }
   .mn-cards--vitrine .mn-card__photo { margin: 0 0 0.875rem; }
 }
 @media (min-width: 1024px) {
   .mn-cards--vitrine { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* A dessert without a photo, in type under its shelf (DessertsChapter). */
+@media (min-width: 640px) {
+  .mn-shelf__told { margin-top: clamp(1.5rem, 2.4vw, 2.5rem); border-top: var(--rule) solid var(--line); }
+}
+@media (min-width: 1024px) {
+  .mn-shelf__told { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--grid-gap); border-top: 0; }
+  .mn-shelf__told > .mn-line { border-top: var(--rule) solid var(--line); }
 }
 
 /* ── Placards: a dish without a photo, served as its name on the notice's paper ── */
@@ -508,6 +569,14 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
   .mn-ch { padding-block: 1.5rem; }
   .mn-back__sheet { filter: none; border: 0; padding: 0; }
   .mn-desserts { --bg: #fff; --fg: #000; --fg-soft: #333; }
+  .mn-row:has(.mn-row__photo) { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: none; grid-template-areas: "name price" "desc price" "facts price"; }
+  /* Blocks still waiting to rise (MenuMotion) print as they are. */
+  .mn-row,
+  .mn-line,
+  .mn-card,
+  .mn-cat__head,
+  [data-mn-rise],
+  [data-mn-head] > * { opacity: 1 !important; transform: none !important; }
   .mn-cards--vitrine .mn-card,
   .mn-row,
   .mn-line { break-inside: avoid; }

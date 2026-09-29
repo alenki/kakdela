@@ -67,12 +67,13 @@ export const bindLastWord = (s: string) => s.replace(/ (?=[^ ]+$)/u, NBSP);
 /**
  * Names stay whole (apply after `typograf()`, where a line may carry a dish or a person's answer): a
  * hyphenated word never breaks at its hyphen («Эспрессо-тоник», «По-настоящему»: a word joiner after
- * it), and a name in «ёлочки» up to 32 characters long stays on one line («Как в сказке»). Idempotent.
+ * it), and a name in «ёлочки» (or the English site's “quotes”) up to 32 characters long stays on one line
+ * («Как в сказке», “Like a Dream”). Idempotent.
  */
 export const keepWhole = (s: string) =>
   s
     .replace(/(?<=\p{L})-(?=\p{L})/gu, `-${WJ}`)
-    .replace(/«[^«»]{1,32}»/gu, (m) => m.replace(/\s/gu, NBSP));
+    .replace(/«[^«»]{1,32}»|“[^“”]{1,32}”/gu, (m) => m.replace(/\s/gu, NBSP));
 
 /**
  * A guest's words as a quotation: «…» around them, and a «…» inside (a dish's name) becomes „…“, as

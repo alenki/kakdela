@@ -123,6 +123,7 @@ export function OpeningDoor() {
         const s = pose(p, geo);
         leaf.style.setProperty("--swing", `${s.angle - geo.ajar}deg`);
         word.style.opacity = String(s.word);
+        lever.style.opacity = String(s.word);
         shade.style.opacity = String(s.shade);
         const c = pullCrop(rest, end, anchor, s.e);
         pan.style.transform = `translate(${c.l - rest.l}px, ${c.t - rest.t}px) scale(${c.w / rest.w})`;
@@ -178,6 +179,8 @@ export function OpeningDoor() {
       let raf = 0;
       let last: PointerEvent | null = null;
       let pressed = "";
+      let downX = 0;
+      let downY = 0;
       const onMove = (e: PointerEvent) => {
         if (e.pointerType === "touch" || (e.pointerType === "pen" && e.buttons !== 0)) return;
         last = e;
@@ -191,9 +194,15 @@ export function OpeningDoor() {
         });
       };
       const onLeave = () => liftTo?.(0);
-      const onDown = (e: PointerEvent) => (pressed = e.pointerType);
-      const onClick = () => {
-        if ((pressed !== "mouse" && pressed !== "pen") || !atRest) return;
+      const onDown = (e: PointerEvent) => {
+        pressed = e.pointerType;
+        downX = e.clientX;
+        downY = e.clientY;
+      };
+      // Only a clean single click: a drag or a double click is the guest selecting the heading's word.
+      const onClick = (e: MouseEvent) => {
+        if ((pressed !== "mouse" && pressed !== "pen") || !atRest || e.detail > 1) return;
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) > 4 || String(window.getSelection() ?? "").trim()) return;
         const to = tween.scrollTrigger?.end ?? 0;
         const l = lenis();
         if (l) l.scrollTo(to, { duration: 1.4 });
@@ -227,6 +236,7 @@ export function OpeningDoor() {
         leaf.removeAttribute("data-gone");
         for (const p of ["--swing", "--lift"]) leaf.style.removeProperty(p);
         lever.style.removeProperty("--lever");
+        lever.style.removeProperty("opacity");
         word.style.removeProperty("opacity");
         shade.style.removeProperty("opacity");
         pan.style.removeProperty("transform");

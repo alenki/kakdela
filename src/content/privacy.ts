@@ -8,6 +8,10 @@
 // on a form until it is filled in here (README, «Before production»). The client's lawyer signs off the
 // whole text before launch.
 
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { privacyEn, EDITION_LABEL_EN, consentIntroEn } from "./en/privacy";
+
 /** The operator and its processors, as they are to be published. `null` is a blank to fill in. */
 export const operator = {
   /** Full name of the legal entity or sole trader, e.g. ООО «…» or ИП … */
@@ -47,7 +51,7 @@ export const blankCaption: Record<OperatorField, string> = {
 export const SITE = "www.kakdelacoffee.ru";
 /** The edition both documents carry; the note's mail quotes it as the consent's version. */
 export const EDITION = "2026-09-28";
-export const EDITION_LABEL = "28 сентября 2026 года";
+export const EDITION_LABEL = EN ? EDITION_LABEL_EN : "28 сентября 2026 года";
 
 /** A paragraph, a list under it, or a table. Paragraphs are numbered «3.2.»; lists and tables are not. */
 export type Block =
@@ -226,7 +230,7 @@ export const policy: Clause[] = [
 ];
 
 /** The consent, as the guest's own statement. Its version is the edition; the note's mail quotes it. */
-export const consentIntro = `Отправляя записку через форму «Обратная связь» на сайте ${SITE} и отмечая согласие в этой форме, я свободно, своей волей и в своём интересе даю согласие {name} (ИНН {inn}, ОГРН {ogrn}, адрес: {address}) на обработку моих персональных данных на следующих условиях.`;
+export const consentIntro = EN ? consentIntroEn : `Отправляя записку через форму «Обратная связь» на сайте ${SITE} и отмечая согласие в этой форме, я свободно, своей волей и в своём интересе даю согласие {name} (ИНН {inn}, ОГРН {ogrn}, адрес: {address}) на обработку моих персональных данных на следующих условиях.`;
 
 export const consent: Clause[] = [
   {
@@ -273,3 +277,6 @@ export const consent: Clause[] = [
     body: [`Как оператор обрабатывает и защищает персональные данные, описано в политике: ${SITE}/privacy.`],
   },
 ];
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay({ blankCaption, deviceStorage, brief, policy, consent }, privacyEn);

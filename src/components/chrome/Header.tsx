@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { CurrentLink } from "./CurrentLink";
 import { MenuDialog } from "./MenuDialog";
+import { LangSwitch } from "./LangSwitch";
 import { HeaderBehavior } from "./HeaderBehavior";
 import type { RouteKey } from "@/content/routes";
 import { cn } from "@/lib/format";
@@ -43,6 +44,7 @@ export function Header() {
             <Wordmark variant="badge" className="site-header__mark site-header__mark--badge" octagon={false} cloverClassName="site-header__clover" />
           </Link>
           <div className="site-header__end">
+            <LangSwitch className="hdr-link" />
             <MenuDialog />
           </div>
         </div>

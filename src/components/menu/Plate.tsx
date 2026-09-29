@@ -3,7 +3,6 @@ import type { CSSProperties } from "react";
 import type { Photo } from "@/content/types";
 import { coverSizes } from "@/components/brand/Photo";
 import { cn } from "@/lib/format";
-import { keepWhole, typograf } from "@/lib/typograf";
 import { plateCrop, type Aspect } from "./plate-crop";
 
 const pct = (v: number) => `${Math.round(v * 100000) / 1000}%`;
@@ -53,13 +52,13 @@ export function Plate({ id, photo, aspect, sizes, className, loading = "lazy", d
 /**
  * A dish without a photo: its name, set in the display face on the notice's paper, in the photo's frame (the
  * about street's stand-in rule). Never a stock photo and never the logo. Always decorative: the name is read
- * from its row.
+ * from its row, so it is set without no-break spaces and wraps wherever the frame needs.
  */
 export function Placard({ name, aspect, className }: { name: string; aspect: Aspect; className?: string }) {
   const [w, h] = aspect.split("/").map(Number);
   return (
     <figure className={cn("mn-placard", className)} style={{ "--photo-aspect": `${w} / ${h}` } as CSSProperties} aria-hidden="true">
-      <span className="mn-placard__name display">{keepWhole(typograf(name))}</span>
+      <span className="mn-placard__name display">{name}</span>
     </figure>
   );
 }

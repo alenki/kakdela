@@ -6,21 +6,25 @@
  *  Anything narrower or taller is the stack: «Спасибо, что» over the door. about.css repeats it verbatim. */
 export const LINE_MQ = "(min-width: 640px) and (min-aspect-ratio: 4/3)";
 
+/** The build's language (NEXT_PUBLIC_LOCALE, inlined at build time): the English site says «Thanks for | asking.». */
+const EN = process.env.NEXT_PUBLIC_LOCALE === "en";
+
 export const DOOR = {
   // Widths in em of the display face at 860, uppercase, tracked -0.012em, measured in Chromium.
   // Re-measure when the copy, the weight or the face changes (door.test.ts pins what follows from them).
+  // English: «Thanks for» / «asking.», measured the same way.
   /** «спросили.», the word on the leaf. */
-  wordEm: 3.792,
+  wordEm: EN ? 2.599 : 3.792,
   /** The leaf's margin either side of the word. */
   jambEm: 0.1,
   /** The doorway: the word and its margins. */
-  doorEm: 3.992,
+  doorEm: EN ? 2.799 : 3.992,
   /** «Спасибо, что» and the space after it. */
-  wallEm: 4.846,
+  wallEm: EN ? 4.025 : 4.846,
   /** The line gutter to gutter: the wall and the doorway (8.838, with a hair to spare). */
-  lineEm: 8.84,
+  lineEm: EN ? 6.83 : 8.84,
   /** The stack: «Спасибо, что» (4.732) across a phone, with a hair to spare. */
-  stackEm: 4.76,
+  stackEm: EN ? 3.94 : 4.76,
   /** The ask across a phone: the longest, «Как в сказке. А у вас как дела?», sets 10.97em at 0.06em. */
   askEm: 11.6,
   /** The face at line-height 1: its cap height, and its baseline from the top of the line. */
@@ -53,11 +57,11 @@ export const DOOR = {
   anchorX: { line: 0.79, stack: 0.8 },
 
   /** The drive's timeline, in its progress: the swing ends, the pull runs, the super changes (and back). */
-  swingTo: 0.62,
-  pullFrom: 0.06,
-  pullTo: 0.8,
-  openAt: 0.8,
-  openBack: 0.76,
+  swingTo: 0.6,
+  pullFrom: 0.04,
+  pullTo: 0.74,
+  openAt: 0.74,
+  openBack: 0.7,
   /** Under this the door is at rest (it lifts to the pointer, a click opens it). */
   restAt: 0.02,
   /** The swing ends this many degrees past edge-on, so the leaf is wholly behind its jamb. */
@@ -67,7 +71,7 @@ export const DOOR = {
   light: [-0.25, -0.35, 0.9] as const,
   shadeMax: 0.22,
   /** The word fades from this share of its flat width to this one, before it can smear. */
-  wordFade: [0.42, 0.2] as const,
+  wordFade: [0.16, 0.09] as const,
 
   /** The invitation (fine pointers): the door eases this many degrees wider within `reach` px of its free
    *  edge, and the lever dips `lever` times as much. */
@@ -98,19 +102,28 @@ export const SAID_WEIGHT = { tired: 110, meh: 200, hungry: 320, good: 460 } as c
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const rad = (deg: number) => (deg * Math.PI) / 180;
 
-/** kd.inOut (cubic-bezier(.65, 0, .35, 1)), solved for x by bisection. */
-export function kdInOut(t: number): number {
-  const x = clamp01(t);
+/** A CSS cubic-bezier(x1, y1, x2, y2) as a function of 0..1, solved for x by bisection. */
+export function bezier(x1: number, y1: number, x2: number, y2: number) {
   const bez = (s: number, a: number, b: number) => 3 * a * s * (1 - s) ** 2 + 3 * b * s * s * (1 - s) + s ** 3;
-  let lo = 0;
-  let hi = 1;
-  for (let i = 0; i < 40; i++) {
-    const m = (lo + hi) / 2;
-    if (bez(m, 0.65, 0.35) < x) lo = m;
-    else hi = m;
-  }
-  return bez((lo + hi) / 2, 0, 1);
+  return (t: number) => {
+    const x = clamp01(t);
+    let lo = 0;
+    let hi = 1;
+    for (let i = 0; i < 40; i++) {
+      const m = (lo + hi) / 2;
+      if (bez(m, x1, x2) < x) lo = m;
+      else hi = m;
+    }
+    return bez((lo + hi) / 2, y1, y2);
+  };
 }
+
+/** kd.inOut (cubic-bezier(.65, 0, .35, 1)). */
+export const kdInOut = bezier(0.65, 0, 0.35, 1);
+/** The swing: a door already ajar answers the first pixel of a push, then slows into its jamb. */
+export const swingEase = bezier(0.3, 0.2, 0.35, 1);
+/** The pull: it gathers, then settles the sign onto the line. */
+export const pullEase = bezier(0.45, 0, 0.3, 1);
 
 /** Where a point `u` px along the leaf from its hinge lands across the doorway, with the leaf at `deg` and
  *  the eye `eyeX` px across from the hinge, `persp` px away (CSS: rotate y, perspective on the frame). */
@@ -179,13 +192,13 @@ export type Geo = { ajar: number; edge: number; eyeX: number; persp: number; u0:
 /** The door at drive progress `p`: its angle, the word's opacity, its shade, the pull's progress, and
  *  whether it is behind its jamb. */
 export function pose(p: number, g: Geo) {
-  const angle = g.ajar + (g.edge + DOOR.edgeMargin - g.ajar) * kdInOut(p / DOOR.swingTo);
+  const angle = g.ajar + (g.edge + DOOR.edgeMargin - g.ajar) * swingEase(p / DOOR.swingTo);
   const ratio = (projectX(g.u1, angle, g.eyeX, g.persp) - projectX(g.u0, angle, g.eyeX, g.persp)) / (g.u1 - g.u0);
   return {
     angle,
     word: wordOpacity(ratio),
     shade: shade(angle),
-    e: kdInOut((p - DOOR.pullFrom) / (DOOR.pullTo - DOOR.pullFrom)),
+    e: pullEase((p - DOOR.pullFrom) / (DOOR.pullTo - DOOR.pullFrom)),
     gone: angle >= g.edge,
   };
 }

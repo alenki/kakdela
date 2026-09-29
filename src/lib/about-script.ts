@@ -36,7 +36,7 @@ try{nav=performance.getEntriesByType('navigation')[0].type}catch(e){}try{sc=+ses
 if(sd||fc||!(nav==='navigate'||nav==='prerender'||nav===''||(nav==='reload'&&sc<=2)))return;
 var g=function(){var x=0,y=0,e=l;while(e&&e!==s){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent}d.style.setProperty('--open-gx',x+'px');d.style.setProperty('--open-gy',y+'px')};
 ds.knock='1';g();if(document.fonts)document.fonts.ready.then(g);
-var ev=['wheel','touchmove','keydown','scroll'],end=function(){delete ds.knock;for(var i=0;i<ev.length;i++)removeEventListener(ev[i],end,true)};
+var ev=['wheel','touchmove','keydown','scroll'],end=function(e){if(e&&e.type==='scroll'&&e.target!==document)return;delete ds.knock;for(var i=0;i<ev.length;i++)removeEventListener(ev[i],end,true)};
 for(var i=0;i<ev.length;i++)addEventListener(ev[i],end,{capture:true,passive:true});setTimeout(end,3000)}catch(e){}})();`;
 
 /** «А у вас?»: the guest's answer from today (a tear on the notice, or a pick here) is already chosen. */

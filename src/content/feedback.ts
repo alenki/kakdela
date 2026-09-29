@@ -3,6 +3,9 @@ import { external } from "./routes";
 import { chessEvent } from "./people";
 import type { Channel, NoteFields, Tone } from "@/lib/feedback";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { feedbackEn } from "./en";
 
 // «Обратная связь» (/feedback). The note's four tones, in the notice's own words («Всё шик», «Так себе»;
 // «Есть идея» and «Есть вопрос» after «Есть хочу»), each with the question over the note's text, the
@@ -166,3 +169,6 @@ export const faq: FaqItem[] = [
     link: { anchor: "zapiska", label: "Напишите записку" },
   },
 ];
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay({ tones, noTone, faq }, feedbackEn);

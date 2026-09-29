@@ -1,5 +1,8 @@
 import { photos } from "./photos";
 import type { Answer, AnswerId } from "./types";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { answersEn } from "./en";
 
 // The tear-off tabs, in order. Each answer to «Как дела?» is also something on the menu.
 export const answers: Answer[] = [
@@ -79,3 +82,6 @@ export const TIME_GUESS: { from: number; to: number; id: AnswerId }[] = [
   { from: 11, to: 16, id: "luchshe-vseh" },
   { from: 16, to: 24, id: "vsyo-shik" },
 ];
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay(answers, answersEn);

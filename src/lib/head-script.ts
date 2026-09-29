@@ -7,12 +7,14 @@
 //   data-guess="1"  the answer is only a guess
 //   data-said       today's torn answer only (never a guess or an arrow-key preview); read by /menu
 //   data-yesterday  the answer from a previous day
-//   .intro          first visit this session → the hero's tabs sway once and settle
-//   .ld-loading + data-loader   the homepage's loader runs (full | brisk | calm): a fresh load or a
-//                   reload at the top of "/", with no hash and no Save-Data. brisk: a later load this
-//                   session; calm: reduced motion. The loader sways the tabs itself, so no .intro. The
-//                   camera itself is LOADER_SCRIPT (src/components/loader/loader-script.ts); this only
-//                   decides, and kills it if it never starts or runs past 15s.
+//   .intro          first visit this session → the hero's tabs sway once and settle (after the
+//                   loader, when it runs: the page's animations wait under its cover)
+//   .ld-on + data-ld   the loading screen runs (full | brisk | calm) on any route: a fresh load, or a
+//                   reload at the top, seen (not a background tab), no Save-Data, never back/forward.
+//                   brisk: a later load this session; calm: reduced motion. .ld-lock holds the
+//                   scroll unless there is a hash to land on. The screen itself is LOADER_SCRIPT
+//                   (src/components/loader/loader-script.ts); this only decides a load's show, and
+//                   kills it if it never starts or runs past 15s. Page switches decide for themselves.
 // Stored ids are whitelisted: a renamed answer or tampered storage must never reach the page.
 import { answers } from "@/content/answers";
 
@@ -35,13 +37,13 @@ try{yd=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow'}).format(new Da
 if(last&&last.day===day){ds.answer=last.id;ds.said=last.id}else{if(last&&yd&&last.day===yd)ds.yesterday=last.id;ds.answer=guess;ds.guess='1'}
 var nav='',sd=false;try{nav=performance.getEntriesByType('navigation')[0].type}catch(e){}
 try{sd=!!navigator.connection.saveData}catch(e){}
-var ld=location.pathname==='/'&&!location.hash&&!sd&&(nav==='navigate'||nav==='prerender'||nav===''||(nav==='reload'&&!(+g('sessionStorage','kd-scroll')>2)));
-if(ld){ds.loader=ds.motion==='reduced'?'calm':g('sessionStorage','kd-intro')?'brisk':'full';d.classList.add('ld-loading');
-var kill=function(){if(window.__kdLoader)window.__kdLoader();else{d.classList.remove('ld-loading','ld-cam','ld-fonts','ld-reveal','ld-measure','ld-wide','ld-tall');delete ds.loader}};
-document.addEventListener('DOMContentLoaded',function(){if(!d.classList.contains('ld-cam'))kill()});window.__kdKill=setTimeout(kill,15000)}
+var ld=!sd&&(document.visibilityState!=='hidden'||document.prerendering)&&(nav==='navigate'||nav==='prerender'||nav===''||(nav==='reload'&&!(+g('sessionStorage','kd-scroll')>2)));
+if(ld){ds.ld=ds.motion==='reduced'?'calm':g('sessionStorage','kd-intro')?'brisk':'full';d.classList.add('ld-on');if(!location.hash)d.classList.add('ld-lock');
+var kill=function(){if(window.KDLoader)window.KDLoader.finish(true);else{d.classList.remove('ld-on','ld-lock','ld-reveal');delete ds.ld}};
+try{document.addEventListener('DOMContentLoaded',function(){if(!document.getElementById('ld-screen'))kill()})}catch(e){}window.__kdKill=setTimeout(kill,15000)}
 try{window.addEventListener('pagehide',function(){try{sessionStorage.setItem('kd-scroll',String(Math.round(window.scrollY)))}catch(e){}})}catch(e){}
-if(ds.motion==='full'&&!ld&&!location.hash&&!g('sessionStorage','kd-intro'))d.classList.add('intro');
-setTimeout(function(){d.classList.remove('intro')},2600);
+if(ds.motion==='full'&&!location.hash&&!g('sessionStorage','kd-intro'))d.classList.add('intro');
+var un=function(){setTimeout(function(){d.classList.remove('intro')},2600)};try{if(ld)window.addEventListener('kd:loader-done',un);else un()}catch(e){un()}
 })();`;
 
 /** Placed right after the answer pad: checks the radio chosen by the head script, before paint. */

@@ -1,7 +1,7 @@
 // Generates app icons and the Open Graph image from the traced wordmark (no text rendering needed).
 //   src/app/icon.svg            favicon: tomato clover on sky
 //   src/app/apple-icon.png      180×180
-//   src/app/opengraph-image.png 1200×630: wordmark on sky, lace-free and calm
+//   public/og/kakdela.png       1200×630: wordmark on sky, lace-free and calm (the site's link preview, src/lib/og.ts)
 import sharp from "sharp";
 import { readFileSync, writeFileSync } from "node:fs";
 
@@ -37,7 +37,7 @@ ${paths("kak", INK)}${paths("kofe", INK)}${paths("zavtraki", INK)}${paths("dela"
 </g>
 <rect x="80" y="${H - 70 - 6}" width="${W - 160}" height="6" fill="${TOMATO}" transform="rotate(-0.6 600 315)"/>
 </svg>`;
-await sharp(Buffer.from(og)).png().toFile("src/app/opengraph-image.png");
+await sharp(Buffer.from(og)).png().toFile("public/og/kakdela.png");
 // Header letters (К.А.К. + ДЕЛА?) as a static mask image; the header paints it with currentColor.
 // ViewBox matches Wordmark's "compact" variant so the inline octagon + clover overlay lines up.
 const compactVB = "124 325 1671 342";

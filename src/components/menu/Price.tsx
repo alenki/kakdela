@@ -1,5 +1,5 @@
 import type { City, MenuItem } from "@/content/types";
-import { groupDigits, rub } from "@/lib/format";
+import { DECIMAL, groupDigits, rub } from "@/lib/format";
 import { typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { CITIES, onlyCity } from "./model";
@@ -38,8 +38,8 @@ export function Price({ item, cities }: { item: MenuItem; cities: City[] }) {
   ));
 }
 
-/** 85.3 → «85,3»; the source's second decimal (15.44) is kept to one (15,4). */
-const dec = (n: number) => String(Math.round(n * 10) / 10).replace(".", ",");
+/** 85.3 → «85,3» ("85.3" in the English build); the source's second decimal (15.44) is kept to one (15,4). */
+const dec = (n: number) => String(Math.round(n * 10) / 10).replace(".", DECIMAL);
 
 export function kbjuLine(item: MenuItem): string | null {
   const k = item.nutrition?.kbju;
@@ -71,9 +71,18 @@ export function Facts({ item, className, volume = true }: { item: MenuItem; clas
     );
   }
   const sep = vol && kbju ? " · " : "";
+  // Cup sizes are already heard with their prices (Price's «200 мл за 240 ₽…»): here they are for the eye only.
+  const sizes = "sizes" in item.price && item.volume && "sizes" in item.volume;
+  if (sizes && vol && !kbju) {
+    return (
+      <p className={className} aria-hidden="true">
+        {typograf(vol)}
+      </p>
+    );
+  }
   return (
     <p className={className}>
-      {vol && typograf(vol)}
+      {vol && (sizes ? <span aria-hidden="true">{typograf(vol)}</span> : typograf(vol))}
       {kbju && (only ? <span data-city-only={only}>{typograf(sep + kbju)}</span> : typograf(sep + kbju))}
     </p>
   );

@@ -7,7 +7,6 @@ import { Slip } from "@/components/brand/Slip";
 import { BtnLabel } from "@/components/chrome/BtnLabel";
 import { RouteLink } from "@/components/chrome/RouteLink";
 import { PAD_SCRIPT, PHOTO_SCRIPT } from "@/lib/head-script";
-import { LOADER_SCRIPT } from "@/components/loader/loader-script";
 import { tornEdge } from "@/lib/tear";
 import { rub } from "@/lib/format";
 import { keepWhole, typograf } from "@/lib/typograf";
@@ -134,8 +133,6 @@ export function Hero() {
           </a>
         </div>
       </div>
-      {/* The first load's camera (the loader): it needs the hero parsed, and nothing after it. */}
-      <script dangerouslySetInnerHTML={{ __html: LOADER_SCRIPT }} />
       <p className="sr-only" aria-live="polite" data-live />
       <HeroController />
     </section>

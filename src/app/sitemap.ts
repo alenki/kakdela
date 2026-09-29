@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { routes } from "@/content/routes";
 
+export const dynamic = "force-static";
+
 const BASE = "https://www.kakdelacoffee.ru";
 
 // Only live routes are listed; planned pages join as they ship.

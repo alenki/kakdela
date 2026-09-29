@@ -1,3 +1,5 @@
+> **Superseded.** Built instead as a second build of the same code (`NEXT_PUBLIC_LOCALE=en`, base path `/en`): no `[lang]` segment, no proxy, no per-component changes, which also fits the static export. See docs/DEPLOY.md, «English version». The style guide (§6) and the measured-layout list (§7) still apply.
+
 # English version: design
 
 Date: 2026-09-29. Status: draft for the user's review.

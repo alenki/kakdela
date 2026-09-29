@@ -1,8 +1,9 @@
-// Draws the /locations link preview (src/app/locations/opengraph-image.jpg, 1200 × 630): the page's first screen
-// in small, «Где встретимся?» beside the Nalchik plan on its paper. What a friend sees in the chat under
+// Draws the /locations link preview (public/og/locations.jpg, 1200 × 630, see src/lib/og.ts): the page's first
+// screen in small, «Где встретимся?» beside the Nalchik plan on its paper. What a friend sees in the chat under
 // «Встретимся в «Как дела?» на …?». No mark is red: one card goes with every invitation, to any of the nine. Rendered in headless Chromium so the type is the
-// site's own (Sofia Sans Extra Condensed, Montserrat, from Google Fonts).
-// Usage: node scripts/make-plan-card.mjs   (after npm run assets:plans; KD_CHROME overrides the browser path)
+// site's own (Sofia Sans Extra Condensed, Montserrat, from Google Fonts). `--lang en` draws the English site's
+// card, public/og/locations.en.jpg.
+// Usage: node scripts/make-plan-card.mjs [--lang en]   (after npm run assets:plans; KD_CHROME overrides the browser path)
 import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -11,7 +12,12 @@ import { chromium } from "playwright";
 import { projectOn } from "../src/lib/plan-projection.ts";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const OUT = path.join(ROOT, "src/app/locations/opengraph-image.jpg");
+const EN = process.argv.includes("--lang") && process.argv[process.argv.indexOf("--lang") + 1] === "en";
+const OUT = path.join(ROOT, EN ? "public/og/locations.en.jpg" : "public/og/locations.jpg");
+// The page's question and lead (t.locationsPage), as the card sets them.
+const WORDS = EN
+  ? { lang: "en", h1: "Where shall we meet?", p: "Nine “Kak&nbsp;dela?” cafés in&nbsp;Nalchik and&nbsp;Vladikavkaz" }
+  : { lang: "ru", h1: "Где встретимся?", p: "Девять кофеен «Как&nbsp;дела?» в&nbsp;Нальчике и&nbsp;Владикавказе" };
 const EXE = process.env.KD_CHROME ?? "C:/Users/omarh/AppData/Local/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-win64/chrome-headless-shell.exe";
 const file = (rel) => pathToFileURL(path.join(ROOT, rel)).href;
 
@@ -33,7 +39,7 @@ const marks = cafes
   .map((p, i) => `<span class="mk" style="left:${(p.x / 10).toFixed(2)}%;top:${(p.y / 12.5).toFixed(2)}%">${i + 1}</span>`)
   .join("");
 
-const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8">
+const html = `<!doctype html><html lang="${WORDS.lang}"><head><meta charset="utf-8">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Sofia+Sans+Extra+Condensed:wght@860&display=block&subset=cyrillic">
 <style>
 html,body{margin:0}
@@ -49,7 +55,7 @@ p{margin:34px 0 0;font:500 27px/1.4 Montserrat,sans-serif;color:#4a4540;max-widt
 .mk{position:absolute;width:26px;height:26px;translate:-50% -50%;border-radius:50%;background:#141210;color:#fff8ee;box-shadow:0 0 0 2px #fff8ee;display:grid;place-items:center;font:860 17px/1 "Sofia Sans Extra Condensed",sans-serif;padding-top:2px;box-sizing:border-box}
 .foot{height:34px}
 </style></head><body>
-<div class="words"><h1>Где встретимся?</h1><p>Девять кофеен «Как&nbsp;дела?» в&nbsp;Нальчике и&nbsp;Владикавказе</p></div>
+<div class="words"><h1>${WORDS.h1}</h1><p>${WORDS.p}</p></div>
 <div class="sheet"><div class="map"><img src="${file("src/assets/plans/nalchik.svg")}" alt="">${marks}</div><div class="foot"></div></div>
 </body></html>`;
 

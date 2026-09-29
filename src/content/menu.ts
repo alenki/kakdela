@@ -1,5 +1,8 @@
 import { photos } from "./photos";
 import type { Breakfast, Dessert, Drink, Photo, Price } from "./types";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { menuEn } from "./en";
 
 const p = (nalchik: number | null, vladikavkaz: number | null = nalchik): Price => ({ nalchik, vladikavkaz });
 
@@ -144,3 +147,6 @@ export const season = {
   title: "Прекрасное далёко!",
   feature: { name: "Золотой клеверок", price: p(350), photo: photos.zolotojKleverok },
 };
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay({ breakfasts, extras, signatureDrinks, desserts, cherryPie, season }, menuEn);

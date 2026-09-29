@@ -75,6 +75,8 @@
    Re-measure the 8.40 whenever the copy, the weight or the face changes. */
 @media (min-width: 1024px) {
   .coffee__answer { font-size: min(100cqi / 8.69, 13.75rem); }
+  /* The English build's answer, «Coffee is no joke.», sets 5.95em: re-measure with its copy. */
+  .coffee__answer:lang(en) { font-size: min(100cqi / 6.16, 13.75rem); }
 }
 /* The café's reply, the section's one italic moment. */
 .coffee__lead {

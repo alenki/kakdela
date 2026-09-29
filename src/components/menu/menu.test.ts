@@ -44,8 +44,14 @@ describe("/menu: the notice turned over", () => {
       const dish = itemForAnswer[a.id].id;
       expect(MENU_PICK_STYLE).toContain(`html[data-answer="${a.id}"] .mn-table:not([data-live]) .mn-slide[data-key="${dish}"]`);
       expect(MENU_PICK_STYLE).toContain(`html[data-answer="${a.id}"] .mn-back:not([data-live]) .mn-tab[data-tab="${a.id}"]`);
-      expect(MENU_PICK_STYLE).toContain(`html[data-said="${a.id}"] .mn-tab[data-tab="${a.id}"] .mn-tab__paper{clip-path:var(--stub)}`);
+      expect(MENU_PICK_STYLE).toContain(`html[data-said="${a.id}"] .mn-tab[data-tab="${a.id}"] .mn-tab__paper::before{clip-path:var(--stub)}`);
     }
+    // A page opened on a kitchen dish serves that dish before paint, over the answer's.
+    for (const item of tableItems) {
+      expect(MENU_PICK_STYLE).toContain(`.mn-day:has([id="${item.id}"]:target) .mn-table:not([data-live]) .mn-slide[data-key="${item.id}"]`);
+    }
+    // The first dish's slip lands at first paint in full motion only, and never again once landed.
+    expect(MENU_PICK_STYLE).toContain(`html[data-motion="full"][data-answer="sonno"] .mn-table:not([data-landed])`);
     // No answer yet (no JS): the first answer's dish.
     expect(MENU_PICK_STYLE).toContain(`html:not([data-answer]) .mn-table:not([data-live]) .mn-slide[data-key="${answers[0].item.anchor}"]`);
   });

@@ -156,6 +156,10 @@ describe("typograf", () => {
     expect(keepWhole(long)).toBe(long);
     const once = keepWhole(typograf("Эспрессо-тоник «Как в сказке»"));
     expect(keepWhole(once)).toBe(once); // idempotent
+    // The English site's names, and never Russian nested quotes („…“ closes on “, which never opens one here).
+    expect(show(keepWhole("Have a “Sweeter Still” with the “Never Better”"))).toBe("Have a “Sweeter~Still” with the “Never~Better”");
+    const nested = "Взяли „Лучше всех“ и кофе „Клевер“ с собой";
+    expect(keepWhole(nested)).toBe(nested);
   });
   it("binds the last word", () => {
     expect(show(bindLastWord("Бариста варят достойный эспрессо."))).toBe("Бариста варят достойный~эспрессо.");

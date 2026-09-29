@@ -13,6 +13,8 @@ import { DEFAULT_TABLE_ITEM, itemForAnswer } from "@/components/menu/model";
 import { TableController } from "@/components/menu/islands/TableController";
 import { MenuMotion } from "@/components/menu/islands/MenuMotion";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
+import { ogImage } from "@/lib/og";
 
 const { title, description } = t.menu.meta;
 
@@ -20,8 +22,22 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/menu" },
-  // A page's openGraph replaces the layout's whole: the site-wide fields come along.
-  openGraph: { type: "website", locale: "ru_RU", siteName: t.meta.brand, title, description, url: "/menu" },
+  // A page's openGraph replaces the layout's whole: the site-wide fields come along. The card is the page's own
+  // first screen in each language (scripts/make-menu-card.mjs).
+  openGraph: {
+    type: "website",
+    locale: EN ? "en_US" : "ru_RU",
+    siteName: t.meta.brand,
+    title,
+    description,
+    url: "/menu",
+    images: ogImage(
+      "menu.jpg",
+      EN
+        ? "The “Kak dela?” menu: “What will it be?” and the “Never Better” breakfast on the table"
+        : "Меню «Как дела?»: «Что будете?» и завтрак «Лучше всех» на столе",
+    ),
+  },
 };
 
 /** The table's dish for each answer, for the controller (a small map, so the client never loads the menu's data). */

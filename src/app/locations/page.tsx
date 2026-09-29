@@ -8,6 +8,8 @@ import { LocationsMotion } from "@/components/locations/islands/LocationsMotion"
 import { LOCATIONS_PICK_SCRIPT, LOCATIONS_PICK_STYLE } from "@/components/locations/pick-script";
 import { InlineScript } from "@/components/chrome/InlineScript";
 import { t } from "@/i18n";
+import { EN } from "@/i18n/locale";
+import { ogImage } from "@/lib/og";
 
 const { title, description } = t.locationsPage.meta;
 
@@ -16,7 +18,21 @@ export const metadata: Metadata = {
   description,
   alternates: { canonical: "/locations" },
   // A page's openGraph replaces the layout's whole: the site-wide fields come along, for the invitation's preview.
-  openGraph: { type: "website", locale: "ru_RU", siteName: t.meta.brand, title, description, url: "/locations" },
+  // The card is the Nalchik plan with the page's question, in each language (scripts/make-plan-card.mjs).
+  openGraph: {
+    type: "website",
+    locale: EN ? "en_US" : "ru_RU",
+    siteName: t.meta.brand,
+    title,
+    description,
+    url: "/locations",
+    images: ogImage(
+      "locations.jpg",
+      EN
+        ? "A plan of Nalchik with the “Kak dela?” cafés and the question “Where shall we meet?”"
+        : "План Нальчика с кофейнями «Как дела?» и вопрос «Где встретимся?»",
+    ),
+  },
 };
 
 // The third line of the conversation: the homepage asks «Как дела?», the menu «Что будете?», this page «Где

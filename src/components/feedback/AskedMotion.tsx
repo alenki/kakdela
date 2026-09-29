@@ -22,7 +22,7 @@ export function AskedMotion() {
       const rise = { duration: 0.7, ease: "kd.out" };
 
       const head = root.querySelector(".section-head");
-      if (head && head.getBoundingClientRect().top > vh * 0.9) {
+      if (head && head.getBoundingClientRect().top > vh) {
         gsap
           .timeline({ scrollTrigger: { trigger: head, start: "top 88%", once: true } })
           .from(head.children, { ...rise, opacity: 0, y: 20, stagger: 0.06, clearProps: "opacity,transform" });

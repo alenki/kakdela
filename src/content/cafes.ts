@@ -1,5 +1,8 @@
 import { photos } from "./photos";
 import type { Cafe, City } from "./types";
+import { EN } from "@/i18n/locale";
+import { overlay } from "./en/overlay";
+import { cafesEn } from "./en";
 
 // Sources: Yandex Maps org pages (ratings as of 26.09.2026), kakdelacoffee.ru contacts, Telegram.
 // Closing times follow Yandex; three cafés close at 23:00 (old site says 00:00, so verify).
@@ -85,3 +88,6 @@ export const flagship: Record<City, Cafe> = {
 };
 
 export const ratingsTotal = { ratings: 2709, reviews: 1460, min: 4.8, max: 5.0 };
+
+// The English build lays its words over these (src/content/en).
+if (EN) overlay(cafes, cafesEn);

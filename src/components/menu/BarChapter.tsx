@@ -4,8 +4,8 @@ import { t } from "@/i18n";
 import { rowsOf } from "./model";
 import { BoardLine, CategoryHead, ChapterHead, DishCard } from "./Rows";
 
-/** A house drink's card: six across from 1024px, three on a tablet, two on a phone. */
-const CARD = "(min-width: 1024px) 15vw, (min-width: 640px) 30vw, 45vw";
+/** A house drink's card: six across from 1280px, three on a tablet and a laptop, two on a phone. */
+const CARD = "(min-width: 1280px) 15vw, (min-width: 640px) 30vw, 45vw";
 
 /**
  * «Бар» / «Что будете пить?», in every café. The house drinks first, as cards with their photos (a drink without
@@ -17,7 +17,7 @@ export function BarChapter() {
   const copy = t.menu.chapters.bar;
   const [house, ...rest] = ch.categories;
   return (
-    <section id={ch.id} className="field section-pad mn-ch mn-bar" data-theme="cream" aria-labelledby={`${ch.id}-title`}>
+    <section id={ch.id} className="field section-pad mn-ch mn-bar" data-theme="cream" aria-label={copy.q}>
       <div className="wrap">
         <ChapterHead id={ch.id} q={copy.q} a={copy.a}>
           <p className="lead">{typograf(copy.lead)}</p>

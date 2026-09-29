@@ -47,9 +47,9 @@ function Slide({ item }: { item: MenuItem }) {
   return (
     <div className="mn-slide" data-key={item.id}>
       {item.photo ? (
-        <Plate id={item.id} photo={item.photo} aspect="4/5" sizes={SIZES} decorative className="mn-slide__plate" />
+        <Plate id={item.id} photo={item.photo} aspect="1/1" sizes={SIZES} decorative className="mn-slide__plate" />
       ) : (
-        <Placard name={item.name} aspect="4/5" className="mn-slide__plate" />
+        <Placard name={item.name} aspect="1/1" className="mn-slide__plate" />
       )}
       {/* The tab that answers with this dish, landed on its side across the dish, as in the hero. */}
       {answer && <Slip seed={answer.id} label={answer.label} mood={answer.mood} className="mn-slide__slip" />}

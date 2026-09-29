@@ -1,3 +1,4 @@
+import { DECIMAL } from "@/lib/format";
 import type { CSSProperties } from "react";
 import { reviews } from "@/content/people";
 import { cafes } from "@/content/cafes";
@@ -22,7 +23,7 @@ const allReviews: { city: City; href: string }[] = [
 const streetName = (address: string) => address.replace(/^(ул\.|пр\.)\s+/, "");
 
 /** 5 → «5,0». */
-const score = (n: number) => n.toFixed(1).replace(".", ",");
+const score = (n: number) => n.toFixed(1).replace(".", DECIMAL);
 
 /** The most-rated café: its score is the 5,0 on the slip, and the screen reader's line says whose it is. */
 const flagship = cafes.reduce((a, b) => (b.ratingsCount > a.ratingsCount ? b : a));

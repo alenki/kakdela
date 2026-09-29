@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LazyMotion, MotionConfig } from "motion/react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
@@ -106,6 +106,28 @@ function useOsMotionSync() {
   }, []);
 }
 
+type LoaderWindow = { __kdPush?: (href: string) => void; KDLoader?: { arrived: (path: string) => void } };
+
+/**
+ * The loading screen on page switches (docs/CONVENTIONS.md, «До краёв»). Its runtime catches the click on
+ * a link to a page not yet shown, puts its cover up and pushes the route through the router lent here;
+ * each page that arrives is reported back, so it knows when the new one is in.
+ */
+function useLoaderSwitch() {
+  const router = useRouter();
+  const pathname = usePathname();
+  useEffect(() => {
+    const w = window as unknown as LoaderWindow;
+    w.__kdPush = (href) => router.push(href);
+    return () => {
+      delete w.__kdPush;
+    };
+  }, [router]);
+  useEffect(() => {
+    (window as unknown as LoaderWindow).KDLoader?.arrived(pathname);
+  }, [pathname]);
+}
+
 /** The buttons' liquid pour, in full motion only; otherwise the stylesheet's flat level (an instant swap). */
 function usePour(mode: "full" | "reduced") {
   useEffect(() => (mode === "full" ? bindPour() : undefined), [mode]);
@@ -119,6 +141,7 @@ export function Providers({ children }: { children: ReactNode }) {
   useScrollRefresh();
   useFooterCanvas();
   useOsMotionSync();
+  useLoaderSwitch();
   return (
     <MotionConfig reducedMotion={mode === "reduced" ? "always" : "never"}>
       <LazyMotion features={loadFeatures} strict>

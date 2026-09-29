@@ -1,6 +1,6 @@
 // Static build for lumako.ru/kakdela (reg.ru shared hosting, Apache): `npm run build:lumako` -> out/.
-// Built twice: Russian at the root, then the same code with NEXT_PUBLIC_LOCALE=en, nested at out/en (its own
-// .htaccess from postexport serves /kakdela/en/…).
+// Built twice: Russian at the root, then the same code with NEXT_PUBLIC_LOCALE=en, nested at out/en
+// (/kakdela/en/…). No .htaccess in either: see scripts/postexport.mjs.
 import { spawnSync } from "node:child_process";
 import { renameSync, rmSync } from "node:fs";
 

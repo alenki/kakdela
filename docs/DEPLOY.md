@@ -6,16 +6,14 @@ The site ships there as a static export: plain files served by Apache, no Node s
 ```bash
 npm run build:lumako
 ```
-It runs `next build` with `STATIC_EXPORT=1` and `NEXT_PUBLIC_BASE_PATH=/kakdela` (see `next.config.ts`), then `scripts/postexport.mjs`, twice: Russian at `out/`, then English (`NEXT_PUBLIC_LOCALE=en`, `NEXT_PUBLIC_BASE_PATH=/kakdela/en`) nested at `out/en/` with its own `.htaccess`. It leaves the site in `out/` and the same files in `kakdela-lumako.zip`. `npm run build` is unchanged.
+It runs `next build` with `STATIC_EXPORT=1` and `NEXT_PUBLIC_BASE_PATH=/kakdela` (see `next.config.ts`), then `scripts/postexport.mjs`, twice: Russian at `out/`, then English (`NEXT_PUBLIC_LOCALE=en`, `NEXT_PUBLIC_BASE_PATH=/kakdela/en`) nested at `out/en/`. It leaves the site in `out/` and the same files in `kakdela-lumako.zip`. `npm run build` is unchanged.
 
 ## Upload
 1. In the reg.ru panel (ISPmanager, «Менеджер файлов»), open the site root of lumako.ru (usually `www/lumako.ru/`).
-2. Create the folder `kakdela` there, upload `kakdela-lumako.zip` into it and unpack it («Извлечь»), so that `kakdela/index.html` and `kakdela/.htaccess` sit side by side (and `kakdela/en/index.html` beside `kakdela/en/.htaccess`). `.htaccess` is a hidden file: turn on hidden files in the file manager to see it. Delete the zip.
+2. Create the folder `kakdela` there, upload `kakdela-lumako.zip` into it and unpack it («Извлечь»), so that `kakdela/index.html` sits directly in `kakdela/` (and `kakdela/en/index.html` in `kakdela/en/`). Delete the zip.
 3. Open https://lumako.ru/kakdela and https://lumako.ru/kakdela/en. To update, delete the folder's contents and repeat.
 
-`.htaccess` (from `postexport.mjs`) serves `/kakdela/about` from `about.html`, shows the site's 404 page and caches `/_next/static/` for a year. It needs `mod_rewrite`, which reg.ru has on.
-
-The pages don't depend on it. On 2026-09-29 lumako.ru ignored it (`/kakdela/about` answered with a 301 to `/kakdela/about/`, then a 403), so `postexport.mjs` also copies every page into its own folder (`about/index.html`), where Apache's own slash redirect lands, and puts a small first script in each page's `<head>` that keeps that slash out of the address and out of the router. Without `.htaccess` an unknown address shows the host's 404 page instead of the café's, and nothing else changes.
+**No `.htaccess`.** The build ships none, and none should be added under `kakdela/`. On 2026-09-29, while the build still wrote one (rewrites, `DirectorySlash Off`, cache headers, the café's 404), lumako.ru answered the whole site with reg.ru's own 403 page («Доступ к странице запрещен»); deleting it brought the site back. So Apache runs as it does out of the box: `/kakdela/about` gets a 301 to `/kakdela/about/`, and `postexport.mjs` copies every page into its own folder (`about/index.html`) where that redirect lands, and puts a small first script in each page's `<head>` that keeps the slash out of the address and out of the router. An unknown address shows the host's 404 page, not the café's.
 
 ## What differs from a server deployment
 - **The feedback form does not send.** A static host can't run the server action; the form shows the café's «не получилось отправить» reply. It has to stay that way until the 152-ФЗ items in the README are done anyway.

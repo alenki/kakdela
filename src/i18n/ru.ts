@@ -276,7 +276,9 @@ export const ru = {
     paused: "На паузе",
     over: "Стаканчик опрокинулся",
     newBest: "Новый рекорд",
-    hintTouch: "Нажмите на поле, чтобы прыгнуть, или держите палец внизу поля, чтобы пригнуться.",
+    // The two pads under the field on a touch screen (hidden from screen readers: the keys are the controls there).
+    jump: "Прыжок",
+    duck: "Пригнуться",
     // Read once, when a run ends; never during play.
     result: (score: number, best: number, isNew: boolean) =>
       isNew
@@ -292,9 +294,18 @@ export const ru = {
       description:
         "Девять кофеен «Как дела?» в Нальчике и Владикавказе: откуда название, что мы делаем сами и кому мы рады. Каждый день с 07:30.",
     },
-    // The guest's line. After a tear today it opens with that answer: «Сонно. А у вас как дела?».
+    // The guest's line, set in the logo's lettering on two lines («А у вас» over «как дела»): every letter of it
+    // must be one src/lib/lettering.ts draws.
     ask: "А у вас как дела?",
+    // The café's answer, on the sign that hangs from the ask's «?» (broken at its last space: two lines).
     a: "Спасибо, что спросили.",
+    // The sign turned over is the café's door sign: open from 07:30, shut from midnight (Moscow time).
+    sign: {
+      open: "Открыто",
+      openNote: "каждый день с 07:30",
+      closed: "Закрыто",
+      closedNote: "откроемся в 07:30",
+    },
     now: {
       ask: "А прямо сейчас?",
       // The answer is the part of the day it is in Moscow (t.dayparts). Without JS the page can't know the hour.

@@ -10,7 +10,7 @@ import { rubSpoken } from "@/lib/format";
 
 /**
  * «А у вас?»: the guest's pick is remembered as if torn off the notice (kd.answer: the homepage's hero and
- * team, and this page's opening line, all show it); browsing the slips with the arrow keys only previews
+ * team show it); browsing the slips with the arrow keys only previews
  * (kd.preview), as on the notice. The reply is announced («Сонно: Эспрессо-тоник, 290 рублей») and, in full
  * motion, its lines rise in. The markup and the choice itself work without this (about.css).
  */

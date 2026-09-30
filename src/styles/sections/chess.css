@@ -4,7 +4,7 @@
    edge), the board in 6–12, held under the header while the column beside it scrolls. */
 
 .chess {
-  --air: clamp(16px, 3vh, 40px);
+  --air: clamp(16px, 3 * var(--vh), 40px);
 }
 .chess__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
@@ -15,7 +15,7 @@
 .chess__head .lead { margin: 1.25rem 0 0; }
 
 /* The room the board may take: the screen under the header (and the action bar below 1024), with air. */
-.chess__board { --room: calc(100svh - var(--header-h) - 56px - 2 * var(--air)); }
+.chess__board { --room: calc(100 * var(--svh) - var(--header-h) - 56px - 2 * var(--air)); }
 @media (max-width: 639.98px) {
   .chess__board { margin-inline: calc(-1 * var(--gutter)); }
 }
@@ -33,9 +33,9 @@
   .chess__head { grid-row: 1; margin-bottom: 0; }
   .chess__log { grid-row: 2; }
   .chess__controls { grid-row: 3; }
-  .chess__event { grid-row: 4; align-self: end; margin-bottom: clamp(2.5rem, 7vh, 5rem); }
+  .chess__event { grid-row: 4; align-self: end; margin-bottom: clamp(2.5rem, 7 * var(--vh), 5rem); }
   .chess__board {
-    --room: calc(100svh - var(--header-h) - 2 * var(--air));
+    --room: calc(100 * var(--svh) - var(--header-h) - 2 * var(--air));
     grid-column: 6 / -1;
     grid-row: 1 / -1;
     align-self: start;
@@ -150,7 +150,7 @@
 .board__sq:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; border-radius: 0; }
 
 /* ── The transcript: the notation and the café's lines, between hairlines ── */
-.chess__log { margin-top: clamp(1.5rem, 3vh, 2.5rem); }
+.chess__log { margin-top: clamp(1.5rem, 3 * var(--vh), 2.5rem); }
 @media (min-width: 1024px) {
   .chess__log { margin-top: var(--head-gap); }
 }
@@ -199,7 +199,7 @@
 html:not(.js) .chess__controls { display: none; }
 
 /* ── The payoff: the grade lands as the hero's torn tab (Slip, brand.css) ── */
-.chess__payoff { display: grid; justify-items: start; margin-top: clamp(1.5rem, 3vh, 2.5rem); }
+.chess__payoff { display: grid; justify-items: start; margin-top: clamp(1.5rem, 3 * var(--vh), 2.5rem); }
 .chess__slip { margin: 0.15em 0 0.3em; font-size: min(calc(var(--h3) * 1.25), 14cqi); }
 .chess__log { container-type: inline-size; }
 /* It lands from a little above, a touch larger, and settles (the hero's kd.settle). */

@@ -9,7 +9,6 @@ import {
   RESUME_LEAD,
   resumeGrace,
   step,
-  touchZone,
   type Input,
   type Phase,
   type Run,
@@ -19,9 +18,10 @@ import { createDrawer, type Drawer } from "./runner-draw";
 
 /**
  * The runner's controller, loaded only when the game is near (see RunnerIsland). Plain DOM, no React:
- * native input on the stage, the fixed-step loop, auto-pause, the start scroll, the HUD numbers, the
- * record and the announcements. The loop runs only while a run is in play; nothing moves before the
- * guest starts one, and everything stops on pause, off screen, on blur and in a hidden tab.
+ * native input on the stage and the touch pads, the fixed-step loop, auto-pause, the start scroll, the
+ * HUD numbers, the record and the announcements. The loop runs only while a run is in play; nothing
+ * moves before the guest starts one, and everything stops on pause, off screen, on blur and in a hidden
+ * tab.
  */
 
 export type RunnerHandle = { start(): void; pause(): void; resume(): void; destroy(): void };
@@ -33,20 +33,26 @@ const reduced = () => kd.get().motion === "reduced";
 
 const JUMP_KEYS = new Set(["Space", "ArrowUp", "KeyW"]);
 const DUCK_KEYS = new Set(["ArrowDown", "KeyS"]);
+/** What a guest can use on the page: a press on one of these, off the game, leaves it. */
+const USABLE =
+  'a[href], button, input, select, textarea, summary, label, iframe, [contenteditable]:not([contenteditable="false"]), [tabindex]:not([tabindex^="-"])';
 
 export function mountRunner(o: {
   root: HTMLElement;
   stage: HTMLElement;
   canvas: HTMLCanvasElement;
+  pads: HTMLElement;
   score: HTMLElement;
   best: HTMLElement;
   live: HTMLElement;
   onPhase(p: Phase): void;
   onOver(r: { score: number; best: number; isNew: boolean }): void;
 }): RunnerHandle {
-  const { root, stage, canvas } = o;
+  const { root, stage, canvas, pads } = o;
   const html = document.documentElement;
   const input: Input = { jumpPress: false, duck: false, jumpHeld: false };
+  const duckPad = pads.querySelector<HTMLElement>('[data-pad="duck"]');
+  const jumpPad = pads.querySelector<HTMLElement>('[data-pad="jump"]');
 
   let phase: Phase = "idle";
   /** Bumped on every phase change: a key press only counts in the phase it began in. */
@@ -60,17 +66,27 @@ export function mountRunner(o: {
   let begun = false, attempt = 0;
   let fallback = 0, announceTimer = 0;
   let onScrollEnd: (() => void) | null = null;
-  let setGame = false;
 
   let keyDuck = false;
   const duckPointers = new Set<number>();
   /** Jump keys and fingers still down: holding one keeps the cup jumping. */
   const jumpKeys = new Set<string>();
   const jumpPointers = new Set<number>();
-  const syncJumpHeld = () => (input.jumpHeld = jumpKeys.size > 0 || jumpPointers.size > 0);
+  /** A pad shows held while its input is on, whatever holds it: the pad, the field (a jump) or a key. */
+  const syncPads = () => {
+    duckPad?.toggleAttribute("data-down", input.duck);
+    jumpPad?.toggleAttribute("data-down", !!input.jumpHeld);
+  };
+  const syncJumpHeld = () => {
+    input.jumpHeld = jumpKeys.size > 0 || jumpPointers.size > 0;
+    syncPads();
+  };
+  const syncDuck = () => {
+    input.duck = keyDuck || duckPointers.size > 0;
+    syncPads();
+  };
   let down: { code: string; epoch: number; at: number } | null = null;
   let pointerDownAt = -Infinity;
-  let pointerInside = false;
 
   /* ───── HUD, record, announcements ───── */
 
@@ -93,15 +109,29 @@ export function mountRunner(o: {
     o.onPhase(p);
   };
 
+  /**
+   * html[data-game] hides the mobile action bar: while a run is on screen (`inPlay`, from its start until
+   * the stage is half gone), and on a touch screen whenever the pads are on screen, since the bar would
+   * cover them (on a phone on its side the game can't show without the bar over its pads).
+   */
+  let inPlay = false, padsSeen = false, setGame = false;
+  const syncGame = () => {
+    const want = inPlay || padsSeen;
+    if (want && !setGame && html.dataset.game === undefined) {
+      html.dataset.game = "";
+      setGame = true;
+    } else if (!want && setGame) {
+      delete html.dataset.game;
+      setGame = false;
+    }
+  };
   const claimGame = () => {
-    if (html.dataset.game !== undefined) return;
-    html.dataset.game = "";
-    setGame = true;
+    inPlay = true;
+    syncGame();
   };
   const releaseGame = () => {
-    if (!setGame) return;
-    delete html.dataset.game;
-    setGame = false;
+    inPlay = false;
+    syncGame();
   };
 
   const clearInputs = () => {
@@ -112,6 +142,7 @@ export function mountRunner(o: {
     duckPointers.clear();
     jumpKeys.clear();
     jumpPointers.clear();
+    syncPads();
     if (run) releaseAll(run);
   };
 
@@ -188,13 +219,14 @@ export function mountRunner(o: {
     const token = ++attempt;
     begun = false;
     claimGame();
-    // Fit the stage and the controls under it between the header and the bottom of the screen; if
-    // they can't both fit, the stage's top goes just under the header.
+    // Fit the whole game (the field, the note and the buttons, and on a touch screen the pads) between
+    // the header and the bottom of the screen; if it can't all fit, the field's top goes just under the
+    // header.
     const top = headerHeight() + 12, bottom = window.innerHeight - 12;
-    const frame = stage.parentElement ?? stage;
-    const foot = root.querySelector<HTMLElement>(".runner__foot") ?? frame;
-    const a = frame.getBoundingClientRect().top, b = foot.getBoundingClientRect().bottom;
-    const d = b - a > bottom - top ? a - top : a < top ? a - top : b > bottom ? b - bottom : 0;
+    const block = root.getBoundingClientRect();
+    const field = (stage.parentElement ?? stage).getBoundingClientRect().top;
+    const a = block.top, b = block.bottom;
+    const d = b - a > bottom - top ? field - top : a < top ? a - top : b > bottom ? b - bottom : 0;
     if (Math.abs(d) < 1) return begin(token);
     if (reduced()) {
       window.scrollBy({ top: d, behavior: "instant" });
@@ -242,7 +274,7 @@ export function mountRunner(o: {
     attemptStart();
   };
 
-  /* ───── Input on the stage ───── */
+  /* ───── Keys on the stage ───── */
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
@@ -256,7 +288,10 @@ export function mountRunner(o: {
         }
       } else if (DUCK_KEYS.has(e.code)) {
         e.preventDefault();
-        if (begun) input.duck = keyDuck = true;
+        if (begun) {
+          keyDuck = true;
+          syncDuck();
+        }
       } else if (e.code === "Escape" || e.code === "KeyP") {
         e.preventDefault();
         if (!e.repeat) pause(true); // holding P must not flip between pause and play
@@ -275,7 +310,7 @@ export function mountRunner(o: {
     if (phase === "running") {
       if (DUCK_KEYS.has(e.code)) {
         keyDuck = false;
-        input.duck = duckPointers.size > 0;
+        syncDuck();
       } else if (jumpKeys.delete(e.code)) syncJumpHeld();
       return;
     }
@@ -289,21 +324,22 @@ export function mountRunner(o: {
     else start();
   };
 
-  const onPointerDown = (e: PointerEvent) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    pointerDownAt = performance.now();
-    if (document.activeElement !== stage) stage.focus({ preventScroll: true });
-    if (phase !== "running" || !begun) return;
+  /* ───── Presses: the field and the pads ───── */
+
+  /**
+   * A press during a run: a jump (held, the cup jumps again on each landing) or a duck while held. The
+   * pressed element takes the pointer, so a thumb that slides off keeps its press.
+   */
+  const hold = (e: PointerEvent, el: HTMLElement, action: "jump" | "duck") => {
     e.preventDefault();
     try {
-      stage.setPointerCapture(e.pointerId);
+      el.setPointerCapture(e.pointerId);
     } catch {
       /* the pointer may already be gone */
     }
-    const r = stage.getBoundingClientRect();
-    if (touchZone(e.clientY - r.top, r.height) === "duck") {
+    if (action === "duck") {
       duckPointers.add(e.pointerId);
-      input.duck = true;
+      syncDuck();
     } else {
       input.jumpPress = true;
       jumpPointers.add(e.pointerId);
@@ -311,10 +347,28 @@ export function mountRunner(o: {
     }
   };
 
+  // The field jumps wherever it is pressed: ducking is the pad's job (or the keys').
+  const onPointerDown = (e: PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    pointerDownAt = performance.now();
+    if (document.activeElement !== stage) stage.focus({ preventScroll: true });
+    if (phase === "running" && begun) hold(e, stage, "jump");
+  };
+
+  const padOf = (e: Event) => (e.target as Element | null)?.closest<HTMLElement>("[data-pad]") ?? null;
+  const onPadDown = (e: PointerEvent) => {
+    const pad = padOf(e);
+    if (!pad || (e.pointerType === "mouse" && e.button !== 0)) return;
+    pointerDownAt = performance.now();
+    if (phase !== "running" || !begun) return;
+    if (document.activeElement !== stage) stage.focus({ preventScroll: true }); // the keys stay with the game
+    hold(e, pad, pad.dataset.pad === "duck" ? "duck" : "jump");
+  };
+
   const onPointerEnd = (e: PointerEvent) => {
     if (jumpPointers.delete(e.pointerId)) syncJumpHeld();
     if (!duckPointers.delete(e.pointerId)) return;
-    input.duck = keyDuck || duckPointers.size > 0;
+    syncDuck();
     if (e.type !== "pointerup" && duckPointers.size === 0 && run) releaseAll(run);
   };
 
@@ -325,30 +379,50 @@ export function mountRunner(o: {
     if (phase === "paused") resume();
     else start();
   };
+  // Outside a run «Прыжок» is the field's twin; «Пригнуться» only ducks.
+  const onPadClick = (e: MouseEvent) => {
+    if (padOf(e)?.dataset.pad === "jump") onClick();
+  };
+  // A field or a pad held mid-run never opens the long-press menu.
+  const onContextMenu = (e: Event) => {
+    if (phase === "running") e.preventDefault();
+  };
 
   /* ───── Auto-pause: never auto-resume ───── */
 
-  // Focus leaving the game (from the stage or from its buttons) pauses it; moving between them doesn't.
-  const onRootFocusOut = (e: FocusEvent) => {
-    const to = e.relatedTarget as Node | null;
-    if (to && root.contains(to)) return;
-    // Safari doesn't focus a button it clicks (focus drops to nothing): pressing «Пауза» isn't leaving.
-    if (!to && pointerInside) return;
-    pause(false);
-  };
-  // A press on one of the game's buttons, held until its click has been handled. On iOS the pointerup
-  // comes before the (synthetic) mousedown that moves focus, so it is cleared after the click instead.
-  const onRootPointerDown = (e: PointerEvent) => {
-    pointerInside = !!(e.target as Element | null)?.closest("button");
-  };
+  /**
+   * Where the press in progress began: in the game; off it on nothing a guest can use (a finger's or a
+   * pen's near miss); or on something else, and any mouse press off the game. Null while no press is on
+   * (the keyboard or a script moves the focus). Kept until the press's click, since on iOS the focus
+   * moves after the pointerup; forgotten on a cancelled press and on any key.
+   */
+  let press: "game" | "near" | "away" | null = null;
   const onWindowPointerDown = (e: PointerEvent) => {
-    if (!root.contains(e.target as Node)) pointerInside = false;
+    const el = e.target instanceof Element ? e.target : null;
+    press = el && root.contains(el) ? "game" : e.pointerType !== "mouse" && !el?.closest(USABLE) ? "near" : "away";
   };
-  const clearPointerInside = () => (pointerInside = false);
+  const forgetPress = () => {
+    press = null;
+  };
   let clickTimer = 0;
   const onWindowClick = () => {
     window.clearTimeout(clickTimer);
-    clickTimer = window.setTimeout(clearPointerInside, 0);
+    clickTimer = window.setTimeout(forgetPress, 0);
+  };
+
+  // Focus leaving the game (the stage and its buttons) pauses it, unless a press that isn't leaving took
+  // it: one in the game (its note, its gaps, the pads; Safari drops the focus to nothing on a button it
+  // clicks) or a near miss off it. Then the stage takes the keys back, so they still play.
+  let refocusTimer = 0;
+  const onRootFocusOut = (e: FocusEvent) => {
+    const to = e.relatedTarget as Node | null;
+    if (to && root.contains(to)) return;
+    if (press !== "game" && press !== "near") return pause(false);
+    window.clearTimeout(refocusTimer);
+    refocusTimer = window.setTimeout(() => {
+      const el = document.activeElement;
+      if (phase === "running" && !(el && (root.contains(el) || el.closest(USABLE)))) stage.focus({ preventScroll: true });
+    }, 0);
   };
   const onWindowBlur = () => pause(false);
   const onVisibility = () => {
@@ -379,6 +453,12 @@ export function mountRunner(o: {
     io.observe(stage);
   };
   observe();
+  // The pads are on screen (only a touch screen shows them): the action bar keeps away.
+  const padsIo = new IntersectionObserver((entries) => {
+    padsSeen = !!entries[entries.length - 1]?.isIntersecting;
+    syncGame();
+  });
+  padsIo.observe(pads);
   let resizeFrame = 0;
   const onResize = () => {
     if (resizeFrame) return;
@@ -399,11 +479,18 @@ export function mountRunner(o: {
   stage.addEventListener("pointercancel", onPointerEnd);
   stage.addEventListener("lostpointercapture", onPointerEnd);
   stage.addEventListener("click", onClick);
+  stage.addEventListener("contextmenu", onContextMenu);
+  pads.addEventListener("pointerdown", onPadDown);
+  pads.addEventListener("pointerup", onPointerEnd);
+  pads.addEventListener("pointercancel", onPointerEnd);
+  pads.addEventListener("lostpointercapture", onPointerEnd);
+  pads.addEventListener("click", onPadClick);
+  pads.addEventListener("contextmenu", onContextMenu);
   root.addEventListener("focusout", onRootFocusOut);
-  root.addEventListener("pointerdown", onRootPointerDown, { capture: true });
   window.addEventListener("pointerdown", onWindowPointerDown, { capture: true });
   window.addEventListener("click", onWindowClick, { capture: true });
-  window.addEventListener("pointercancel", clearPointerInside);
+  window.addEventListener("pointercancel", forgetPress);
+  window.addEventListener("keydown", forgetPress, { capture: true });
   window.addEventListener("blur", onWindowBlur);
   window.addEventListener("resize", onResize);
   window.addEventListener("storage", onStorage);
@@ -420,8 +507,11 @@ export function mountRunner(o: {
       window.clearTimeout(fallback);
       window.clearTimeout(announceTimer);
       window.clearTimeout(clickTimer);
+      window.clearTimeout(refocusTimer);
       if (onScrollEnd) window.removeEventListener("scrollend", onScrollEnd);
       io?.disconnect();
+      padsIo.disconnect();
+      padsSeen = false;
       drawer?.destroy();
       stage.removeEventListener("keydown", onKeyDown);
       stage.removeEventListener("keyup", onKeyUp);
@@ -430,15 +520,24 @@ export function mountRunner(o: {
       stage.removeEventListener("pointercancel", onPointerEnd);
       stage.removeEventListener("lostpointercapture", onPointerEnd);
       stage.removeEventListener("click", onClick);
+      stage.removeEventListener("contextmenu", onContextMenu);
+      pads.removeEventListener("pointerdown", onPadDown);
+      pads.removeEventListener("pointerup", onPointerEnd);
+      pads.removeEventListener("pointercancel", onPointerEnd);
+      pads.removeEventListener("lostpointercapture", onPointerEnd);
+      pads.removeEventListener("click", onPadClick);
+      pads.removeEventListener("contextmenu", onContextMenu);
       root.removeEventListener("focusout", onRootFocusOut);
-      root.removeEventListener("pointerdown", onRootPointerDown, { capture: true });
       window.removeEventListener("pointerdown", onWindowPointerDown, { capture: true });
       window.removeEventListener("click", onWindowClick, { capture: true });
-      window.removeEventListener("pointercancel", clearPointerInside);
+      window.removeEventListener("pointercancel", forgetPress);
+      window.removeEventListener("keydown", forgetPress, { capture: true });
       window.removeEventListener("blur", onWindowBlur);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("storage", onStorage);
       document.removeEventListener("visibilitychange", onVisibility);
+      duckPad?.removeAttribute("data-down");
+      jumpPad?.removeAttribute("data-down");
       delete root.dataset.live;
       releaseGame();
     },

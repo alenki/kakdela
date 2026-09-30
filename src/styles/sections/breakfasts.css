@@ -6,7 +6,7 @@
    focused / read dish owns 9–12, its top level with the bar's. */
 .bf {
   /* The sticky photo's distance from the header. */
-  --bf-top: clamp(16px, 3vh, 2.5rem);
+  --bf-top: clamp(16px, 3 * var(--vh), 2.5rem);
   /* The row photo below 1024px: 96px on the smallest phones, then 27vw, 128px from 480px. It never
      drops under 96px, so the stock-photo badge always fits on one line. */
   --bf-thumb: clamp(96px, 27vw, 128px);
@@ -191,7 +191,7 @@ html:not(.js) .bf-bar__switch { display: none; }
   display: grid;
   gap: 1rem;
   /* 4:5, as wide as the column unless the screen is too short to hold it, the caption and the header. */
-  width: min(100cqi, (100svh - var(--header-h) - 2 * var(--bf-top) - var(--bf-cap)) * 0.8);
+  width: min(100cqi, (100 * var(--svh) - var(--header-h) - 2 * var(--bf-top) - var(--bf-cap)) * 0.8);
 }
 .bf-stage { position: relative; aspect-ratio: 4 / 5; }
 /* Crossfade: the new photo fades in on top; the old one waits under it, then drops. */

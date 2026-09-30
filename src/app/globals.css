@@ -48,7 +48,12 @@
     --gutter: 16px;
     --grid-gap: 16px;
     --header-h: 56px;
-    --section-pad: clamp(80px, 11vh, 168px);
+    /* 1% of 100vh and of 100svh, frozen per width by the head script (head-script.ts): size with these,
+       never raw vh/svh. Telegram's in-app browser resizes the page as its bars fold, and raw units
+       would reflow it mid-scroll. These defaults are the plain units, for a page without scripts. */
+    --vh: 1vh;
+    --svh: 1vh;
+    --section-pad: clamp(80px, 11 * var(--vh), 168px);
     /* Heading block → content: the same pause in every section. */
     --head-gap: clamp(40px, 4.5vw, 96px);
     /* A list or grid → the closing line under it (the links, a note, the pie): the same step everywhere. */
@@ -77,6 +82,9 @@
     --paper-tex: url("/tex/paper.png") 0 0 / 256px 256px;
     --paper-shadow: 5px 6px 1px rgb(92 62 30 / 0.16);
     --edge: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  }
+  @supports (height: 1svh) {
+    :root { --svh: 1svh; }
   }
   @media (min-width: 640px) {
     :root { --gutter: clamp(24px, 3.4vw, 104px); --grid-gap: clamp(20px, 1.6vw, 48px); }
@@ -141,6 +149,7 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     background: var(--color-cream);
+    /* On the root this clip goes to the viewport, so it clips no element: the page's one sideways guard. */
     overflow-x: clip;
   }
   /* The overscroll bounce shows the canvas: ink under the footer, cream under the hero (Providers toggles it). */
@@ -152,7 +161,9 @@
     line-height: 1.55;
     color: var(--color-ink);
     background: var(--color-cream);
-    overflow-x: clip;
+    /* Never an overflow clip here, or on anything that holds a position: sticky element: iOS Safari
+       then gives the sticky element a clipping layer, moves it with the page and snaps it back (the
+       phones' coffee band twitched). A block that spills sideways clips itself (.ab-sign, .ab-welcome). */
   }
   ::selection { background: var(--color-ink); color: var(--color-cream); }
   [data-theme="ink"] ::selection { background: var(--color-milk); color: var(--color-ink); }

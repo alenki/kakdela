@@ -7,7 +7,7 @@
 
 .mn {
   /* The table's (and the sticky heads') distance from the header. */
-  --mn-top: clamp(16px, 3vh, 2.5rem);
+  --mn-top: clamp(16px, 3 * var(--vh), 2.5rem);
   /* A dish's name: signature rows at the item-title size (as the homepage's breakfasts), the rest a step down. */
   --mn-name: calc(var(--h3) * 0.72);
   /* The row's own photo on phones and tablets: 80px on the smallest phones, then 24vw, 112px from 470px. */
@@ -18,7 +18,7 @@
 
 /* ── The day: title, notice, kitchen and the table ── */
 .mn-day {
-  padding-top: calc(var(--header-h) + clamp(24px, 4.5vh, 3.5rem));
+  padding-top: calc(var(--header-h) + clamp(24px, 4.5 * var(--vh), 3.5rem));
   padding-bottom: calc(var(--section-pad) * 1.15);
 }
 .mn-day__grid { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -61,7 +61,7 @@ html:not(.js) .mn-prices__switch { display: none; }
   position: relative;
   container-type: inline-size;
   min-width: 0;
-  margin-top: clamp(2rem, 5vh, 3.5rem);
+  margin-top: clamp(2rem, 5 * var(--vh), 3.5rem);
   color: var(--color-ink);
 }
 /* The tabs and the perforation are one strip, the sheet another, each with the paper's shadow (the front splits
@@ -231,7 +231,7 @@ html[data-city="vladikavkaz"] .mn-toc__cat[data-only="nalchik"] .mn-toc__link { 
   top: calc(var(--header-h) + var(--mn-top));
   display: grid;
   gap: 1rem;
-  width: min(100cqi, (100svh - var(--header-h) - 2 * var(--mn-top) - var(--mn-cap) - var(--mn-slip) * 0.5) * 1);
+  width: min(100cqi, (100 * var(--svh) - var(--header-h) - 2 * var(--mn-top) - var(--mn-cap) - var(--mn-slip) * 0.5) * 1);
 }
 html:not(.js) .mn-table__sticky { width: 100cqi; }
 .mn-table__stage { position: relative; aspect-ratio: 1 / 1; margin-top: calc(var(--mn-slip) * 0.5); }
@@ -338,7 +338,7 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
   column-gap: 1rem;
   padding-block: 1.125rem;
   border-bottom: var(--rule) solid var(--line);
-  scroll-margin-top: calc(var(--header-h) + 25svh);
+  scroll-margin-top: calc(var(--header-h) + 25 * var(--svh));
 }
 .mn-row:has(.mn-row__photo) {
   grid-template-columns: var(--mn-thumb) minmax(0, 1fr) auto;
@@ -368,7 +368,7 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
 }
 @media (min-width: 1024px) {
   /* A row shorter than its category's tallest keeps its text centred, level with the price. */
-  .mn-row { align-content: center; padding-block: clamp(1.25rem, 1.6vw, 2.25rem); column-gap: 2rem; scroll-margin-top: calc(var(--header-h) + 34svh); }
+  .mn-row { align-content: center; padding-block: clamp(1.25rem, 1.6vw, 2.25rem); column-gap: 2rem; scroll-margin-top: calc(var(--header-h) + 34 * var(--svh)); }
   /* The table shows the dish (and its КБЖУ in the caption): the row's own photo goes, КБЖУ stays for screen readers. */
   html.js .mn-row .mn-row__photo { display: none; }
   html.js .mn-row:has(.mn-row__photo) { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: none; grid-template-areas: "name price" "desc price" "facts price"; }
@@ -418,7 +418,7 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
   grid-template-rows: auto auto 1fr auto;
   align-items: baseline;
   column-gap: 1rem;
-  scroll-margin-top: calc(var(--header-h) + 25svh);
+  scroll-margin-top: calc(var(--header-h) + 25 * var(--svh));
 }
 .mn-card__photo { grid-area: photo; align-self: start; margin-bottom: 0.875rem; }
 .mn-card__name { grid-area: name; }
@@ -465,7 +465,7 @@ html[data-city="vladikavkaz"] [data-only="nalchik"] > .mn-name { color: var(--fg
   column-gap: 1.25rem;
   padding-block: 0.875rem;
   border-bottom: var(--rule) solid var(--line);
-  scroll-margin-top: calc(var(--header-h) + 25svh);
+  scroll-margin-top: calc(var(--header-h) + 25 * var(--svh));
 }
 .mn-line__name { grid-area: name; font-size: clamp(1.25rem, 0.95rem + 0.75vw, 1.875rem); }
 .mn-line__price { grid-area: price; margin: 0; font-weight: 500; text-align: right; white-space: nowrap; }

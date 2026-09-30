@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { fontVariables } from "./fonts";
-import { HEAD_SCRIPT } from "@/lib/head-script";
+import { HEAD_SCRIPT, PROBE_SCRIPT } from "@/lib/head-script";
 import { LOADER_SCRIPT } from "@/components/loader/loader-script";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/chrome/Header";
@@ -47,6 +47,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang={LOCALE} data-city="nalchik" data-motion="full" className={fontVariables} suppressHydrationWarning>
       <head>
+        {/* On its own: a browser too old for the site's scripts can't parse it, and HEAD_SCRIPT then
+            keeps the no-JS page (src/lib/head-script.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: PROBE_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: HEAD_SCRIPT }} />
         {/* The loading screen (docs/CONVENTIONS.md, «До краёв»): runs only when the head script says so. */}
         <script dangerouslySetInnerHTML={{ __html: LOADER_SCRIPT }} />

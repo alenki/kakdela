@@ -1,87 +1,136 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
-import { answers } from "@/content/answers";
-import { doorway } from "@/content/about";
-import { DOOR_SCRIPT } from "@/lib/about-script";
-import { doorVars } from "@/lib/door";
+import { HANG_SCRIPT } from "@/lib/about-script";
+import { CAP, letterAsk } from "@/lib/lettering";
+import { GLYPH, arrivalCss, signVars } from "@/lib/sign";
 import { bindLastWord, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
 import { InlineScript } from "./InlineScript";
-import { OpeningDoor } from "./opening/OpeningDoor";
+import { HangingSign } from "./opening/HangingSign";
 
 /** The founding line, as on the homepage's team heading (typograf keeps «как дела?» on one line). */
 const founding = bindLastWord(typograf(t.team.lead));
 
-/** The answer, cut at its last space: «Спасибо, что» stays on the wall, «спросили.» goes on the door. */
+/** The ask in the logo's lettering, on two lines: «А у вас» over «как дела», whose «?» is the logo's own. */
+const ask = letterAsk(t.about.ask);
+
+/** The answer, broken at its last space: «Спасибо, что» over «спросили.». */
 const cut = t.about.a.lastIndexOf(" ");
-const wall = typograf(t.about.a.slice(0, cut));
-const word = typograf(t.about.a.slice(cut + 1));
+const lines = [typograf(t.about.a.slice(0, cut)), typograf(t.about.a.slice(cut + 1))];
 
-/** Every answer the guest may have torn today, for about.css to put before the line («Сонно.»). Attributes,
- *  not hidden spans, so the heading's text is only what it says. */
-const said = Object.fromEntries(answers.map((a) => [`data-said-${a.id}`, `${a.label}.`]));
-
-const room = doorway.photo;
+/** The arrival, simulated once when the page is built (src/lib/sign.ts) and played by the compositor. */
+const ARRIVAL_CSS = arrivalCss();
 
 /**
  * The opening exchange. The homepage asks the guest «Как дела?»; here the guest asks back, «А у вас как
- * дела?», in the thin display voice, and the café answers in heavy caps: «Спасибо, что спросили.». Its last
- * word is a door. «Спасибо, что» is set on the wall; «спросили.» is lettered on a flush leaf of the same
- * cream, hung like the kitchen door at Лермонтова, 59, and it stands ajar: through the crack the café's
- * kitchen door asks «Как дела на кухне?». Question, answer, question, in one still frame.
+ * дела?», in the logo's own lettering (src/lib/lettering.ts), and its «?» is the logo's. Its dot is a nail,
+ * and the café's answer hangs from it on the notice's paper, «Спасибо, что спросили.»: everything the café
+ * is hangs on that one question. Turned over, the sign is the café's door sign, open or shut right now.
  *
- * Scrolled (full motion, OpeningDoor), the door swings into the room and the photo in the doorway pulls
- * back from the kitchen door to the whole room, until the sign over the bar, «Как дела?», stands on the
- * guest's own line. The type never moves. On a fresh load at the top the door is shut at first paint and
- * comes ajar once the guest has asked (DOOR_SCRIPT, about.css). Without JS or with reduced motion it is
- * simply ajar. A guest who tore a tab today opens the line with it, in red, at the weight of its mood.
- * All the numbers are src/lib/door.ts, written here as the section's custom properties.
+ * On a fresh load at the top the café hangs it (HANG_SCRIPT and the baked arrival): it drops onto the nail,
+ * the cord catches and it swings. Then it is a card on a cord (HangingSign): the guest can take it and let it
+ * swing or turn it over, and a hard fling of the page makes it hop on its cord. Without JS, with reduced
+ * motion, in forced colours and on paper it simply hangs. All the numbers are src/lib/sign.ts, written here
+ * as the section's custom properties.
  */
 export function Opening() {
   return (
     <section
       id="o-nas"
-      className="field ab-open"
+      className="field ab-sign"
       data-theme="cream"
       aria-labelledby="o-nas-title"
-      style={doorVars as CSSProperties}
+      style={signVars as CSSProperties}
     >
-      <div className="ab-open__drive" data-open-drive>
-        <div className="wrap ab-open__stage" data-open-stage>
-          <h1 id="o-nas-title" className="dlg ab-open__head">
-            <span className="dlg-ask ab-open__ask" data-open-ask {...said}>
-              {typograf(t.about.ask)}
-            </span>{" "}
-            <span className="dlg-title display ab-open__title">
-              <span className="ab-open__wall">{wall}</span>{" "}
-              <span className="ab-open__door">
-                {/* The doorway: it clips, and it gives the leaf (its direct child) its perspective. */}
-                <span className="ab-open__frame" data-open-frame>
-                  <span className="ab-open__room" aria-hidden="true">
-                    <span className="ab-open__pan" data-open-pan>
-                      <Image src={room.src} alt="" fill sizes="1333px" placeholder="blur" preload className="ab-open__img" />
+      <style href="ab-sign-arrival" precedence="default">
+        {ARRIVAL_CSS}
+      </style>
+      <div className="ab-sign__frame">
+        <div className="wrap ab-sign__stage">
+          <h1 id="o-nas-title" className="ab-sign__head">
+            <span className="ab-sign__ask">
+              {/* Read as words, seen as the lettering; the rig after it is read after its «?». */}
+              <span className="sr-only">{typograf(t.about.ask)}</span>
+              <span className="ab-sign__words" aria-hidden="true">
+                {ask.lines.map((l) => {
+                  const w = Math.round(l.w * 10) / 10;
+                  return (
+                    <svg
+                      key={l.text}
+                      className="ab-sign__line"
+                      viewBox={`0 0 ${w} ${CAP}`}
+                      style={{ "--w": (w / CAP).toFixed(4) } as CSSProperties}
+                      focusable="false"
+                    >
+                      <path d={l.d} />
+                    </svg>
+                  );
+                })}
+              </span>
+              <span className="ab-sign__q">
+                <span className="ab-sign__rig">
+                  <svg
+                    className="ab-sign__glyph"
+                    viewBox={`${GLYPH.x} ${GLYPH.y} ${GLYPH.w} ${GLYPH.h}`}
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d={GLYPH.hook} fillRule="evenodd" />
+                    <path d={GLYPH.dot} fillRule="evenodd" />
+                  </svg>
+                  <span className="ab-sign__nail" data-sign-nail>
+                    <span className="ab-sign__swing" data-sign-swing>
+                      <span className="ab-sign__fall" data-sign-fall>
+                        <span className="ab-sign__card" data-sign-card>
+                          <span className="ab-sign__turn" data-sign-turn>
+                            <span className="ab-sign__face ab-sign__face--front">
+                              <span className="ab-sign__answer display">
+                                <span>{lines[0]}</span> <span>{lines[1]}</span>
+                              </span>
+                              <Holes />
+                            </span>
+                            <span className="ab-sign__face ab-sign__face--back" aria-hidden="true">
+                              <span className="ab-sign__state display" data-open>
+                                {t.about.sign.open}
+                              </span>
+                              <span className="ab-sign__note" data-open>
+                                {typograf(t.about.sign.openNote)}
+                              </span>
+                              <span className="ab-sign__state display" data-shut>
+                                {t.about.sign.closed}
+                              </span>
+                              <span className="ab-sign__note" data-shut>
+                                {typograf(t.about.sign.closedNote)}
+                              </span>
+                              <Holes />
+                            </span>
+                          </span>
+                        </span>
+                      </span>
                     </span>
-                  </span>
-                  <span className="ab-open__leaf" data-open-leaf>
-                    <span className="ab-open__word" data-open-word>
-                      {word}
-                    </span>
-                    <span className="ab-open__lever" data-open-lever aria-hidden="true" />
-                    <span className="ab-open__shade" data-open-shade aria-hidden="true" />
+                    <span className="ab-sign__cord ab-sign__cord--a" data-sign-cord aria-hidden="true" />
+                    <span className="ab-sign__cord ab-sign__cord--b" data-sign-cord aria-hidden="true" />
                   </span>
                 </span>
               </span>
             </span>
           </h1>
-          <p className="sr-only">{room.alt}</p>
-          <div className="ab-open__story">
-            <p className="ab-open__founding reply">{founding}</p>
+          <div className="ab-sign__story">
+            <p className="ab-sign__founding reply">{founding}</p>
           </div>
         </div>
-        <div className="ab-open__travel" aria-hidden="true" />
       </div>
-      <InlineScript code={DOOR_SCRIPT} />
-      <OpeningDoor />
+      <InlineScript code={HANG_SCRIPT} />
+      <HangingSign />
     </section>
+  );
+}
+
+/** The two punched holes the cord runs through. */
+function Holes() {
+  return (
+    <>
+      <span className="ab-sign__hole ab-sign__hole--a" aria-hidden="true" />
+      <span className="ab-sign__hole ab-sign__hole--b" aria-hidden="true" />
+    </>
   );
 }

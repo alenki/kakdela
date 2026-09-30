@@ -222,7 +222,7 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: start;
-  padding-bottom: clamp(32px, 6vh, 4rem);
+  padding-bottom: clamp(32px, 6 * var(--vh), 4rem);
 }
 .menu-dialog__top { display: flex; align-items: center; justify-content: flex-end; height: var(--header-h); }
 /* As wide as the burger's lines: opening, they swing into this × (menu-roll.ts). */
@@ -233,7 +233,7 @@ html.js:has(#hero) .site-header:is(:not([data-solid]), [data-end]) .site-header_
 }
 .menu-dialog__x > span + span { transform: rotate(-45deg); }
 
-.menu-dialog__nav { display: grid; gap: clamp(28px, 4vh, 48px); align-content: start; padding-top: clamp(24px, 6vh, 72px); }
+.menu-dialog__nav { display: grid; gap: clamp(28px, 4 * var(--vh), 48px); align-content: start; padding-top: clamp(24px, 6 * var(--vh), 72px); }
 .menu-link {
   display: inline-block;
   min-height: 44px;
@@ -295,7 +295,7 @@ html[data-city="vladikavkaz"] [data-city-hold="nalchik"] { visibility: hidden; }
   .menu-dialog__inner { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); }
   .menu-dialog__top { grid-column: 1 / -1; }
   .menu-dialog__nav { grid-column: 1 / span 7; }
-  .menu-dialog__side { grid-column: 9 / -1; margin-top: 0; padding-top: clamp(24px, 6vh, 72px); }
+  .menu-dialog__side { grid-column: 9 / -1; margin-top: 0; padding-top: clamp(24px, 6 * var(--vh), 72px); }
 }
 
 /* ───── City switch ───── */
@@ -397,14 +397,14 @@ html[data-game] .action-bar { display: none; }
    Then the runner as a side offer. One screen on tall windows; on 1440 × 900 and 1920 × 1080 the page
    scrolls a little, and starting a run brings the game into view. The rows stay together, centred. */
 .not-found {
-  min-height: 100svh;
+  min-height: calc(100 * var(--svh));
   display: grid;
   align-content: center;
   row-gap: var(--head-gap);
   padding-block: calc(var(--header-h) + var(--section-pad)) var(--section-pad);
 }
 .not-found__game-label { margin: 0 0 1rem; }
-.not-found__inner { margin-bottom: 0; row-gap: clamp(28px, 4vh, 40px); }
+.not-found__inner { margin-bottom: 0; row-gap: clamp(28px, 4 * var(--vh), 40px); }
 .not-found__line { display: block; }
 .not-found__aside { display: grid; justify-items: start; gap: 24px; }
 .not-found__links { display: grid; gap: 12px; }

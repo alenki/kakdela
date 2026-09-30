@@ -11,7 +11,7 @@ import { answerById, answers } from "@/content/answers";
 import { breakfasts } from "@/content/menu";
 import { reviews, team } from "@/content/people";
 import { ru } from "@/i18n/ru";
-import { HEAD_SCRIPT } from "./head-script";
+import { HEAD_SCRIPT, PROBE_SCRIPT } from "./head-script";
 
 const midnightClose = { open: "07:30", close: "00:00" as const };
 const elevenClose = { open: "07:30", close: "23:00" as const };
@@ -80,6 +80,10 @@ describe("typograf", () => {
     expect(NBSP.codePointAt(0)).toBe(0xa0);
     expect(WJ.codePointAt(0)).toBe(0x2060);
     expect(NBSP.length + WJ.length).toBe(2);
+  });
+  it("has no lookbehind: it ships to the browser, and Safari before 16.4 can't parse one", () => {
+    const src = readFileSync(new URL("./typograf.ts", import.meta.url), "utf8");
+    expect(src).not.toMatch(/\(\?<[=!]/);
   });
   it("holds one- and two-letter words and short prepositions to the next word", () => {
     expect(ty("Скрэмбл с креветками и свежая зелень")).toBe("Скрэмбл с~креветками и~свежая зелень");
@@ -302,6 +306,79 @@ describe("head script: today's tear", () => {
     expect(run({ id: "sonno", day: day(-864e5) }).said).toBeUndefined();
     expect(run(null).said).toBeUndefined();
     expect(run({ id: "<img>", day: day(0) }).said).toBeUndefined();
+  });
+});
+
+describe("head script: scripted mode only where the bundle runs", () => {
+  // PROBE_SCRIPT sets window.__kdJs where it parses and runs; HEAD_SCRIPT reads it.
+  function run(win: Record<string, unknown>) {
+    const classes = new Set<string>();
+    const dataset: Record<string, string> = {};
+    const env = {
+      document: {
+        documentElement: {
+          dataset,
+          classList: { add: (...c: string[]) => c.forEach((x) => classes.add(x)), remove: (...c: string[]) => c.forEach((x) => classes.delete(x)) },
+        },
+      },
+      localStorage: { getItem: () => null },
+      sessionStorage: { getItem: () => null },
+      matchMedia: () => ({ matches: false }),
+      location: { hash: "" },
+      setTimeout: () => 0,
+    };
+    const fn = new Function("window", "document", "localStorage", "sessionStorage", "matchMedia", "location", "setTimeout", HEAD_SCRIPT);
+    fn(win, env.document, env.localStorage, env.sessionStorage, env.matchMedia, env.location, env.setTimeout);
+    return { classes, dataset };
+  }
+  it("passes the probe where the bundle can run, and fails it without Object.hasOwn", () => {
+    const win: Record<string, unknown> = {};
+    new Function("window", PROBE_SCRIPT)(win);
+    expect(win.__kdJs).toBe(1);
+    const old: Record<string, unknown> = {};
+    new Function("window", "Object", PROBE_SCRIPT)(old, {});
+    expect(old.__kdJs).toBeUndefined();
+  });
+  it("turns on .js, the loader and the intro after a passed probe", () => {
+    const { classes, dataset } = run({ __kdJs: 1 });
+    expect([...classes].sort()).toEqual(["intro", "js", "ld-lock", "ld-on"]);
+    expect(dataset.ld).toBe("full");
+  });
+  it("freezes 100vh and 100svh as --vh and --svh, re-measured only when the width changes on touch", () => {
+    const vars: Record<string, string> = {};
+    const on: Record<string, () => void> = {};
+    const view = { vh: 743.4, svh: 660.2, width: 390 };
+    const probe = { style: { cssText: "", height: "" }, getBoundingClientRect: () => ({ height: probe.style.height === "100svh" ? view.svh : view.vh }) };
+    const doc = {
+      documentElement: { dataset: {}, classList: { add() {}, remove() {} }, style: { setProperty: (k: string, v: string) => void (vars[k] = v) } },
+      body: null as null | { appendChild(): void; removeChild(): void },
+      addEventListener: (type: string, fn: () => void) => void (on[type] = fn),
+      createElement: () => probe,
+    };
+    const win = { innerWidth: view.width, addEventListener: (type: string, fn: () => void) => void (on[type] = fn) };
+    Object.defineProperty(probe.style, "cssText", { set: () => void (probe.style.height = "100vh") });
+    const fn = new Function("window", "document", "localStorage", "sessionStorage", "matchMedia", "location", "setTimeout", HEAD_SCRIPT);
+    fn(win, doc, { getItem: () => null }, { getItem: () => null }, () => ({ matches: false }), { hash: "" }, () => 0);
+    // In <head> there is no body yet: it measures once the document is parsed.
+    expect(vars).toEqual({});
+    doc.body = { appendChild() {}, removeChild() {} };
+    on.DOMContentLoaded();
+    expect(vars).toEqual({ "--vh": "7.434px", "--svh": "6.602px" });
+    // Telegram folds its bar: only the height changes, and nothing is re-measured.
+    view.vh = 826.4;
+    on.resize();
+    expect(vars["--vh"]).toBe("7.434px");
+    // A turned phone: the width changes, and it measures again.
+    win.innerWidth = 844;
+    on.resize();
+    expect(vars["--vh"]).toBe("8.264px");
+  });
+  it("keeps a browser that failed the probe on the no-JS page, with the page's own choices", () => {
+    const { classes, dataset } = run({});
+    expect([...classes]).toEqual([]);
+    expect(dataset.ld).toBeUndefined();
+    expect(dataset.motion).toBe("full");
+    expect(dataset.answer).toBeDefined();
   });
 });
 

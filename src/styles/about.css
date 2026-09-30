@@ -2,179 +2,162 @@
    One conversation in six chapters, one café day: cream from the opening to the café's own things, ink from
    the evening's welcome to the footer. Every heading is an exchange: the guest's question in the thin
    display voice (.dlg-ask), the café's answer in heavy caps (.dlg-title). Components: src/components/about.
-     #o-nas     the opening: «А у вас как дела?» / «Спасибо, что спросили.», its last word a door ajar
+     #o-nas     the opening: «А у вас как дела?» in the logo's lettering / «Спасибо, что спросили.», hung on its «?»
      #seychas   «А прямо сейчас?»: the part of the day it is in Moscow, and the day as a ruler
      #dveri     «Девять дверей, один вопрос.»: the street, every café's sign on one line (the moment)
      #svoyo     «Голландез, сироп из горных трав и названия.»: three menu entries
      #rady      «Всем, кто зайдёт.»: a guest's words on a note, what the cafés have (ink)
      #a-u-vas   «А у вас?»: the café asks back; the eight answers as slips, and its reply (ink) */
 
-/* ───────────────────────── The opening: the door in the answer ───────────────────────── */
-/* «Спасибо, что | спросили.»: the answer's last word is a door standing ajar onto the café (Opening.tsx).
-   Every number is src/lib/door.ts, written on the section as --open-* and --room-*: re-measure there when
-   the copy, the weight, the face or the room's photo changes. Two arrangements: the stack (the default,
-   «Спасибо, что» over the door) and the line (LINE_MQ: the answer on one line gutter to gutter, the door
-   rising from under the header to the floor). The leaf is the frame's direct child: never put a filter,
-   opacity, clip-path or a wrapper between them, or the frame's perspective no longer reaches it. */
-.ab-open { --travel: var(--open-travel-stack); padding-top: var(--header-h); }
-.ab-open__drive { position: relative; }
-.ab-open__stage {
-  position: relative;
+/* ───────────────────────── The opening: the answer hangs on the question ───────────────────────── */
+/* «А у вас как дела» is set in the logo's own lettering (src/lib/lettering.ts, two lines of SVG, read as the
+   words beside them) and ends in the logo's «?»: its dot is a nail, and «Спасибо, что спросили.» hangs from it
+   on the notice's paper (Opening.tsx). The sign is one geometry in its own width --sw, the question one in its
+   caps' height --ask-f (its em): every number is src/lib/sign.ts, written on the section as --sign-*, and
+   sign.test.ts mirrors this block. The stack (the default): the question across the content, then the rig as
+   a block with the «?» centred, then the founding line. The line (LINE_MQ, below): the question as the
+   headline, its «?» the logo's at the size of its letters, the sign hanging from its dot, the founding line
+   beside the sign. The frame is a container, so 100cqi is the page's width without its scrollbar. The
+   section clips sideways: the arrival's first frames swing the card past the screen's edge (7px on a 390px
+   phone, and on a desktop the overflow box of its nested turns reaches some 35px past). Nothing in it is
+   sticky, so it may (docs/CONVENTIONS.md, the motion rules). */
+.ab-sign { padding-top: var(--header-h); overflow-x: clip; }
+.ab-sign__frame {
   container-type: inline-size;
-  overflow-x: clip;
-  padding-block: clamp(1.25rem, 3svh, 2rem) calc(var(--section-pad) * 1.15);
-  --ajar: var(--open-ajar-stack);
-  --f: min(calc(100cqi / var(--open-stack-em)), 11rem);
-  --dw: calc(var(--open-door-em) * var(--f));
-  --dh: max(var(--open-stack-min), min(calc(var(--open-stack-door) * var(--f)), calc(100svh - var(--header-h) - var(--open-stack-leave))));
-  /* The photo's height when the doorway just holds the whole room (its end). */
-  --H: max(calc(var(--room-ar) * var(--dw)), var(--dh));
+  /* The question's longer line across the content, its caps never taller than 16svh (a phone on its side). */
+  --ask-f: min(16 * var(--svh), calc((100cqi - 2 * var(--gutter)) / var(--sign-stack-em)));
+  /* The sign: the content's width, short enough to leave the question and 8rem of the first screen, never
+     under 16rem. */
+  --sw: min(calc(100cqi - 2 * var(--gutter)), max(16rem, calc((100 * var(--svh) - var(--header-h) - var(--sign-head-h) * var(--ask-f) - 8rem) / var(--sign-height))));
 }
-/* Driven (OpeningDoor, full motion, from the top): the stage sticks under the header for the drive. */
-.ab-open__travel { display: block; height: 0; }
-.ab-open[data-drive] .ab-open__travel { height: var(--travel); }
-.ab-open[data-drive] .ab-open__stage { position: sticky; top: var(--header-h); }
+.ab-sign__stage {
+  position: relative;
+  padding-block: clamp(1.25rem, 3 * var(--svh), 2rem) calc(var(--section-pad) * 1.15);
+}
+.ab-sign__head { margin: 0; }
+/* The guest's line: its caps are its em, its two lines of lettering blocks the width of their letters. */
+.ab-sign__ask { position: relative; display: block; font-size: var(--ask-f); line-height: 1; }
+.ab-sign__words { display: block; }
+.ab-sign__line { display: block; width: calc(var(--w) * 1em); height: 1em; overflow: visible; fill: currentColor; }
+.ab-sign__line + .ab-sign__line { margin-top: calc(var(--sign-lead) * 1em); }
 
-.ab-open__head { gap: 0.75rem; }
-/* The guest's line, on one line at every size. */
-.ab-open__ask {
-  font-size: min(calc(100cqi / var(--open-ask-em)), 2.25rem);
-  line-height: 1.05;
-  letter-spacing: 0.06em;
-}
-/* Today's torn answer opens it in red, at the weight of its mood (SAID_WEIGHT in door.ts), never the café's
-   860: «Сонно.» barely there, «Лучше всех.» at a speaking weight. html[data-answer] is a tear or a pick
-   today; a time-of-day guess also sets data-guess and never shows. The words come from the line's own
-   data-said-* attributes (Opening.tsx), and they are read as part of the heading. */
-.ab-open__ask::before { color: var(--accent-ink); font-weight: var(--said-w, 300); }
-html[data-answer="luchshe-vseh"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-luchshe-vseh) " "; --said-w: 460; }
-html[data-answer="kak-v-skazke"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-kak-v-skazke) " "; --said-w: 460; }
-html[data-answer="vsyo-shik"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-vsyo-shik) " "; --said-w: 460; }
-html[data-answer="10-iz-10"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-10-iz-10) " "; --said-w: 460; }
-html[data-answer="est-hochu"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-est-hochu) " "; --said-w: 320; }
-html[data-answer="normalno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-normalno) " "; --said-w: 200; }
-html[data-answer="sonno"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-sonno) " "; --said-w: 110; }
-html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: attr(data-said-tak-sebe) " "; --said-w: 200; }
-/* Hairlines lose more to antialiasing at phone sizes. */
-@media (max-width: 639.98px) {
-  .ab-open__ask::before { font-weight: max(var(--said-w, 300), 200); }
-}
-
-/* The café's answer. The stack: «Спасибо, что» across the canvas, the door under it against the right gutter. */
-.ab-open__title {
-  display: flex;
-  flex-direction: column;
-  font-size: var(--f);
-  line-height: 0.88;
-  letter-spacing: -0.012em;
-}
-.ab-open__wall { white-space: nowrap; }
-.ab-open__door {
+/* The rig: the «?», its nail, the sign and the cord's two strands. It sits inside the question (it is read
+   after it), so it sets the line height back. */
+.ab-sign__q { display: block; }
+.ab-sign__rig {
   position: relative;
   display: block;
-  align-self: flex-end;
-  width: var(--dw);
-  height: var(--dh);
-  margin-top: 0.06em;
+  height: calc(var(--sign-height) * var(--sw));
+  margin-top: clamp(1rem, 3 * var(--svh), 2rem);
+  line-height: normal;
 }
-/* The doorway: it clips the leaf and the room, and its perspective is the guest's eye. */
-.ab-open__frame {
+.ab-sign__glyph {
+  position: absolute;
+  left: calc(50% - var(--sign-nail-x) * var(--sw));
+  top: 0;
+  width: calc(var(--sign-glyph-w) * var(--sw));
+  height: calc(var(--sign-glyph-h) * var(--sw));
+  overflow: visible;
+  fill: currentColor;
+}
+/* The nail: the dot's centre. What hangs from it turns about it. */
+.ab-sign__nail { position: absolute; left: 50%; top: calc(var(--sign-nail-y) * var(--sw)); width: 0; height: 0; }
+/* The swing turns the sign's middle about the nail, the fall carries it along the cord (the island, or the
+   arrival: sign.ts), the card tilts on its own and the turn is its twist about the cord. Each is CSS
+   `rotate`, `translate` or `scale` alone, never a tweened `transform`. */
+.ab-sign__swing,
+.ab-sign__fall { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.ab-sign__card {
+  position: absolute;
+  left: calc(var(--sw) / -2);
+  top: calc((var(--sign-rest) - var(--sign-ratio) / 2) * var(--sw));
+  width: var(--sw);
+  height: calc(var(--sign-ratio) * var(--sw));
+  perspective: calc(4 * var(--sw));
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.ab-sign__turn { position: absolute; inset: 0; transform-style: preserve-3d; }
+/* Two faces of the notice's paper, back to back. */
+.ab-sign__face {
   position: absolute;
   inset: 0;
-  overflow: clip;
-  perspective: var(--open-persp-stack);
-  perspective-origin: 0 50%;
-}
-/* The steel frame: hairline jambs and head over the leaf's edges (the floor line is the sill). */
-.ab-open__frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--line-strong);
-  border-bottom: 0;
-  pointer-events: none;
-}
-.ab-open__room { position: absolute; inset: 0; }
-/* The room at rest: the kitchen door's lettering on the anchor, the photo zoomed (never past 1.3 times its
-   pixels). The drive only ever scales it down from here (OpeningDoor). */
-.ab-open__pan {
-  --wz: min(calc(var(--open-zoom-stack) * var(--H) / var(--room-ar)), var(--room-max));
-  --ax: calc(var(--open-ax-stack) * var(--dw));
-  --ay: calc(var(--dh) / 2);
-  position: absolute;
-  width: var(--wz);
-  aspect-ratio: 1333 / 2000;
-  left: calc(var(--ax) - var(--room-kx) * var(--wz));
-  top: calc(var(--ay) - var(--room-ky) * var(--room-ar) * var(--wz));
-  transform-origin: 0 0;
-}
-.ab-open__img { object-fit: cover; }
-/* The leaf: the wall's own cream and grain, hung on its left edge, ajar. Its angle is CSS `rotate` alone
-   (--swing from the drive, --lift from the pointer), never a tweened transform. */
-.ab-open__leaf {
-  position: absolute;
-  inset: 0;
-  transform-origin: 0 50%;
-  rotate: y calc(var(--ajar) + var(--swing, 0deg) + var(--lift, 0deg));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: calc(var(--sign-pad) * var(--sw));
+  background: var(--paper-tex), var(--paper);
+  border: 1px solid var(--edge);
+  box-shadow: var(--paper-shadow);
+  color: var(--color-ink);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  background: var(--bg);
-  box-shadow: inset -1px 0 0 var(--line-strong);
 }
-/* The wall's grain (.field::before), in phase with it (DOOR_SCRIPT), so the shut door shows no seam. */
-.ab-open__leaf::before {
+/* Light, not decoration: the card darkens as it turns from the guest (the island's --sign-shade). */
+.ab-sign__face::after {
   content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--grain) calc(-1 * var(--open-gx, 0px)) calc(-1 * var(--open-gy, 0px)) / 128px 128px;
-  opacity: 0.3;
-  pointer-events: none;
-}
-.ab-open__leaf[data-gone] { visibility: hidden; }
-/* The word goes into the room with its door but never out of the heading: transparent, still read. */
-.ab-open__leaf[data-gone] .ab-open__word { visibility: visible; }
-.ab-open__word {
-  position: absolute;
-  left: calc(var(--open-jamb-em) * 1em);
-  top: calc(0.15 * var(--dh));
-  white-space: nowrap;
-}
-/* The lever: a slim ink bar on a small rose at the free edge, pivoting at the rose. */
-.ab-open__lever {
-  position: absolute;
-  right: 0.16em;
-  top: 50%;
-  width: 0.56em;
-  height: max(2px, 0.024em);
-  border-radius: 0.012em;
-  background: currentColor;
-  translate: 0 -50%;
-  transform-origin: 100% 50%;
-  rotate: var(--lever, 0deg);
-}
-.ab-open__lever::after {
-  content: "";
-  position: absolute;
-  right: -0.03em;
-  top: 50%;
-  width: 0.1em;
-  height: 0.1em;
-  translate: 0 -50%;
-  border-radius: 0.012em;
-  background: currentColor;
-}
-/* Light, not decoration: one flat wash of ink, as much as the leaf has turned from the window (shade() in
-   door.ts: its rest value here, the drive's on the element). */
-.ab-open__shade {
   position: absolute;
   inset: 0;
   background: var(--color-ink);
-  opacity: var(--open-shade-stack);
+  opacity: var(--sign-shade, 0);
   pointer-events: none;
 }
-/* The founding line in the café's italic (the section's one italic moment), the rest in the text face. */
-.ab-open__story { margin-top: clamp(2.5rem, 8vw, 4rem); }
-.ab-open__founding {
+.ab-sign__face--back { rotate: y 180deg; align-items: flex-start; }
+/* Reduced motion: a click turns it over at once. */
+.ab-sign[data-turned] .ab-sign__turn { rotate: y 180deg; }
+/* The punched holes the cord runs through. */
+.ab-sign__hole {
+  position: absolute;
+  top: calc(var(--sign-hole-y) * var(--sw));
+  width: calc(0.018 * var(--sw));
+  aspect-ratio: 1;
+  margin: calc(-0.009 * var(--sw)) 0 0 calc(-0.009 * var(--sw));
+  border-radius: 50%;
+  background: var(--color-cream);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+.ab-sign__hole--a { left: calc(50% - var(--sign-hole-x) * var(--sw)); }
+.ab-sign__hole--b { left: calc(50% + var(--sign-hole-x) * var(--sw)); }
+/* The answer, broken where its last space is, its longer line across the paper. */
+.ab-sign__answer {
+  font-size: calc(var(--sw) * (1 - 2 * var(--sign-pad)) / var(--sign-line-em));
+  line-height: 0.9;
+  letter-spacing: -0.012em;
+}
+.ab-sign__answer > span { display: block; white-space: nowrap; }
+/* The back: the café's door sign. Open from 07:30 to midnight in Moscow (html[data-daypart], NOW_SCRIPT and
+   NowClock), shut before; without the script it says open. */
+.ab-sign__state {
+  font-size: calc(var(--sw) * 0.8 / var(--sign-back-em));
+  line-height: 0.9;
+  letter-spacing: -0.012em;
+}
+.ab-sign__note {
+  margin-top: 0.8em;
+  font-family: var(--font-sans);
+  font-size: calc(0.036 * var(--sw));
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-graphite);
+}
+.ab-sign__face--back [data-shut] { display: none; }
+html[data-daypart="0"] .ab-sign__face--back [data-open] { display: none; }
+html[data-daypart="0"] .ab-sign__face--back [data-shut] { display: block; }
+/* The cord: two strands from the nail's centre (under its ink) to the holes, laid over the paper. */
+.ab-sign__cord {
+  position: absolute;
+  left: -0.55px;
+  top: 0;
+  width: 1.1px;
+  height: calc(var(--sign-cord) * var(--sw));
+  background: currentColor;
+  transform-origin: 50% 0;
+}
+.ab-sign__cord--a { rotate: var(--sign-cord-a); }
+.ab-sign__cord--b { rotate: var(--sign-cord-b); }
+/* The founding line in the café's italic (the section's one italic moment). */
+.ab-sign__story { margin-top: clamp(2.5rem, 8vw, 4rem); }
+.ab-sign__founding {
   margin: 0;
   max-width: 30ch;
   font-size: clamp(1.375rem, 0.62rem + 1.9vw, 2.25rem);
@@ -182,110 +165,94 @@ html[data-answer="tak-sebe"]:not([data-guess]) .ab-open__ask::before { content: 
   color: var(--fg);
   text-wrap: pretty;
 }
-/* Layers only while the drive moves: at rest the word and the photo raster crisp. */
-.ab-open[data-moving] .ab-open__leaf { will-change: rotate; }
-.ab-open[data-moving] .ab-open__pan { will-change: transform; }
+.ab-sign[data-live] .ab-sign__card { -webkit-user-select: none; user-select: none; }
 @media (hover: hover) and (pointer: fine) {
-  .ab-open[data-drive][data-rest] .ab-open__frame { cursor: pointer; }
+  .ab-sign[data-live] .ab-sign__card { cursor: grab; }
+  .ab-sign[data-grab],
+  .ab-sign[data-grab] .ab-sign__card { cursor: grabbing; }
+  .ab-sign[data-still] .ab-sign__card { cursor: pointer; }
 }
 
-/* The line: «Спасибо, что спросили.» on one line gutter to gutter (the wall and the doorway, 8.84em), the
-   door from under the header down to the floor. The eye stands left of the hinge, level with the lever.
-   The ask is sized from the photo: at the drive's end the bar's sign stands on its baseline, at its cap
-   height (lockCrop in door.ts), so the café's «КАК ДЕЛА?» answers the guest's on one line. */
-@media (min-width: 640px) and (min-aspect-ratio: 4/3) {
-  .ab-open { --travel: var(--open-travel-line); padding-bottom: clamp(1rem, 3vh, 2.5rem); }
-  .ab-open__stage {
-    height: max(calc(100svh - var(--header-h)), 32rem);
-    container-type: size;
-    padding-block: 0;
-    --ajar: var(--open-ajar-line);
-    --f: min(calc(100cqi / var(--open-line-em)), 14rem, calc(100cqh / var(--open-fit)));
-    --eye: calc(var(--open-eye) * 1cqh);
-    --fh: calc(var(--open-floor) * 1cqh);
-    --wall: calc(var(--open-wall-em) * var(--f));
-    --askb: calc(var(--eye) - var(--open-ask-gap) * var(--f));
-    --H: max(
-      calc(var(--room-ar) * var(--dw)),
-      calc((var(--fh) - var(--askb)) / (1 - var(--room-sign-b))),
-      calc(var(--askb) / var(--room-sign-b))
-    );
+/* The line: the question is the headline, «А у вас» over «как дела», and its «?» is the logo's at the size of
+   its letters, after the second line (HEAD in sign.ts); the sign hangs from that «?»'s dot with its right edge
+   on the right gutter, its foot on the first screen. Two things size the pair: the dot stands over the sign's
+   middle, and the question's hang (down to its nail) and the rig below the nail share the room the first
+   screen has. With k the hang over the nail's reach along the line (both in em), the sign is
+   (room - k × content) / (below - k / 2) wide, between 18rem and 52% of the canvas, and the question is sized
+   to put its dot over the sign's middle. Past caps of 17svh the question stops growing and the sign keeps to
+   its dot, short of the gutter. The founding line runs from the left gutter to the sign, its top level with
+   the paper's (in the flow, so a long one only makes the stage longer). On a screen twice as wide as it is
+   tall (WIDE_MQ, below) the question is one line, so the same equation reaches the gutter there too. */
+@media (min-width: 1024px) and (min-aspect-ratio: 6/5) {
+  .ab-sign__frame {
+    /* The question's own numbers, which the wide line swaps for its one line's. */
+    --nail-em: var(--sign-nail-em);
+    --hang-em: var(--sign-hang-em);
+    --head-h: var(--sign-head-h);
+    --content: calc(100cqi - 2 * var(--gutter));
+    --room: calc(100 * var(--svh) - var(--header-h) - 10 * var(--svh));
+    --k: calc(var(--hang-em) / var(--nail-em));
+    --flush: max(18rem, min(52cqi, calc((var(--room) - var(--k) * var(--content)) / (var(--sign-below) - var(--k) / 2))));
+    --ask-f: min(17 * var(--svh), calc((var(--content) - var(--flush) / 2) / var(--nail-em)));
+    --nail-x: calc(var(--gutter) + var(--nail-em) * var(--ask-f));
+    --sw: max(18rem, min(52cqi, calc(2 * (100cqi - var(--gutter) - var(--nail-x))), calc((var(--room) - var(--hang-em) * var(--ask-f)) / var(--sign-below))));
+    --pad-t: max(5 * var(--svh), calc((100 * var(--svh) - var(--header-h) - var(--hang-em) * var(--ask-f) - var(--sign-below) * var(--sw)) * 0.45));
+    /* The sign's foot, from the stage's top. */
+    --foot: calc(var(--pad-t) + var(--hang-em) * var(--ask-f) + var(--sign-below) * var(--sw));
   }
-  /* Cap height = the sign's at the lock (its cap share of --H), baseline on --askb (line-height 1). */
-  .ab-open__ask {
-    position: absolute;
-    left: var(--gutter);
-    top: calc(var(--askb) - var(--open-base) * 1em);
-    font-size: calc(var(--room-sign-cap) * var(--H) / var(--open-cap));
-    line-height: 1;
-    white-space: nowrap;
+  .ab-sign__stage {
+    min-height: max(calc(100 * var(--svh) - var(--header-h)), calc(var(--foot) + 5 * var(--svh)));
+    padding-block: var(--pad-t) calc(5 * var(--svh));
   }
-  .ab-open__title { display: block; position: absolute; left: var(--gutter); top: var(--eye); white-space: nowrap; }
-  .ab-open__door { display: inline-block; vertical-align: top; height: 0.88em; margin: 0; }
-  .ab-open__frame {
-    inset: auto 0;
-    top: calc(-1 * var(--eye));
-    height: var(--fh);
-    perspective: var(--open-persp-line);
-    perspective-origin: var(--open-eye-x-line) calc(var(--eye) + var(--open-lever));
+  /* The rig hangs from the question's top left: its «?» after the second line, its nail that «?»'s dot. */
+  .ab-sign__q,
+  .ab-sign__rig { position: absolute; left: 0; top: 0; width: 0; height: 0; margin: 0; }
+  .ab-sign__glyph {
+    left: calc(var(--sign-hq-left) * 1em);
+    top: calc(var(--sign-hq-top) * 1em);
+    width: calc(var(--sign-hq-w) * 1em);
+    height: calc(var(--sign-hq-h) * 1em);
   }
-  .ab-open__frame::after { border-top: 0; }
-  .ab-open__pan {
-    --wz: min(calc(var(--open-zoom-line) * var(--H) / var(--room-ar)), var(--room-max));
-    --ax: calc(var(--open-ax-line) * var(--dw));
-    --ay: calc(var(--eye) + 0.44em);
+  .ab-sign__nail { left: calc(var(--nail-em) * 1em); top: calc(var(--hang-em) * 1em); }
+  .ab-sign__story {
+    width: calc(var(--nail-x) - var(--sw) / 2 - 2 * var(--grid-gap) - var(--gutter));
+    margin-top: calc((var(--hang-em) - var(--head-h)) * var(--ask-f) + var(--sign-paper) * var(--sw));
   }
-  .ab-open__word { top: var(--eye); }
-  .ab-open__lever { top: calc(var(--eye) + var(--open-lever)); }
-  .ab-open__shade { opacity: var(--open-shade-line); }
-  /* The story on the wall under «Спасибо, что», its sizes held by the stage's height on short screens. */
-  .ab-open__story {
-    position: absolute;
-    margin: 0;
-    left: var(--gutter);
-    top: calc(var(--eye) + 0.88 * var(--f) + clamp(1.25rem, 4cqh, 3rem));
-    width: min(calc(var(--wall) - 2 * var(--grid-gap)), 40rem);
+  .ab-sign__founding { font-size: clamp(1.25rem, 0.5rem + 1.35vw, 2.4rem); }
+}
+/* The wide line: «А у вас как дела» on one line, a word space between its two lines of lettering. */
+@media (min-width: 1024px) and (min-aspect-ratio: 2/1) {
+  .ab-sign__frame {
+    --nail-em: var(--sign-wide-nail-em);
+    --hang-em: var(--sign-wide-hang-em);
+    --head-h: 1;
   }
-  .ab-open__founding { font-size: min(clamp(1.25rem, 0.5rem + 1.35vw, 2.4rem), 3.4cqh); }
+  .ab-sign__words { display: flex; column-gap: calc(var(--sign-join) * 1em); }
+  .ab-sign__line + .ab-sign__line { margin-top: 0; }
+  .ab-sign__glyph { left: calc(var(--sign-wide-hq-left) * 1em); top: calc(var(--sign-wide-hq-top) * 1em); }
 }
 
-/* First paint, with no script: the guest asks (the line from the left), then the super and the story. On a
-   fresh load at the top (html[data-knock], DOOR_SCRIPT) the door is shut at first paint, and after a beat
-   the lever dips and it drifts ajar off its latch, a heavy leaf slowing to its rest. Reduced motion never sees any of it;
-   a visit that isn't fresh opens on the door already ajar. */
+/* First paint, with no script: the guest asks (the line from the left), then the story rises. On a fresh load
+   at the top (html[data-hang], HANG_SCRIPT) the café hangs its answer: that arrival is baked from the physics
+   by Opening.tsx. Reduced motion never sees either. */
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-motion="reduced"]) .ab-open__ask { animation: ab-ask 760ms var(--ease-kd-out) 120ms both; }
-  html[data-knock]:not([data-motion="reduced"]) .ab-open__lever { animation: ab-latch 320ms 1080ms backwards; }
-  html[data-knock]:not([data-motion="reduced"]) .ab-open__leaf {
-    animation: ab-ajar 1300ms cubic-bezier(0.35, 0.45, 0.2, 1) 1240ms backwards;
-  }
-  html[data-knock]:not([data-motion="reduced"]) .ab-open__shade { animation: ab-fade 1300ms var(--ease-kd-out) 1240ms backwards; }
+  html:not([data-motion="reduced"]) .ab-sign__words { animation: ab-ask 760ms var(--ease-kd-out) 120ms both; }
+  html:not([data-motion="reduced"]) .ab-sign__founding { animation: ab-up 900ms var(--ease-kd-out) 1400ms both; }
 }
-@media (prefers-reduced-motion: no-preference) and (min-width: 640px) and (min-aspect-ratio: 4/3) {
-  html:not([data-motion="reduced"]) .ab-open__story { animation: ab-up 900ms var(--ease-kd-out) 1400ms both; }
-}
-@keyframes ab-fade { from { opacity: 0; } }
 @keyframes ab-ask { from { opacity: 0; translate: -0.8em 0; } }
 @keyframes ab-up { from { opacity: 0; translate: 0 22px; } }
-/* Backwards only: once it has played, the leaf's own rotate (with the drive's --swing) rules again. */
-@keyframes ab-ajar { from { rotate: y 0deg; } }
-@keyframes ab-latch {
-  0% { rotate: 0deg; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
-  47% { rotate: -22deg; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-  100% { rotate: 0deg; }
-}
 
 @media (forced-colors: active) {
-  .ab-open__shade,
-  .ab-open__leaf::before { display: none; }
-  .ab-open__leaf { background: Canvas; outline: 1px solid CanvasText; outline-offset: -1px; }
-  .ab-open__lever,
-  .ab-open__lever::after { background: CanvasText; }
+  .ab-sign__face { background: Canvas; border-color: CanvasText; box-shadow: none; }
+  .ab-sign__face::after { display: none; }
+  .ab-sign__hole { background: Canvas; box-shadow: inset 0 0 0 1px CanvasText; }
+  .ab-sign__glyph,
+  .ab-sign__line { fill: CanvasText; }
+  .ab-sign__cord { background: CanvasText; }
 }
-/* On paper the headline prints whole. */
+/* On paper: the front, still. */
 @media print {
-  .ab-open__leaf { rotate: none; }
-  .ab-open__room { display: none; }
+  .ab-sign__face--back { display: none; }
 }
 
 /* A photo cut by a crop (FramedPhoto): the image keeps its proportions, placed in % of the frame. */
@@ -434,13 +401,13 @@ html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-colo
    running sign to sign. The door's height is what the screen under the header leaves for it. */
 .ab-street {
   --door-gap: clamp(24px, 5vw, 7.5rem);
-  --door-h: clamp(13rem, calc(100svh - var(--header-h) - 16rem), 46rem);
+  --door-h: clamp(13rem, calc(100 * var(--svh) - var(--header-h) - 16rem), 46rem);
   --door-w: calc(var(--door-h) * 0.8);
-  --stage-pad: clamp(16px, 4vh, 3.5rem);
+  --stage-pad: clamp(16px, 4 * var(--vh), 3.5rem);
 }
 @media (max-width: 639.98px) {
   .ab-street {
-    --door-w: min(74vw, calc((100svh - var(--header-h) - 12rem) * 0.8));
+    --door-w: min(74vw, calc((100 * var(--svh) - var(--header-h) - 12rem) * 0.8));
     --door-h: calc(var(--door-w) * 1.25);
   }
 }
@@ -525,13 +492,13 @@ html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-colo
 
 /* Driven (StreetDrive, full motion): the stage stays under the header for as long as the street is
    longer than the screen, and the wrapper is that much taller, so the page's scroll walks it. */
-.ab-street[data-drive] .ab-street__drive { height: calc(100svh - var(--header-h) + var(--travel, 0px)); }
+.ab-street[data-drive] .ab-street__drive { height: calc(100 * var(--svh) - var(--header-h) + var(--travel, 0px)); }
 .ab-street[data-drive] .ab-street__stage {
   position: sticky;
   top: var(--header-h);
   display: flex;
   align-items: center;
-  height: calc(100svh - var(--header-h));
+  height: calc(100 * var(--svh) - var(--header-h));
   overflow: clip;
   scroll-snap-type: none;
 }
@@ -571,6 +538,9 @@ html[data-daypart="5"] .ab-part[data-dp="5"] { color: var(--fg); border-top-colo
 }
 
 /* ───────────────────────── «Всем, кто зайдёт.» (ink) ───────────────────────── */
+/* On a narrow phone the tilted note runs past the screen's edge: the section clips it, so the page never
+   scrolls sideways (the page itself has no clip: see body in globals.css). Nothing in it is sticky. */
+.ab-welcome { overflow-x: clip; }
 .ab-welcome__grid { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(3.5rem, 7vw, 6rem); }
 @media (min-width: 1024px) {
   .ab-welcome__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: center; }

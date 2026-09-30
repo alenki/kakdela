@@ -31,7 +31,7 @@ function DishPrice({ price }: { price: Price }) {
  * notice's slips: a radio group, so it works with no script at all (about.css shows the checked answer's
  * reply with :has). The café replies as in the hero: its line in italic, then the dish of that name and
  * its price. A pick is a tear: BackController remembers it (the homepage's notice and the team's slips
- * show it, and the opening's line starts with it); browsing with the arrow keys only previews. Today's
+ * show it); browsing with the arrow keys only previews. Today's
  * answer is already chosen (BACK_SCRIPT, before first paint).
  */
 export function Back() {

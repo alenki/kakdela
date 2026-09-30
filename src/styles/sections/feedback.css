@@ -15,7 +15,7 @@
 .fb-desk { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(40px, 6vw, 64px); }
 @media (min-width: 1024px) {
   .fb-desk {
-    --fb-stick: clamp(16px, 2.4vh, 2rem);
+    --fb-stick: clamp(16px, 2.4 * var(--vh), 2rem);
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--grid-gap);
   }
@@ -27,7 +27,7 @@
   .fb-stage__stick {
     position: sticky;
     top: calc(var(--header-h) + var(--fb-stick));
-    height: min(100%, calc(100svh - var(--header-h) - 2 * var(--fb-stick)));
+    height: min(100%, calc(100 * var(--svh) - var(--header-h) - 2 * var(--fb-stick)));
   }
 }
 
@@ -390,7 +390,7 @@ html:not(.js) .fb-cafes__name { display: block; }
 /* Whom the note goes to: the street and its status, or the city's cafés. Its letters sit on the pad's
    top edge, as the hero's line does on the notice's. */
 .fb-stage__cafe {
-  margin: 0 0 clamp(12px, 1.8vh, 1.25rem);
+  margin: 0 0 clamp(12px, 1.8 * var(--vh), 1.25rem);
   text-box: trim-start cap alphabetic;
 }
 .fb-stage__street { color: var(--fg); }
@@ -430,7 +430,7 @@ html:not(.js) .fb-cafes__name { display: block; }
   transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 0s;
 }
 @media (min-width: 1024px) {
-  .fb-note { width: 90%; margin-top: clamp(12px, 3vh, 2rem); }
+  .fb-note { width: 90%; margin-top: clamp(12px, 3 * var(--vh), 2rem); }
 }
 .fb-note[data-flying] { visibility: hidden; }
 .fb-note[data-gone] { opacity: 0; visibility: hidden; transition: opacity 250ms var(--ease-kd-ui), visibility 0s linear 250ms; }
@@ -473,8 +473,8 @@ html:not(.js) .fb-cafes__name { display: block; }
 /* The café's voice under the photo, and the line to call beside it (the hero's reply and price). */
 .fb-stage__text {
   display: grid;
-  row-gap: clamp(14px, 2vh, 1.5rem);
-  padding-top: clamp(16px, 2.6vh, 2rem);
+  row-gap: clamp(14px, 2 * var(--vh), 1.5rem);
+  padding-top: clamp(16px, 2.6 * var(--vh), 2rem);
   font-size: clamp(1.0625rem, 0.8rem + 0.55vw, 1.4375rem);
 }
 .fb-says { min-width: 0; display: grid; }

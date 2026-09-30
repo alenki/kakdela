@@ -12,7 +12,6 @@ import {
   resumeGrace,
   speedAt,
   step,
-  touchZone,
   UNLOCK,
   WORLD,
   type Input,
@@ -101,19 +100,18 @@ function centredBot(jumpTabs: boolean): Bot {
  * Takes off at a seeded point in the middle 60% of each obstacle's valid window, and presses duck at a
  * seeded moment 0.3 to 0.08 s before a tab arrives, releasing it the step the tab has passed.
  */
-function jitterBot(seed: number, via?: (zone: "jump" | "duck") => "jump" | "duck"): Bot {
+function jitterBot(seed: number): Bot {
   const rnd = mulberry32(seed ^ 0x9e3779b9);
   const frac = new Map<number, number>();
   const duckAt = new Map<number, number>();
   const pressed = new Set<number>();
-  const act = (a: "jump" | "duck") => (via ? via(a) : a);
   return (run, input) => {
     input.duck = false;
     const tab = ahead(run, (o) => o.kind === "tab");
     if (tab) {
       if (!duckAt.has(tab.id)) duckAt.set(tab.id, 0.08 + rnd() * 0.22);
       const toArrive = (extent(tab).x0 - WORLD.standFront) / (run.v * tab.k);
-      if (toArrive <= duckAt.get(tab.id)!) input.duck = act("duck") === "duck";
+      if (toArrive <= duckAt.get(tab.id)!) input.duck = true;
     }
     const o = ahead(run, (o) => o.kind !== "tab" && o.kind !== "plane");
     if (!o || pressed.has(o.id) || run.v <= 0) return;
@@ -122,7 +120,7 @@ function jitterBot(seed: number, via?: (zone: "jump" | "duck") => "jump" | "duck
     const arrive = (e.x0 - WORLD.standFront) / u, leave = (e.x1 - CUP_BACK) / u;
     const lo = leave - AIRTIME + a, hi = arrive - a;
     if (lo + frac.get(o.id)! * (hi - lo) <= 0) {
-      input.jumpPress = act("jump") === "jump";
+      input.jumpPress = true;
       pressed.add(o.id);
     }
   };
@@ -468,8 +466,6 @@ describe("runner: fairness", () => {
   it("is cleared by centred jumps and ducks", () => clean(() => centredBot(false)), 60_000);
   it("is cleared by jumps alone (touch without ducking)", () => clean(() => centredBot(true)), 60_000);
   it("is cleared anywhere in the middle of every window", () => clean((seed) => jitterBot(seed)), 60_000);
-  it("is cleared through the touch zones", () =>
-    clean((seed) => jitterBot(seed, (a) => touchZone(a === "duck" ? 0.9 * 149 : 0.3 * 149, 149))), 60_000);
 });
 
 describe("runner: pausing", () => {
@@ -616,13 +612,6 @@ describe("runner: phases, camera, touch zones", () => {
     });
     const [min, max] = [Math.min(...leads), Math.max(...leads)];
     expect(max / min).toBeLessThan(1.03);
-  });
-
-  it("ducks from the lower third, jumps above it", () => {
-    expect(touchZone(0, 150)).toBe("jump");
-    expect(touchZone(99.9, 150)).toBe("jump");
-    expect(touchZone(100, 150)).toBe("duck");
-    expect(touchZone(150, 150)).toBe("duck");
   });
 });
 

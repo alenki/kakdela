@@ -206,9 +206,6 @@ export const photosEn: Record<string, { alt: string }> = {
   vishnevyjPirog: { alt: "Cherry pie with a scoop of ice cream" },
   cafeBajsultanova1: { alt: "The café’s front and terrace on Baysultanova St, 1" },
   cafeLermontova59: { alt: "Inside the café on Lermontova St, 59: the “Kak dela?” sign over the bar" },
-  lermontova59Room: {
-    alt: "The café on Lermontova St, 59: the “Kak dela?” sign over the bar and the kitchen door that asks “How’s the kitchen?”",
-  },
   cafeLenina32: { alt: "The café on Lenina Ave, 32" },
   cafeShogencukova14: { alt: "The café on Shogentsukova Ave, 14" },
   cafeAtazhukina10v: { alt: "The café with a terrace on Atazhukina St, 10V" },

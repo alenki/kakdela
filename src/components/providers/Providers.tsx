@@ -62,17 +62,31 @@ function useScrollRefresh() {
     const blocks = [document.getElementById("main"), document.getElementById("footer")].filter((el): el is HTMLElement => !!el);
     const height = () => blocks.reduce((sum, el) => sum + el.offsetHeight, 0);
     let lastH = height();
+    // A phone's own bars change only the viewport's height (Telegram's in-app browser resizes the page
+    // as its bar folds). The layout holds still (--vh, head-script.ts), and whatever still follows the
+    // live viewport is no reason to refresh: a refresh ends by restoring the scroll, which throws the
+    // page back and stops iOS's momentum dead. On touch, a height change just after such a resize is
+    // taken for the bars; content, fonts and a turned phone still refresh.
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    let vw = window.innerWidth;
+    let barsAt = -Infinity;
+    const onResize = () => {
+      if (window.innerWidth === vw) barsAt = performance.now();
+      vw = window.innerWidth;
+    };
+    window.addEventListener("resize", onResize);
     const ro = new ResizeObserver(() => {
       const h = height();
-      if (Math.abs(h - lastH) > 2) {
-        lastH = h;
-        refresh();
-      }
+      if (Math.abs(h - lastH) <= 2) return;
+      lastH = h;
+      if (!fine && performance.now() - barsAt < 500) return;
+      refresh();
     });
     blocks.forEach((el) => ro.observe(el));
     return () => {
       window.clearTimeout(t);
       document.fonts?.removeEventListener?.("loadingdone", refresh);
+      window.removeEventListener("resize", onResize);
       ro.disconnect();
     };
   }, [pathname]); // observe the new page's <main>/footer after navigation

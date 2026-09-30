@@ -434,8 +434,3 @@ export function nextPhase(p: Phase, a: "start" | "pause" | "resume" | "crash"): 
   if (p === "paused" && a === "resume") return "running";
   return p;
 }
-
-/** Touch: a press in the lower third of the stage (the floor) ducks; anywhere above it jumps. */
-export function touchZone(yInStage: number, stageH: number): "jump" | "duck" {
-  return yInStage >= (stageH * 2) / 3 ? "duck" : "jump";
-}

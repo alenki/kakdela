@@ -1,14 +1,19 @@
 /* ═════════════ GAME «Игра со стаканчиком.»: the runner, on ink after the evening; also on the 404 ═════════════
    The stage is the full grid width; its height follows a fixed ratio (12/5 on phones, 3/1 from 640,
-   4/1 from 1024), never taller than the screen allows. Under it, the note and the buttons. */
+   4/1 from 1024), never taller than the screen allows. Under it, the note and the buttons; on a touch
+   screen those go above it, and two thumb pads under it. */
 
 /* Without JS the game can't start: no dead block (as the header's «Разделы»). */
 html:not(.js) :is(.game, .not-found__game) { display: none; }
 
 /* The room the frame may take: the screen under the header, with a little air. A short window (a phone
-   on its side) narrows the frame at the same ratio, so the stage keeps its proportions. */
-.runner { --runner-room: calc(100svh - var(--header-h) - 1.5rem); }
-.runner__frame { position: relative; max-width: calc(var(--runner-room) * 12 / 5); }
+   on its side) narrows the frame at the same ratio, so the stage keeps its proportions. `--runner-w` is
+   the widest the frame may be at that ratio. */
+.runner {
+  --runner-room: calc(100 * var(--svh) - var(--header-h) - 1.5rem);
+  --runner-w: calc(var(--runner-room) * 12 / 5);
+}
+.runner__frame { position: relative; max-width: var(--runner-w); }
 .runner__stage {
   position: relative;
   width: 100%;
@@ -23,14 +28,14 @@ html:not(.js) :is(.game, .not-found__game) { display: none; }
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 640px) {
-  .runner__frame { max-width: calc(var(--runner-room) * 3); }
+  .runner { --runner-w: calc(var(--runner-room) * 3); }
   .runner__stage { aspect-ratio: 3 / 1; }
 }
 @media (min-width: 1024px) {
-  .runner__frame { max-width: calc(var(--runner-room) * 4); }
+  .runner { --runner-w: calc(var(--runner-room) * 4); }
   .runner__stage { aspect-ratio: 4 / 1; }
 }
-/* While a run is on, the stage takes every touch (tap to jump, hold low to duck); otherwise the page scrolls. */
+/* While a run is on, the stage takes every touch (a press anywhere jumps); otherwise the page scrolls. */
 .runner[data-state="running"] .runner__stage { touch-action: none; cursor: default; }
 
 /* High contrast can't recolour a canvas: the stage keeps its theme's own ink and paper, like a picture,
@@ -68,14 +73,79 @@ html:not(.js) :is(.game, .not-found__game) { display: none; }
   align-items: center;
 }
 /* Until the page is interactive the controls can do nothing: they keep their room (no shift) unseen. */
-.runner:not([data-ready]) :is(.runner__hud, .runner__foot) { visibility: hidden; }
+.runner:not([data-ready]) :is(.runner__hud, .runner__foot, .runner__pads) { visibility: hidden; }
 .runner__note { margin: 0; max-width: 44ch; }
-.runner__hint-touch { display: none; }
-@media (pointer: coarse) {
-  .runner__hint-touch { display: inline; }
-}
 /* The buttons keep to the stage's right edge, under the score, at every width. */
 .runner__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
 @media (min-width: 640px) {
   .runner__foot { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+/* ───── Touch: the thumbs play on two pads under the field, and the note and the buttons go above it, out
+   of their way: one row, a button's 48px in every state, so nothing under it moves when a run pauses or
+   ends. The field keeps its ratio and shares the screen with the row, the pads and the two 12px gaps. ───── */
+.runner__pads { display: none; }
+@media (pointer: coarse) {
+  .runner {
+    --runner-pad-h: clamp(56px, 11 * var(--svh), 96px);
+    --runner-room: calc(100 * var(--svh) - var(--header-h) - 1.5rem - 48px - var(--runner-pad-h) - 24px);
+    display: flex;
+    flex-direction: column;
+  }
+  .runner__foot {
+    order: -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 48px;
+    max-width: var(--runner-w);
+    margin: 0 0 12px;
+  }
+  /* At most two lines beside the buttons (a 320px phone, paused). */
+  .runner__note {
+    flex: 1 1 0;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .runner__actions { flex: none; flex-wrap: nowrap; }
+  .runner__pads {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: var(--runner-w);
+    height: var(--runner-pad-h);
+    margin-top: 12px;
+  }
+}
+.runner__pad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-width: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.runner__pad svg { flex: none; width: 1em; height: 1em; }
+/* During a run the pads take every touch, and a held pad fills at once: a game control can't wait for
+   the pour. */
+.runner[data-state="running"] .runner__pad { touch-action: none; }
+.runner__pad[data-down] { border-color: var(--fg); background: var(--fg); color: var(--bg); }
+@media (forced-colors: active) {
+  .runner__pad[data-down] { forced-color-adjust: none; border-color: Highlight; background: Highlight; color: HighlightText; }
 }

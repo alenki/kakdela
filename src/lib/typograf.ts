@@ -2,6 +2,10 @@
  * Russian typesetting for flowing copy, shared by server and client components.
  * Copy in ru.ts and src/content stays plain; call `typograf()` where it is rendered.
  * It only swaps ordinary spaces for no-break ones: words, quotes («ёлочки») and dashes are untouched.
+ * No pattern here looks behind: this module ships to the browser, and Safari before 16.4 can't parse a
+ * lookbehind (one such regex literal stops the whole bundle). A rule that depends on the character
+ * before its match reads it with `before()` in its replacer instead, and leaves the match as it was when
+ * the character doesn't fit.
  */
 
 // Built from their code points so they stay visible and unambiguous in source.
@@ -26,30 +30,45 @@ const SHORT: Record<TypografLevel, string> = {
   3: "[а-яё]{1,2}|для|без|над|под|при|про",
 };
 const SHORT_RE = Object.fromEntries(
-  Object.entries(SHORT).map(([k, words]) => [k, new RegExp(`(?<=^|[\\s«„(])(${words})\\s+`, "giu")]),
+  Object.entries(SHORT).map(([k, words]) => [k, new RegExp(`(${words})\\s+`, "giu")]),
 ) as Record<TypografLevel, RegExp>;
+
+/** The character before index `i` of `s` (a whole code point), or "" at the start of the text. */
+function before(s: string, i: number): string {
+  if (i <= 0) return "";
+  const pair = i > 1 ? s.codePointAt(i - 2) : undefined;
+  return pair !== undefined && pair > 0xffff ? String.fromCodePoint(pair) : s[i - 1];
+}
+/** A short word or «как» starts a word here: at the start, or after a space, «, „ or (. */
+const startsWord = (ch: string) => ch === "" || /[\s«„(]/u.test(ch);
+const isDigit = (ch: string) => /\d/u.test(ch);
 
 /** Units that stay with their number: «50 м», «1,4 км», «320 ккал». (No «с»: it is also a preposition.) */
 const UNITS = "ккал|кг|км|мл|мин|см|шт|г|л|м|ч|%";
+const UNIT_RE = new RegExp(`\\s+(?=(?:${UNITS})(?![\\p{L}\\d]))`, "gu");
 
-const RULES: [RegExp, string][] = [
+const RULES: ((s: string) => string)[] = [
   // An opening dialogue dash (U+2014) holds on to the first word.
-  [/^\u2014\s+/u, `\u2014${NBSP}`],
+  (s) => s.replace(/^\u2014\s+/u, `\u2014${NBSP}`),
   // A dash (U+2014, U+2013) or «·» never starts a line: it stays with the word before.
-  [/\s+([\u2014\u2013·])/gu, `${NBSP}$1`],
+  (s) => s.replace(/\s+([\u2014\u2013·])/gu, `${NBSP}$1`),
   // Particles stay with the word before: «так же», «было ли».
-  [/\s+(же|ли|бы)(?=[\s.,!?…:;»]|$)/giu, `${NBSP}$1`],
-  // Street abbreviations stay with the name: «пр. Шогенцукова».
-  [/(?<=^|[\s«(])(ул|пр|пер|пл|д)\.\s+/giu, `$1.${NBSP}`],
+  (s) => s.replace(/\s+(же|ли|бы)(?=[\s.,!?…:;»]|$)/giu, `${NBSP}$1`),
+  // Street abbreviations stay with the name: «пр. Шогенцукова» (at the start, or after a space, « or ().
+  (s) =>
+    s.replace(/(ул|пр|пер|пл|д)\.\s+/giu, (m, w: string, i: number) => {
+      const ch = before(s, i);
+      return ch === "" || /[\s«(]/u.test(ch) ? `${w}.${NBSP}` : m;
+    }),
   // House numbers stay with the street name: «Байсултанова, 1» (not a list: «50 м, 1,4 км»).
-  [/(?<=\p{Lu}\p{Ll}*),\s+(?=\d)/gu, `,${NBSP}`],
+  (s) => s.replace(/(\p{Lu}\p{Ll}*),\s+(?=\d)/gu, `$1,${NBSP}`),
   // Digit groups never split: «2 709», «5 000» (a no-break space; see NBSP).
-  [/(?<=\d)\s(?=\d{3}(?!\d))/gu, NBSP],
+  (s) => s.replace(/\s(?=\d{3}(?!\d))/gu, (m, i: number) => (isDigit(before(s, i)) ? NBSP : m)),
   // The brand's own question never splits: «как дела?», wherever it appears.
-  [/(?<=(?:^|[\s«„(])[Кк]ак)\s+(?=дела(?!\p{L}))/gu, NBSP],
+  (s) => s.replace(/([Кк]ак)\s+(?=дела(?!\p{L}))/gu, (m, w: string, i: number) => (startsWord(before(s, i)) ? w + NBSP : m)),
   // A number keeps its unit, and «₽» never starts a line.
-  [new RegExp(`(?<=\\d)\\s+(?=(?:${UNITS})(?![\\p{L}\\d]))`, "gu"), NBSP],
-  [/\s+₽/gu, `${NBSP}₽`],
+  (s) => s.replace(UNIT_RE, (m, i: number) => (isDigit(before(s, i)) ? NBSP : m)),
+  (s) => s.replace(/\s+₽/gu, `${NBSP}₽`),
 ];
 
 /**
@@ -57,8 +76,8 @@ const RULES: [RegExp, string][] = [
  * starts a line, numbers keep their digit groups, units and «₽», and «как дела» stays whole. Idempotent.
  */
 export function typograf(s: string, level: TypografLevel = 3): string {
-  const out = s.replace(SHORT_RE[level], `$1${NBSP}`);
-  return RULES.reduce((acc, [re, to]) => acc.replace(re, to), out);
+  const out = s.replace(SHORT_RE[level], (m, w: string, i: number) => (startsWord(before(s, i)) ? w + NBSP : m));
+  return RULES.reduce((acc, rule) => rule(acc), out);
 }
 
 /** The last two words travel together, so a paragraph never ends on a lone word. */
@@ -72,7 +91,7 @@ export const bindLastWord = (s: string) => s.replace(/ (?=[^ ]+$)/u, NBSP);
  */
 export const keepWhole = (s: string) =>
   s
-    .replace(/(?<=\p{L})-(?=\p{L})/gu, `-${WJ}`)
+    .replace(/-(?=\p{L})/gu, (m, i: number) => (/\p{L}/u.test(before(s, i)) ? `-${WJ}` : m))
     .replace(/«[^«»]{1,32}»|“[^“”]{1,32}”/gu, (m) => m.replace(/\s/gu, NBSP));
 
 /**

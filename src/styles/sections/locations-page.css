@@ -8,7 +8,7 @@
    pick, or the answer to «Какая ближе ко мне?». The paper never moves; only the red does. */
 .lc {
   /* The stuck plan's distance from the header; the sheet's paper margin and the credit's row under the print. */
-  --lc-top: clamp(16px, 3vh, 2.5rem);
+  --lc-top: clamp(16px, 3 * var(--vh), 2.5rem);
   --lc-pad: clamp(10px, 1vw, 1.25rem);
   --lc-foot: 2.25rem;
   /* A mark: 20px on a small sheet, growing with it (the plan's own container queries, below). */
@@ -22,12 +22,12 @@
   /* Where a picked row lands on a phone: under the plan, so the red mark and its row share the screen. */
   --lc-land: min(
     calc(var(--header-h) + 0.75rem + (var(--lc-sheet-w) - 2 * var(--lc-pad)) * 1.25 + var(--lc-pad) + var(--lc-foot) + 2px + var(--lc-plan-gap)),
-    100svh - 12rem
+    100 * var(--svh) - 12rem
   );
 }
 @media (min-width: 640px) {
   .lc {
-    --lc-sheet-w: min(100vw - 2 * var(--gutter), max(300px, (100svh - var(--header-h) - 2 * var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
+    --lc-sheet-w: min(100vw - 2 * var(--gutter), max(300px, (100 * var(--svh) - var(--header-h) - 2 * var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
   }
 }
 /* A café reached by a link lands under the header, with a little air (phones: under the plan, see --lc-land). */
@@ -70,7 +70,7 @@
     top: calc(var(--header-h) + var(--lc-top));
     /* 4:5 and its margins, as wide as the column unless the screen is too short to hold all of it, from where it
        first stands (under the section's top gap) to where it sticks. */
-    width: min(100cqi, max(240px, (100svh - var(--header-h) - var(--head-gap) - var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
+    width: min(100cqi, max(240px, (100 * var(--svh) - var(--header-h) - var(--head-gap) - var(--lc-top) - var(--lc-pad) - var(--lc-foot)) * 0.8 + 2 * var(--lc-pad)));
     margin-left: auto;
   }
 }

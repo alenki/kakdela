@@ -254,7 +254,8 @@ export const en: Loose<Dictionary> = {
     paused: "Paused",
     over: "The cup tipped over",
     newBest: "New best",
-    hintTouch: "Tap the field to jump, or hold your finger at the bottom of the field to duck.",
+    jump: "Jump",
+    duck: "Duck",
     result: (score, best, isNew) =>
       isNew ? `New best: ${group(score)}.` : `The cup tipped over. Score ${group(score)}, best ${group(best)}.`,
   },
@@ -264,9 +265,16 @@ export const en: Loose<Dictionary> = {
       description:
         "Nine “Kak dela?” cafés in Nalchik and Vladikavkaz: where the name comes from, what we make ourselves and who we’re glad to see. Open daily from 07:30.",
     },
-    // Measured in src/lib/door.ts: «Thanks for » is the wall, «asking.» the door.
+    // Set in the logo's lettering («And how» over «are you»): every letter must be one src/lib/lettering.ts draws.
     ask: "And how are you?",
+    // On the sign, broken at its last space: «Thanks for» over «asking.» (measured in src/lib/sign.ts).
     a: "Thanks for asking.",
+    sign: {
+      open: "Open",
+      openNote: "every day from 07:30",
+      closed: "Closed",
+      closedNote: "we open at 07:30",
+    },
     now: {
       ask: "And right now?",
       fallback: everyDay,

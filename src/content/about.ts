@@ -3,7 +3,7 @@ import { cafes, cafesByCity } from "./cafes";
 import { breakfasts, signatureDrinks } from "./menu";
 import { photos } from "./photos";
 import { reviews } from "./people";
-import type { Cafe, City, Photo } from "./types";
+import type { Cafe, City } from "./types";
 import { t } from "@/i18n";
 
 // The about page (src/components/about) takes everything it says from the rest of the content: the cafés
@@ -20,10 +20,6 @@ export const street: { city: City; cafes: Cafe[] }[] = CITIES.map((city) => ({
   city,
   cafes: [...cafesByCity(city)].sort((a, b) => Number(!a.photo.sign) - Number(!b.photo.sign)),
 }));
-
-/** The opening's door: behind it, the room at Лермонтова, 59, where the kitchen door asks «Как дела на
- *  кухне?» and the bar's sign asks the guest. Its points are measured in src/lib/door.ts (ROOM). */
-export const doorway: { photo: Photo } = { photo: photos.lermontova59Room };
 
 const byId = <T extends { id: string }>(list: T[], id: string) => {
   const found = list.find((x) => x.id === id);

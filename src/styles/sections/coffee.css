@@ -13,7 +13,9 @@
   --kofe-line: rgb(20 18 16 / 0.16);
   /* The phones' sticky band (10 + 110 + 12): focus scrolling keeps a row clear of it. */
   --kofe-badge-h: 132px;
-  overflow-x: clip;
+  /* No overflow clip: the sticky cup and the phones' band are inside, and iOS Safari moves a sticky
+     element under a clip with the page and snaps it back (see body in globals.css). Nothing on the
+     poster reaches past the screen's edges (the halo's hatch is cut to the clover). */
 }
 /* The grain reads a little stronger on red, as on the original poster. */
 .coffee.field::before { opacity: 0.5; }
@@ -80,14 +82,14 @@
 }
 /* The café's reply, the section's one italic moment. */
 .coffee__lead {
-  margin: clamp(18px, 3vh, 34px) 0 0;
+  margin: clamp(18px, 3 * var(--vh), 34px) 0 0;
   max-width: 32ch;
   font-size: clamp(1.125rem, 0.8rem + 0.75vw, 1.625rem);
   color: var(--fg);
   text-wrap: balance;
 }
 @media (min-width: 1024px) {
-  .coffee__lead { margin-top: clamp(32px, 6vh, 88px); }
+  .coffee__lead { margin-top: clamp(32px, 6 * var(--vh), 88px); }
 }
 @media (min-width: 1600px) {
   .coffee__lead { max-width: 34ch; font-size: clamp(1.5rem, 0.7rem + 0.8vw, 1.75rem); }
@@ -100,10 +102,10 @@
 }
 .coffee__sticky {
   /* The cup is as tall as the screen allows and never wider than 82% of its column. */
-  --cup-h: min(70vh, 126cqi);
-  --cup-pad: 3vh;
+  --cup-h: min(70 * var(--vh), 126cqi);
+  --cup-pad: calc(3 * var(--vh));
   position: sticky;
-  top: max(10vh, var(--header-h) + 12px);
+  top: max(10 * var(--vh), var(--header-h) + 12px);
   height: calc(var(--cup-h) * 1.12 + var(--cup-pad));
   display: flex;
   flex-direction: column;
@@ -177,7 +179,7 @@ html.js[data-motion="full"] :is(
 }
 
 /* ── The card ── */
-.coffee__menu { position: relative; margin-top: clamp(2.5rem, 7vh, 5rem); }
+.coffee__menu { position: relative; margin-top: clamp(2.5rem, 7 * var(--vh), 5rem); }
 .coffee__card {
   /* Ink on milk inside the red field: the card's own tokens. Never a data-theme here: the header and the
      action bar would take the card for a section. */
@@ -234,7 +236,7 @@ html.js[data-motion="full"] :is(
 @media (min-width: 1024px) {
   .drink {
     gap: clamp(1.5rem, 2.6vw, 2.75rem);
-    min-height: clamp(13rem, 26vh, 17rem);
+    min-height: clamp(13rem, 26 * var(--vh), 17rem);
     padding: 1.75rem 2rem 1.75rem 3.5rem;
   }
 }

@@ -19,7 +19,7 @@
     column-gap: var(--grid-gap);
     align-items: start;
   }
-  .pp-toc { grid-column: 1 / 4; position: sticky; top: calc(var(--header-h) + clamp(1.5rem, 4vh, 2.5rem)); }
+  .pp-toc { grid-column: 1 / 4; position: sticky; top: calc(var(--header-h) + clamp(1.5rem, 4 * var(--vh), 2.5rem)); }
   .pp-body { grid-column: 5 / 12; }
 }
 

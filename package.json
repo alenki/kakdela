@@ -14,7 +14,6 @@
     "dev:en": "node scripts/dev-en.mjs",
     "build": "next build",
     "build:lumako": "node scripts/build-lumako.mjs",
-    "build:okaraf": "node scripts/build-okaraf.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

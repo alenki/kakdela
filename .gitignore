@@ -150,7 +150,3 @@ kakdela-lumako.zip
 # the English build's own folders (npm run dev:en, build:lumako)
 /.next-en/
 /out-ru/
-
-# Static build for okaraf.com/kakdela (npm run build:okaraf)
-kakdela-okaraf.zip
-/out-en/

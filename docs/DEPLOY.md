@@ -27,9 +27,3 @@ The same code, built a second time with `NEXT_PUBLIC_LOCALE=en` (`src/i18n/local
 - Link previews: each build names its own card in `public/og/` (`src/lib/og.ts`), `menu.jpg` or `menu.en.jpg` and so on, with its alt in its language. Redraw the English ones with `node scripts/make-menu-card.mjs http://localhost:3000 --lang en` (from the running site) and `node --no-warnings scripts/make-plan-card.mjs --lang en`.
 - The mail from an English note stays in Russian for the staff, with the line «Язык записки: английский».
 - Still Russian on the English site: the logo lockup, which is the brand (and the menu's provenance notes, which are never shown).
-
-## okaraf.com/kakdela (English first)
-```bash
-npm run build:okaraf
-```
-The same static export, turned around (`scripts/build-okaraf.mjs`): English at the root, `out/` (https://okaraf.com/kakdela), Russian nested at `out/ru/` (https://okaraf.com/kakdela/ru). `NEXT_PUBLIC_ROOT_LOCALE=en` tells `src/i18n/locale.ts` which language sits where, so the «RU» / «EN» switch links between them. It leaves `kakdela-okaraf.zip`: make the folder `kakdela` in okaraf.com's site root and unpack the zip into it, so that `kakdela/index.html` and `kakdela/ru/index.html` sit there. No `.htaccess`, as above.

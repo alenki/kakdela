@@ -1,3 +1,4 @@
+import { PaperFlake } from "@/components/season/PaperFlake";
 import type { CSSProperties } from "react";
 import { cafes } from "@/content/cafes";
 import { fullMenu } from "@/content/full-menu";
@@ -46,6 +47,9 @@ function Where({ chapter }: { chapter: MenuChapter }) {
 export function NoticeBack() {
   return (
     <nav id="soderzhanie" className="mn-back" aria-label={t.menu.contents} data-mn-back>
+      {/* The New Year season: the snowflake stuck on the front's top corner shows past this side's edge, under
+          the paper (season.css). */}
+      <PaperFlake spot="noticeLeft" className="xm-flake--behind" />
       {/* The tabs and the perforation are one strip of the paper, as the front's pad is (one shadow). */}
       <div className="mn-back__pad">
       <ul className="mn-tabs" role="list">

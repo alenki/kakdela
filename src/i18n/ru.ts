@@ -511,6 +511,12 @@ export const ru = {
     lead: "Его дают отдельно, отмечая согласие в записке перед отправкой. Без него записка не уйдёт.",
     policy: "Политика конфиденциальности",
   },
+  // The New Year season («С наступающим!», src/lib/season.ts): the café's line at the end of the hero's reply,
+  // by the Moscow date, and the bell in the header that turns the season's sounds on.
+  season: {
+    greet: { eve: "С наступающим!", ny: "С Новым годом!", xmas: "С Рождеством!", old: "Со старым Новым годом!" },
+    sound: "Звук",
+  },
 } as const;
 
 export type Dictionary = typeof ru;

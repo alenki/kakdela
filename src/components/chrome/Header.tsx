@@ -4,6 +4,7 @@ import { CurrentLink } from "./CurrentLink";
 import { MenuDialog } from "./MenuDialog";
 import { LangSwitch } from "./LangSwitch";
 import { HeaderBehavior } from "./HeaderBehavior";
+import { SoundToggle } from "@/components/season/SoundToggle";
 import type { RouteKey } from "@/content/routes";
 import { cn } from "@/lib/format";
 import { t } from "@/i18n";
@@ -44,6 +45,8 @@ export function Header() {
             <Wordmark variant="badge" className="site-header__mark site-header__mark--badge" octagon={false} cloverClassName="site-header__clover" />
           </Link>
           <div className="site-header__end">
+            {/* The New Year season's bell (season.css shows it only then). */}
+            <SoundToggle />
             <LangSwitch className="hdr-link" />
             <MenuDialog />
           </div>

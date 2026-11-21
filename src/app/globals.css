@@ -17,6 +17,7 @@
 @import "../styles/about.css";
 @import "../styles/sections/feedback.css";
 @import "../styles/sections/privacy.css";
+@import "../styles/season.css";
 
 /* ───────────────────────── Tokens ───────────────────────── */
 /* Warm paper, black ink, one red. Tomato is the only accent: the logo clover, focus, and at most one

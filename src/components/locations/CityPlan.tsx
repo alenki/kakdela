@@ -1,3 +1,4 @@
+import { PaperFlake } from "@/components/season/PaperFlake";
 import Image, { type StaticImageData } from "next/image";
 import type { CSSProperties } from "react";
 import nalchikPrint from "@/assets/plans/nalchik.svg";
@@ -32,6 +33,8 @@ export function CityPlan({ city }: { city: City }) {
   return (
     <div className="lc-plan" data-lc-plan={city}>
       <div className="lc-plan__sheet">
+        {/* The New Year season: a paper snowflake stuck on the sheet's corner (season.css). */}
+        <PaperFlake spot="locations" />
         <div className="lc-plan__map" data-lc-map>
           {/* Eager: the print is the desktop's largest paint, and the other city's is only a few KB. */}
           <Image src={PRINTS[city]} alt={typograf(t.locationsPage.plan.label(city, list.length))} fill unoptimized loading="eager" className="lc-plan__print" />

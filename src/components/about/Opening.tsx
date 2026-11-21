@@ -4,6 +4,7 @@ import { CAP, letterAsk } from "@/lib/lettering";
 import { GLYPH, arrivalCss, signVars } from "@/lib/sign";
 import { bindLastWord, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { PaperFlake } from "@/components/season/PaperFlake";
 import { InlineScript } from "./InlineScript";
 import { HangingSign } from "./opening/HangingSign";
 
@@ -83,6 +84,8 @@ export function Opening() {
                         <span className="ab-sign__card" data-sign-card>
                           <span className="ab-sign__turn" data-sign-turn>
                             <span className="ab-sign__face ab-sign__face--front">
+                              {/* The New Year season: a paper snowflake stuck on the sign (season.css). */}
+                              <PaperFlake spot="about" />
                               <span className="ab-sign__answer display">
                                 <span>{lines[0]}</span> <span>{lines[1]}</span>
                               </span>

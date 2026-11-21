@@ -1,0 +1,192 @@
+/* ═════════════ «С наступающим!»: the New Year season ═════════════
+   Everything here shows only while html[data-season] is set (the head script, by the Moscow date: 20 November
+   to 14 January; src/lib/season.ts). The look is the site's: the text colour's ink, the cream, the milk, the one
+   red, the notice's paper. No new tone, no glow, no gradient: the realism is in how things move.
+     the greeting   the café's line at the end of the hero's reply
+     the garland    lights on nails under the header's line, at the top of every page (garland-controller.ts)
+     the bell       the season's sounds, in the header
+     snowflakes     cut from the notice's paper, stuck on the hero and the other pages' paper (FlakePeel peels)
+     snow           a canvas over the page: milk, so it shows where snow shows (Snowfall.tsx) */
+
+html:not([data-season]) :is(.xm-garland, .xm-flake, .hdr-sound, .xm-snow) { display: none !important; }
+html:not(.js) :is(.xm-garland, .hdr-sound, .xm-snow) { display: none !important; }
+@media print {
+  :is(.xm-garland, .xm-flake, .hdr-sound, .xm-snow) { display: none !important; }
+}
+
+/* ── The greeting: one of four, by the date ── */
+.xm-greet { display: none; }
+html[data-season="eve"] .xm-greet[data-greet="eve"],
+html[data-season="ny"] .xm-greet[data-greet="ny"],
+html[data-season="xmas"] .xm-greet[data-greet="xmas"],
+html[data-season="old"] .xm-greet[data-greet="old"] { display: inline; }
+
+/* ── The garland ── */
+/* Its box is the page's top, under the fixed header (which covers it as the page scrolls on), above every
+   section. Only the bulbs take the hand. The wire and nails are ink, the glass red and milk: the top of
+   every page is cream. Before the lights come on the glass is dark; the wave runs from the first bulb, held
+   under the loader like every animation, then they stay lit. */
+.xm-garland {
+  --xm-wire: var(--color-ink);
+  --xm-off: color-mix(in srgb, var(--color-ink) 80%, var(--color-cream));
+  --xm-edge: color-mix(in srgb, var(--color-ink) 34%, transparent);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.xm-garland__svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.xm-garland__cord { fill: none; stroke: var(--xm-wire); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.xm-garland__nails circle { fill: var(--xm-wire); }
+.xm-bulb { --lit: var(--color-tomato); }
+.xm-bulb[data-kind="1"] { --lit: var(--color-milk); }
+.xm-bulb__lead { stroke: var(--xm-wire); stroke-width: 1; }
+.xm-bulb__socket { fill: var(--xm-wire); }
+.xm-bulb__glass { fill: var(--xm-off); stroke: var(--xm-edge); stroke-width: 0.8; }
+.xm-garland[data-lit] .xm-bulb__glass {
+  animation: xm-on 520ms steps(1, end) both;
+  animation-delay: calc(450ms + var(--i) * 44ms);
+}
+.xm-garland[data-on] .xm-bulb__glass { fill: var(--lit); }
+/* A filament coming on: lit, a flicker, lit. */
+@keyframes xm-on {
+  0% { fill: var(--xm-off); }
+  18% { fill: var(--lit); }
+  30% { fill: var(--xm-off); }
+  46%, 100% { fill: var(--lit); }
+}
+/* The Kremlin clock strikes: every light blinks with it. */
+.xm-garland[data-blink] .xm-bulb__glass { animation: none; fill: var(--xm-off); }
+.xm-garland__hit {
+  position: absolute;
+  pointer-events: auto;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
+}
+.xm-garland[data-holding] .xm-garland__hit { cursor: grabbing; }
+@media (forced-colors: active) {
+  .xm-garland { display: none; }
+}
+
+/* ── The bell (the header's end, before the language) ── */
+.hdr-sound {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0 -10px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 150ms var(--ease-kd-ui);
+}
+.hdr-sound:active { opacity: 0.6; }
+@media (hover: hover) and (pointer: fine) {
+  .hdr-sound:hover { opacity: 0.7; }
+}
+.hdr-sound__icon { width: 1.375rem; height: 1.375rem; overflow: visible; }
+.hdr-sound__bell { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; transform-origin: 12px 4px; }
+.hdr-sound__bell circle { fill: currentColor; stroke: none; }
+.hdr-sound__ring { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity 200ms var(--ease-kd-ui); }
+.hdr-sound[aria-pressed="true"] .hdr-sound__ring { opacity: 1; }
+/* Turned on, the bell swings and rings down, each swing smaller than the last. */
+.hdr-sound[aria-pressed="true"] .hdr-sound__bell { animation: hdr-ring 1.3s cubic-bezier(0.3, 0, 0.3, 1) both; }
+@keyframes hdr-ring {
+  0% { rotate: 0deg; }
+  12% { rotate: 22deg; }
+  28% { rotate: -16deg; }
+  44% { rotate: 10deg; }
+  60% { rotate: -6deg; }
+  76% { rotate: 3deg; }
+  100% { rotate: 0deg; }
+}
+
+/* ── Paper snowflakes ── */
+/* The notice's paper (its fibres and colour) cut by the flake's mask, with the hairline of a cut edge and the
+   paper's own shadow, a little shorter than the notice's: stuck on at the middle, its arms stand a little
+   off. The wrapper carries the shadow (a filter on the masked paper itself would be cut away with it). Its
+   place and size are its spot's (below). */
+.xm-flake {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  aspect-ratio: 1;
+  rotate: var(--xm-turn, 0deg);
+  --xm-lift: 0;
+  filter: drop-shadow(0 0 0.45px rgb(20 18 16 / 0.55))
+    drop-shadow(calc(2px + var(--xm-lift) * 7px) calc(2.6px + var(--xm-lift) * 9px) calc(0.2px + var(--xm-lift) * 2.4px) rgb(92 62 30 / 0.3));
+  pointer-events: none;
+}
+.xm-flake__paper {
+  position: absolute;
+  inset: 0;
+  background: var(--paper-tex), var(--paper);
+  -webkit-mask: var(--flake) center / 100% 100% no-repeat;
+  mask: var(--flake) center / 100% 100% no-repeat;
+}
+/* Peeling (FlakePeel): the scripts take the flake by the hand. */
+html.js[data-motion="full"] .xm-flake { pointer-events: auto; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.xm-flake[data-peeled] { visibility: hidden; }
+/* Coming off: it falls in a layer of its own over the page, its shadow left behind on the wall. */
+.xm-fall { position: fixed; inset: 0; z-index: 70; overflow: hidden; pointer-events: none; }
+.xm-fall .xm-flake--falling { position: absolute; pointer-events: none; cursor: auto; filter: drop-shadow(0 0 0.5px rgb(20 18 16 / 0.42)); will-change: transform; }
+
+/* The hero's notice: a big one over its top left corner, a small one in its top right corner. In the notice's
+   own width (cqi), so they keep their place on the paper at every size. */
+.xm-flake--noticeLeft { width: 15cqi; left: -3.2cqi; top: -3.6cqi; --xm-turn: -8deg; }
+.xm-flake--noticeRight { width: 9.5cqi; right: 3.4cqi; top: 2.6cqi; --xm-turn: 17deg; }
+/* The answer's photo: on its top corner, half on the dish and half on the wall. The photo's top is under the
+   slip's strip (hero.css: the slip's top margin, its height, less the 0.56em it laps over the photo). */
+.stage__panels { position: relative; }
+.xm-flake--photo {
+  font-size: min(var(--h2), 14.5cqi);
+  width: clamp(64px, 18cqi, 9rem);
+  right: 0;
+  top: calc(clamp(8px, 1.4 * var(--vh), 1rem) + 0.72em + 2px);
+  /* Out past the photo's edge by a third of itself, but never past the gutter (turned 11°, its box is 8.6%
+     wider each side). */
+  translate: min(36%, calc(var(--gutter) - 2px - 8.6%)) -40%;
+  --xm-turn: 11deg;
+}
+
+/* /menu: the hero's snowflake is stuck on the notice's front, over its top corner. Turned over (top over
+   bottom), that corner is this side's bottom corner, and the flake shows past the edge from behind the
+   paper: under it, its shadow on the far side, and not to be peeled from here. */
+html[data-season] .mn-back { isolation: isolate; }
+.mn-back > .xm-flake--behind {
+  z-index: -1;
+  top: auto;
+  bottom: -3.6cqi;
+  --xm-turn: 8deg;
+  /* Its cut edge only: the shadow it casts falls on the notice's far side. */
+  filter: drop-shadow(0 0 0.45px rgb(20 18 16 / 0.55));
+  pointer-events: none !important;
+}
+/* /locations: on the plan's sheet, over its top corner (in the sheet's own width and height: it is 4:5). */
+.xm-flake--locations { z-index: 3; width: 16%; right: -3.4%; top: -2.8%; --xm-turn: -12deg; }
+/* /feedback: on the pad's letterhead, over its top corner. */
+.fb-pad__head { position: relative; }
+.xm-flake--feedback { width: 13cqi; left: -2.8cqi; top: -3.2cqi; --xm-turn: -7deg; }
+/* /about: stuck on the sign, so it swings and turns over with it; the sign takes the hand. */
+.xm-flake--about { width: 17%; right: 4%; bottom: 8%; --xm-turn: 14deg; pointer-events: none !important; }
+
+/* ── Snow ── */
+.xm-snow { position: fixed; top: 0; left: 0; z-index: 35; width: 100%; height: 100%; pointer-events: none; }
+/* The snow fades in once it starts (and goes while the page is covered). */
+.xm-snow { opacity: 0; transition: opacity 1.2s var(--ease-kd-out); }
+.xm-snow[data-on]:not([data-idle]) { opacity: 1; }
+/* The snow settled on the footer's wordmark: laid over its letters, moving with the page. */
+.ft-sign { position: relative; }
+.xm-drift { position: absolute; pointer-events: none; }
+html:not([data-season]) .xm-drift { display: none; }
+@media (forced-colors: active) {
+  .xm-snow, .xm-drift { display: none; }
+}

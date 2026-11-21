@@ -439,4 +439,8 @@ export const en: Loose<Dictionary> = {
     lead: "It is given separately, by ticking the box on the note before sending it. Without it the note won’t go. This is a translation: the Russian version is the one that applies.",
     policy: "Privacy policy",
   },
+  season: {
+    greet: { eve: "Happy holidays!", ny: "Happy New Year!", xmas: "Merry Christmas!", old: "Happy Old New Year!" },
+    sound: "Sound",
+  },
 };

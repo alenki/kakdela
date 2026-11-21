@@ -5,6 +5,10 @@ import { LOADER_SCRIPT } from "@/components/loader/loader-script";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/chrome/Header";
 import { MobileActionBar } from "@/components/chrome/MobileActionBar";
+import { Garland } from "@/components/season/Garland";
+import { SeasonIsland } from "@/components/season/SeasonIsland";
+import { Snowfall } from "@/components/season/Snowfall";
+import { FlakePeel } from "@/components/season/FlakePeel";
 import { t } from "@/i18n";
 import { EN, LOCALE } from "@/i18n/locale";
 import { ogImage } from "@/lib/og";
@@ -57,6 +61,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <Providers>
           <Header />
+          {/* The New Year season («С наступающим!»): the garland at the top of every page, the snow and the
+              season's clock. They stay put across page switches; outside the season they do nothing. */}
+          <Garland />
+          <SeasonIsland />
+          <Snowfall />
+          <FlakePeel />
           {/* Each page renders its own <main id="main" tabIndex={-1}> (the skip link's target), so the
               site footer can follow it at the top level as the page's contentinfo landmark. */}
           {children}

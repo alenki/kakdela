@@ -11,6 +11,8 @@ import { tornEdge } from "@/lib/tear";
 import { rub } from "@/lib/format";
 import { keepWhole, typograf } from "@/lib/typograf";
 import { t } from "@/i18n";
+import { SeasonGreeting } from "@/components/season/SeasonGreeting";
+import { PaperFlake } from "@/components/season/PaperFlake";
 import { HeroController } from "./HeroController";
 import { HeroStatus } from "./HeroStatus";
 
@@ -52,6 +54,9 @@ export function Hero() {
       <div className="wrap hero__grid">
         {/* The notice: the logo asks, the tabs answer. */}
         <div className="notice">
+          {/* The New Year season: paper snowflakes stuck on the notice (season.css). */}
+          <PaperFlake spot="noticeLeft" />
+          <PaperFlake spot="noticeRight" />
           <div className="notice__sheet">
             <Wordmark variant="full" className="notice__logo" />
             <p className="notice__prompt label" id="pad-prompt">
@@ -100,6 +105,7 @@ export function Hero() {
         <div className="stage">
           <HeroStatus />
           <div className="stage__panels">
+            <PaperFlake spot="photo" />
             {answers.map((a) => (
               <article key={a.id} className="panel" data-panel={a.id} aria-label={`${a.label}: ${a.item.name}`}>
                 {/* The tab the guest tore off, landed on its side across the dish, a little askew: rising
@@ -115,7 +121,10 @@ export function Hero() {
                   loading="lazy"
                 />
                 <div className="panel__text">
-                  <p className="panel__reply reply">{dish(a.reply)}</p>
+                  <p className="panel__reply reply">
+                    {dish(a.reply)}
+                    <SeasonGreeting />
+                  </p>
                   <DishPrice price={a.item.price} />
                 </div>
               </article>

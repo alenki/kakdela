@@ -21,8 +21,11 @@
 //                   when the width changes (or on any resize with a fine pointer). CSS sizes with
 //                   these, never raw vh/svh: Telegram's in-app browser resizes the page as its bars
 //                   fold, and raw units would reflow the page mid-scroll (Safari's never move anyway).
+//   data-season     the New Year season's phase by the Moscow date (eve | ny | xmas | old), absent
+//                   outside it; `?season=…` previews one (src/lib/season.ts, «С наступающим!»)
 // Stored ids are whitelisted: a renamed answer or tampered storage must never reach the page.
 import { answers } from "@/content/answers";
+import { seasonSnippet } from "./season";
 
 const IDS = JSON.stringify(answers.map((a) => a.id));
 
@@ -46,6 +49,7 @@ var h=0,mi=0,day='';try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/
 for(var i=0;i<p.length;i++){if(p[i].type==='hour')h=+p[i].value;if(p[i].type==='minute')mi=+p[i].value}
 day=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow'}).format(new Date())}catch(e){h=new Date().getHours()}
 var t=h+mi/60;
+${seasonSnippet()}
 var guess=t<11?'sonno':t<16?'luchshe-vseh':'vsyo-shik';
 var ids=${IDS},last=null,yd='';try{last=JSON.parse(g('localStorage','kd-last')||'null')}catch(e){}
 if(!last||typeof last!=='object'||ids.indexOf(last.id)<0)last=null;

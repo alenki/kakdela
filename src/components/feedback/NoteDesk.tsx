@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent } from "react";
+import { startTransition, useActionState, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { City } from "@/content/types";
 import { cafes, flagship } from "@/content/cafes";
 import { cafeReply, noTone, tones } from "@/content/feedback";
@@ -48,7 +48,7 @@ const without = (errors: NoteErrors, key: keyof NoteErrors): NoteErrors => {
  * back with the note and the reply (or the note as it was, with what to put right). With JS the page
  * checks the note first and the flight is flight.ts.
  */
-export function NoteDesk() {
+export function NoteDesk({ flake }: { flake?: ReactNode } = {}) {
   const [state, formAction, pending] = useActionState(sendNote, IDLE);
   const city = useKd((s) => s.city);
   const mode = useMotionMode();
@@ -170,6 +170,7 @@ export function NoteDesk() {
       {/* The pad: the letterhead asks «Как дела?», the sheet under the perforation answers. */}
       <div className="fb-pad" ref={padRef}>
         <div className="fb-pad__head">
+          {flake}
           <Wordmark variant="plain" className="fb-pad__logo" cloverClassName="fb-pad__clover" />
         </div>
         <div className="fb-pad__perf" aria-hidden="true" />

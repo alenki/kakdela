@@ -15,6 +15,9 @@ The brand name is a question, and the menu already answers it: the breakfasts ar
 
 «О нас» carries the conversation on: the guest asks back in the logo's own lettering, «А у вас как дела?», and the café hangs its answer («Спасибо, что спросили.») on a paper sign from the logo's own question mark, then answers chapter by chapter. It remembers the tab torn today, answers with the part of the day it is in Moscow, walks a street of its nine doors with every «Как дела?» sign on one line, and ends by asking «А у вас?».
 
+## The New Year season («С наступающим!»)
+From 20 November to 14 January, by the Moscow date, the site wears the New Year on its own: a garland of lights under the header that swings, rings and plays «В лесу родилась ёлочка», paper snowflakes cut from the notice's paper (peel one off), snow in the air at night that settles on the footer's wordmark, the season's line in the hero's reply, and sounds behind the bell in the header (off until pressed; the Kremlin chimes strike at midnight on 1 January). It turns itself off on 15 January and on again next November. Preview a phase on any date with `?season=eve`, `ny`, `xmas` or `old`, or see the site without it with `?season=off`. The dates are `SEASON` in `src/lib/season.ts`; the rest is in `docs/CONVENTIONS.md`, «С наступающим!: the season».
+
 ## Stack
 Next.js 16 (App Router, Turbopack), React 19.3, TypeScript, Tailwind CSS v4, GSAP 3.15 with @gsap/react (ScrollTrigger, CustomEase; DrawSVG and CustomWiggle for the coffee poster), Motion 13 (`m.*` under `LazyMotion`), Lenis.
 
@@ -55,7 +58,8 @@ npm run assets:plan-card # the /locations link preview from the Nalchik plan →
 | `src/components/privacy/*` | The policy and the consent: `LegalDoc` sets the text from `src/content/privacy.ts` |
 | `src/components/feedback/*` | «Обратная связь»: the pad and the café's side, the note's rows, the pen loop and the tear; the server action is `src/app/feedback/actions.ts` |
 | `src/components/game/*` | The runner «Игра со стаканчиком»: the poster, the island, the lazy controller and canvas drawing (homepage section and 404) |
-| `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup; the runner's engine and record |
+| `src/lib/*` | Store (hydration-safe), time (Europe/Moscow), geo, format, typograf (Russian no-break rules), seed and GSAP setup; the runner's engine and record; the New Year season (dates, the garland, the snowflakes, the snow, the sound) |
+| `src/components/season/*` | The New Year season: the garland, the snow, the paper snowflakes and their peeling, the bell, the season's clock |
 | `src/styles/*` | Chrome, brand and hero styles, plus one CSS file per section |
 | `docs/CONVENTIONS.md` | Design and motion rules for contributors |
 

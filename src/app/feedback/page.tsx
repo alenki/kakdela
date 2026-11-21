@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NoteDesk } from "@/components/feedback/NoteDesk";
+import { PaperFlake } from "@/components/season/PaperFlake";
 import { Asked } from "@/components/feedback/Asked";
 import { SiteFooter } from "@/components/sections/SiteFooter";
 import { typograf } from "@/lib/typograf";
@@ -27,7 +28,7 @@ export default function FeedbackPage() {
                 <span className="dlg-title display">{typograf(t.feedback.title)}</span>
               </h1>
             </header>
-            <NoteDesk />
+            <NoteDesk flake={<PaperFlake spot="feedback" />} />
           </div>
         </section>
         <Asked />

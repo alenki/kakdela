@@ -14,6 +14,7 @@ import {
   type Run,
 } from "@/lib/runner";
 import { BEST_KEY, pad5, parseBest, readBest, writeBest } from "@/lib/runner-best";
+import { sound } from "@/lib/sound";
 import { createDrawer, type Drawer } from "./runner-draw";
 
 /**
@@ -21,7 +22,9 @@ import { createDrawer, type Drawer } from "./runner-draw";
  * native input on the stage and the touch pads, the fixed-step loop, auto-pause, the start scroll, the
  * HUD numbers, the record and the announcements. The loop runs only while a run is in play; nothing
  * moves before the guest starts one, and everything stops on pause, off screen, on blur and in a hidden
- * tab.
+ * tab. In the New Year season the run's own moments are heard (src/lib/sound.ts, `game`: the start, a jump,
+ * feet landing in snow, a slide, every hundred, a record, a crash; silent unless the season's sound plays)
+ * and the snow answers them (runner-draw.ts): a jump and a landing kick it up, a crash throws a burst.
  */
 
 export type RunnerHandle = { start(): void; pause(): void; resume(): void; destroy(): void };
@@ -63,6 +66,8 @@ export function mountRunner(o: {
   let crashAt = -Infinity;
 
   let raf = 0, last = 0, acc = 0;
+  /** The cup was ducking at the last frame (a new duck swishes). */
+  let ducked = false;
   let begun = false, attempt = 0;
   let fallback = 0, announceTimer = 0;
   let onScrollEnd: (() => void) | null = null;
@@ -148,8 +153,9 @@ export function mountRunner(o: {
 
   /* ───── The loop ───── */
 
-  const draw = (alpha = 1) => {
-    if (run && drawer) drawer.frame(run, alpha, reduced());
+  /** A frame; `live` only from the loop (a still frame's snow stays put). */
+  const draw = (alpha = 1, live = false) => {
+    if (run && drawer) drawer.frame(run, alpha, reduced(), live);
   };
   const stopLoop = () => {
     cancelAnimationFrame(raf);
@@ -167,6 +173,8 @@ export function mountRunner(o: {
     storedBest = Math.max(prev, score);
     hud();
     draw();
+    sound.gameMode(false);
+    if (isNew) window.setTimeout(() => sound.game("record"), 700);
     setPhase("over");
     announce(t.game.result(score, storedBest, isNew));
     o.onOver({ score, best: storedBest, isNew });
@@ -182,10 +190,27 @@ export function mountRunner(o: {
       step(run, input);
       acc -= DT;
     }
-    run.events.length = 0; // jump, land, milestones, spawns: nothing on screen reacts to them
+    // The run's moments: heard (with the season's sound on) and, in the season, answered by the snow.
+    for (const e of run.events) {
+      if (e.t === "jump") {
+        sound.game("jump");
+        drawer.snow("jump");
+      } else if (e.t === "land") {
+        sound.game("land");
+        drawer.snow("land");
+      } else if (e.t === "milestone") sound.game("milestone");
+      else if (e.t === "newBest") sound.game("best");
+      else if (e.t === "crash") {
+        sound.game("crash");
+        drawer.snow("crash");
+      }
+    }
+    run.events.length = 0;
+    if (run.ducking && !ducked) sound.game("duck");
+    ducked = run.ducking;
     if (run.crashed) return crash();
     hud();
-    draw(acc / DT);
+    draw(acc / DT, true);
     raf = requestAnimationFrame(tick);
   };
 
@@ -212,6 +237,9 @@ export function mountRunner(o: {
     }
     last = performance.now();
     acc = 0;
+    ducked = false;
+    sound.game("start");
+    sound.gameMode(true);
     raf = requestAnimationFrame(tick);
   };
 
@@ -262,6 +290,8 @@ export function mountRunner(o: {
     stopLoop();
     clearInputs();
     draw();
+    if (begun) sound.game("pause");
+    sound.gameMode(false);
     setPhase("paused");
     if (manual || root.contains(document.activeElement)) announce(t.game.paused);
   };
@@ -503,6 +533,7 @@ export function mountRunner(o: {
     destroy() {
       attempt++;
       stopLoop();
+      sound.gameMode(false);
       cancelAnimationFrame(resizeFrame);
       window.clearTimeout(fallback);
       window.clearTimeout(announceTimer);

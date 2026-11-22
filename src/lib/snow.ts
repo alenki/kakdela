@@ -52,7 +52,20 @@ export type Air = {
   scroll: number;
   /** A moving pointer, px and px/s, or null. */
   hand: { x: number; y: number; vx: number; vy: number } | null;
+  /** A run of the game in play: its floor's travel across the screen (px/s, leftward) over the section from
+   *  `top` to `bottom` (screen px). The flakes there stream back with it, by depth, as the game's own do. */
+  stream?: { speed: number; top: number; bottom: number } | null;
 };
+
+/** How far into a run's section a height on the screen is: 0 well outside, 1 inside, eased across its edges
+ *  (so a flake drifting in from above picks the stream up gently). */
+export function inStream(y: number, top: number, bottom: number, band = 70): number {
+  const ease = (u: number) => {
+    const c = Math.max(0, Math.min(1, u));
+    return c * c * (3 - 2 * c);
+  };
+  return ease((y - (top - band)) / (2 * band)) * ease((bottom + band - y) / (2 * band));
+}
 
 /** A new flake somewhere in a w × h screen (or along its top edge, `top`). */
 export function spawn(rnd: () => number, w: number, h: number, top = false): Flake {
@@ -102,6 +115,7 @@ export function fall(flakes: Flake[], dt: number, w: number, h: number, air: Air
   const drag = Math.max(-500, Math.min(500, -air.scroll * SNOW.drag));
   const hand = air.hand;
   const reach2 = 2 * SNOW.wakeReach * SNOW.wakeReach;
+  const stream = air.stream && Math.abs(air.stream.speed) > 0.5 ? air.stream : null;
   for (const f of flakes) {
     const par = 0.55 + 0.75 * f.z;
     const [ax, ay] = airAt(f.x, f.y, air.t);
@@ -122,9 +136,16 @@ export function fall(flakes: Flake[], dt: number, w: number, h: number, air: Air
     f.vy += (ty - f.vy) * k;
     f.x += f.vx * dt;
     f.y += f.vy * dt;
+    // A run in play: the scene goes by, the near flakes faster than the far (the game's own parallax). A
+    // camera's motion, not the air's, so it moves the flake and leaves its velocity alone.
+    const by = stream ? inStream(f.y, stream.top, stream.bottom) : 0;
+    if (by > 0) f.x -= stream!.speed * (0.45 + 0.9 * f.z) * by * dt;
     if (f.y > h + 12 || f.y < -160) Object.assign(f, spawn(rnd, w, h, true));
-    else if (f.x < -24) f.x += w + 48;
-    else if (f.x > w + 24) f.x -= w + 48;
+    else if (f.x < -24) {
+      f.x += w + 48;
+      // Streaming in from the right edge: anywhere down the section, not where it left.
+      if (by > 0.5) f.y = Math.max(stream!.top, 0) + rnd() * (Math.min(stream!.bottom, h) - Math.max(stream!.top, 0));
+    } else if (f.x > w + 24) f.x -= w + 48;
   }
 }
 

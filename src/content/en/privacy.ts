@@ -28,6 +28,7 @@ const deviceStorage = [
   { key: "kd-last", store: "localStorage", what: "The answer you tore off on the home page, and the date.", kept: "Until you clear the site’s data." },
   { key: "kd-puzzle", store: "localStorage", what: "Your solution to the chess puzzle of the week.", kept: "Until you clear the site’s data; last week’s solution is not shown." },
   { key: "kd-runner", store: "localStorage", what: "Your best score in the cup game.", kept: "Until you clear the site’s data." },
+  { key: "kd-sound", store: "localStorage", what: "That you turned off the New Year music: it won’t start by itself next time.", kept: "Until you clear the site’s data or turn the music back on." },
   { key: "kd-intro", store: "sessionStorage", what: "That the welcome animation has been shown: it runs shorter in this tab after that.", kept: "While the tab is open." },
   { key: "kd-scroll", store: "sessionStorage", what: "How far down the page you were when you left it: if not at the very top, the animation is skipped after a reload.", kept: "While the tab is open." },
 ];
@@ -47,7 +48,7 @@ export const privacyEn = {
   deviceStorage,
   brief: [
     "There are no counters, ad pixels or cookies on the site.",
-    "Your city, your answer to “How are you?”, your best score and your solved puzzle are kept only in your browser.",
+    "Your city, your answer to “How are you?”, your best score, your solved puzzle and whether you turned the music off are kept only in your browser.",
     "Your browser works out where you are only when you press “Which one is nearest?”. That stays on your device.",
     "Only the text of a note is required. A signature and a contact are needed if you want a reply, and never for advertising.",
     "Notes are kept in Russia for no longer than a year, are never published and never go abroad.",
@@ -211,5 +212,5 @@ export const privacyEn = {
   },
 };
 
-export const EDITION_LABEL_EN = "28 September 2026";
+export const EDITION_LABEL_EN = "21 November 2026";
 export const consentIntroEn = `By sending a note through the “Feedback” form on ${SITE} and ticking the consent box in that form, I freely, of my own will and in my own interest give {name} (INN {inn}, OGRN {ogrn}, address: {address}) my consent to the processing of my personal data on the following terms.`;

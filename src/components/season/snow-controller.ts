@@ -6,11 +6,14 @@
 //   the drift   laid over the footer's wordmark and moving with the page: the snow that has settled on its
 //               letters and its clover, from before the guest came (snowedOn) and from what falls while they
 //               are there
-// The fall runs while the tab is seen and the page isn't covered (the loader, the «Разделы» dialog, a run of
-// the game); reduced motion and Save-Data have no fall, only the snow already on the wordmark.
+// The fall runs while the tab is seen and the page isn't covered (the loader, the «Разделы» dialog). While a
+// run of the game is in play, the flakes over its section stream back as fast as its floor goes by
+// (src/lib/run-stream.ts, by depth), so the whole section runs with it; the game paints only the snow on its
+// floor and its things. Reduced motion and Save-Data have no fall, only the snow already on the wordmark.
 
 import { fall, flakesFor, land, makeDrift, snowedOn, spawn, type Drift, type Flake } from "@/lib/snow";
 import { mulberry32 } from "@/lib/seed";
+import { runStream } from "@/lib/run-stream";
 
 const MILK = "#fff8ee";
 /** The drift's cell, CSS px: a flake is a cell or two. */
@@ -26,6 +29,8 @@ export function mountSnow(canvas: HTMLCanvasElement, opts: { fall: boolean }): (
   const flakes: Flake[] = [];
   let raf = 0;
   let sleep = 0;
+  /** The run's stream as this snow has taken it up, px/s. */
+  let streamSpeed = 0;
   let last = 0;
   let t = 0;
   let alive = true;
@@ -160,8 +165,7 @@ export function mountSnow(canvas: HTMLCanvasElement, opts: { fall: boolean }): (
   }
 
   // ── The frame ──
-  const covered = () =>
-    html.classList.contains("ld-on") || html.hasAttribute("data-dialog") || html.hasAttribute("data-game") || document.hidden;
+  const covered = () => html.classList.contains("ld-on") || html.hasAttribute("data-dialog") || document.hidden;
   const frame = (now: number) => {
     raf = 0;
     if (!alive) return;
@@ -182,7 +186,16 @@ export function mountSnow(canvas: HTMLCanvasElement, opts: { fall: boolean }): (
     delete canvas.dataset.idle;
     const v = scrollSpeed(now);
     const h = hand && now - hand.at < 120 ? hand : null;
-    fall(flakes, dt, W, H, { t, scroll: v, hand: h }, rnd);
+    // A run of the game in play: the flakes over its section go by with its floor. When the run stops, the
+    // stream stops with it (a camera halting), within a few frames.
+    const target = now - runStream.at < 150 && runStream.section ? runStream.speed : 0;
+    streamSpeed += (target - streamSpeed) * (1 - Math.exp(-dt / 0.08));
+    let stream: { speed: number; top: number; bottom: number } | null = null;
+    if (streamSpeed > 0.5 && runStream.section?.isConnected) {
+      const r = runStream.section.getBoundingClientRect();
+      stream = { speed: streamSpeed, top: r.top, bottom: r.bottom };
+    }
+    fall(flakes, dt, W, H, { t, scroll: v, hand: h, stream }, rnd);
     // Flakes by the page (the far ones) that come down onto the wordmark stay there.
     if (drift && driftCanvas) {
       markRect = driftCanvas.getBoundingClientRect();

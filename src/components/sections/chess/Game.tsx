@@ -3,12 +3,16 @@
 import { useEffect, useId, useReducer, useRef, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import type { Sq } from "@/lib/chess";
 import { describeRu, puzzleFor, readSaved, startOf, weekNumber, writeSaved, type Grade } from "@/lib/puzzle";
+import { sound } from "@/lib/sound";
 import { t } from "@/i18n";
+import { cueOf } from "./cues";
 import { boardVM, helpStep, initGame, logVM, reduce, type GameState } from "./model";
 import { BoardView, ControlsView, LogView } from "./views";
 
 /** How long the café takes to answer, how long its answer to a wrong move stays up, a solution's pace. */
 const DELAY = { cafe: 420, read: 1100, auto: 800 } as const;
+/** When a sliding piece lands, s: its 280ms slide (chess.css) is nine tenths home by then. */
+const LAND = 0.15;
 
 /**
  * The first state, read once as the game loads (never during render): this week's puzzle, a solve
@@ -40,6 +44,8 @@ export function Game({ init, payoffs }: { init: GameState; payoffs: Record<Grade
   const squares = useRef<(HTMLButtonElement | null)[]>([]);
   const drag = useRef<Drag | null>(null);
   const swallowClick = useRef(false);
+  const heard = useRef(s);
+  const dropped = useRef(false);
   const descId = useId();
 
   // The café's answer, the pause over a refuted move, the solution's next move.
@@ -87,6 +93,19 @@ export function Game({ init, payoffs }: { init: GameState; payoffs: Record<Grade
     return () => window.clearTimeout(id);
   }, [s.say]);
 
+  // The board's sounds (cues.ts), heard only while the season's sound is on (src/lib/sound.ts). A piece
+  // knocks as it lands: at once where it doesn't slide (the guest's own drop, reduced motion).
+  useEffect(() => {
+    const prev = heard.current;
+    const drop = dropped.current && prev.phase === "play";
+    heard.current = s;
+    dropped.current = false;
+    const cue = cueOf(prev, s);
+    if (!cue) return;
+    const still = document.documentElement.dataset.motion === "reduced";
+    sound.chess(cue, { delay: still || drop ? 0 : LAND });
+  }, [s]);
+
   // A solve made here is kept until Monday.
   const { grade, restored, week, line } = s;
   const id = s.pz.id;
@@ -129,7 +148,9 @@ export function Game({ init, payoffs }: { init: GameState; payoffs: Record<Grade
       boardRef.current?.removeAttribute("data-dragging");
       d.el.style.transform = "";
       const to = e.type === "pointerup" ? squareAt(e.clientX, e.clientY) : null;
-      dispatch(to !== null && to !== d.from ? { type: "drop", from: d.from, to } : { type: "cancel" });
+      const moved = to !== null && to !== d.from;
+      dropped.current = moved;
+      dispatch(moved ? { type: "drop", from: d.from, to } : { type: "cancel" });
     };
     window.addEventListener("pointermove", onMove, { passive: false });
     window.addEventListener("pointerup", onUp);

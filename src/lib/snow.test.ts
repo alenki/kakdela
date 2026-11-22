@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { airAt, fall, flakesFor, land, makeDrift, snowedOn, spawn, SNOW, type Flake } from "./snow";
+import { airAt, fall, flakesFor, inStream, land, makeDrift, snowedOn, spawn, SNOW, type Flake } from "./snow";
 import { mulberry32 } from "./seed";
 
 describe("the air", () => {
@@ -65,6 +65,54 @@ describe("the snowfall", () => {
       fall([g], 1 / 60, 1440, 900, { t, scroll: 0, hand: null }, rnd);
     }
     expect(f.x - g.x).toBeGreaterThan(40);
+  });
+});
+
+describe("a run of the game going by", () => {
+  it("takes the section, eased in across its edges", () => {
+    expect(inStream(-500, 100, 800)).toBe(0);
+    expect(inStream(1500, 100, 800)).toBe(0);
+    expect(inStream(450, 100, 800)).toBe(1);
+    // On the edge itself, halfway in; and smoothly either side of it.
+    expect(inStream(100, 100, 800)).toBeCloseTo(0.5, 6);
+    expect(inStream(70, 100, 800)).toBeLessThan(inStream(100, 100, 800));
+    expect(inStream(130, 100, 800)).toBeGreaterThan(inStream(100, 100, 800));
+  });
+
+  it("streams the flakes over the section back as fast as the floor, by depth, and leaves the rest", () => {
+    const rnd = mulberry32(11);
+    const make = (y: number, z: number): Flake => ({ ...spawn(rnd, 1440, 900), x: 700, y, z, vx: 0, vy: 0, sway: 0 });
+    const inside = make(450, 1), far = make(450, 0), above = make(-100, 1);
+    const calm = [make(450, 1), make(450, 0), make(-100, 1)];
+    const stream = { speed: 900, top: 100, bottom: 800 };
+    // Six frames: 0.1 s.
+    for (let k = 0; k < 6; k++) {
+      const t = k / 60;
+      fall([inside, far, above], 1 / 60, 1440, 900, { t, scroll: 0, hand: null, stream }, rnd);
+      fall(calm, 1 / 60, 1440, 900, { t, scroll: 0, hand: null }, rnd);
+    }
+    // Over 0.1 s at 900 px/s: a near flake goes some 120 px further back, a far one some 40.
+    expect(calm[0].x - inside.x).toBeGreaterThan(110);
+    expect(calm[0].x - inside.x).toBeLessThan(135);
+    expect(calm[1].x - far.x).toBeGreaterThan(35);
+    expect(calm[1].x - far.x).toBeLessThan(50);
+    // Well above the section, nothing goes by.
+    expect(Math.abs(calm[2].x - above.x)).toBeLessThan(1);
+  });
+
+  it("streams them in from the right edge anywhere down the section", () => {
+    const rnd = mulberry32(12);
+    const stream = { speed: 2000, top: 200, bottom: 700 };
+    const ys: number[] = [];
+    for (let k = 0; k < 40; k++) {
+      const f: Flake = { ...spawn(rnd, 1440, 900), x: -20, y: 400, z: 1, vx: 0, vy: 0, sway: 0 };
+      fall([f], 1 / 60, 1440, 900, { t: k, scroll: 0, hand: null, stream }, rnd);
+      expect(f.x).toBeGreaterThan(1400);
+      ys.push(f.y);
+    }
+    expect(Math.min(...ys)).toBeGreaterThanOrEqual(200);
+    expect(Math.max(...ys)).toBeLessThanOrEqual(700);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThan(250);
   });
 });
 

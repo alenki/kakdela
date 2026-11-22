@@ -22,20 +22,20 @@ function sane(s: Sim) {
 describe("the garland's layout", () => {
   it("hangs as much of the song as suits the width", () => {
     const at = (w: number, g: number, rem = 16) => layoutGarland(w, g, 2.8 * rem);
-    expect(at(320, 16).halves).toBe(1);
-    expect(at(390, 16).halves).toBe(1);
-    expect(at(768, 26).halves).toBe(1);
-    expect(at(1440, 49).halves).toBe(2);
-    expect(at(1920, 65, 17.33).halves).toBe(3);
-    expect(at(2560, 87, 20).halves).toBe(3);
+    expect(at(320, 16).lines).toBe(1);
+    expect(at(390, 16).lines).toBe(1);
+    expect(at(1440, 49).lines).toBe(3);
+    expect(at(1920, 65, 17.33).lines).toBe(3);
+    expect(at(2560, 87, 20).lines).toBe(4);
   });
 
   it("hangs a bulb for every note, in the song's order, evenly", () => {
     const l = layoutGarland(1440, 49, 44.8);
-    expect(l.bulbs).toHaveLength(28);
-    expect(l.length).toBe(28);
-    expect(l.bulbs.map((b) => b.midi)).toEqual(NOTES.map((n) => n.midi));
-    expect(l.bulbs.map((b) => b.t)).toEqual(NOTES.map((_, i) => i));
+    // The verse's first three lines: «Dashing through the snow…», «O'er the fields…», «Bells on bobtail…».
+    expect(l.bulbs).toHaveLength(33);
+    expect(l.length).toBe(33);
+    expect(l.bulbs.map((b) => b.midi)).toEqual(NOTES.slice(0, 33).map((n) => n.midi));
+    expect(l.bulbs.map((b) => b.t)).toEqual(NOTES.slice(0, 33).map((_, i) => i));
     expect(l.pitch * l.length).toBeCloseTo(1440 - 98, 6);
     expect(l.pxPerM).toBeCloseTo(l.pitch / PITCH_M, 9);
   });

@@ -13,7 +13,9 @@ const STRIKE = 3.2;
  * switches. It turns html[data-season] over at Moscow midnight (the greeting changes on the page the guest is
  * reading), and at midnight on 1 January the Kremlin clock strikes twelve: with the sound on, its bell; with
  * or without, the garland jumps at every stroke (kd:chimes) and on the twelfth the line becomes «С Новым
- * годом!». With the sound on, a torn tab rips. A preview (`?season=`) keeps its phase.
+ * годом!». With the sound on, a torn tab rips. A preview (`?season=`) keeps its phase. It also sets the sound
+ * on, the season's default (src/lib/sound.ts), once the loader has gone: the music starts with the guest's
+ * first click or tap.
  */
 export function SeasonIsland() {
   useEffect(() => {
@@ -60,6 +62,13 @@ export function SeasonIsland() {
       );
     }
 
+    // ── The sound on by default: armed once the page is handed over ──
+    const prime = () => {
+      if (html.dataset.season) sound.prime();
+    };
+    if (html.classList.contains("ld-on")) window.addEventListener("kd:loader-done", prime, { once: true });
+    else prime();
+
     // ── A torn tab rips (the store counts the tears) ──
     let torn = kd.get().torn.length;
     const unsub = kd.subscribe(() => {
@@ -70,6 +79,7 @@ export function SeasonIsland() {
 
     return () => {
       timers.forEach((id) => window.clearTimeout(id));
+      window.removeEventListener("kd:loader-done", prime);
       unsub();
     };
   }, []);

@@ -3,12 +3,12 @@
 // src/components/season/garland-controller.ts draws it and gives it the page's motion and the guest's hand.
 //
 // The bulbs are the song's notes (src/lib/melody.ts), one to a bulb in order, so a hand run along the garland
-// plays «В лесу родилась ёлочка», and a nail holds every four. The physics sees a real garland whatever its
+// plays «Jingle Bells» from «Dashing through the snow», and a nail holds every four. The physics sees a real garland whatever its
 // size on the screen (bulbs 12 cm apart): an inextensible
 // cord of nodes pinned on the nails, each bulb a pendulum on its socket's lead. Position-based dynamics in
 // small fixed steps (one projection per step, 1.2 kHz), in metres and seconds, y down from the nails.
 
-import { VERSE } from "./melody";
+import { LINES, NOTES } from "./melody";
 
 /** Bulbs hang 12 cm apart. */
 export const PITCH_M = 0.12;
@@ -43,40 +43,39 @@ export type Layout = {
   pxPerM: number;
   /** The first nail's x (the gutter), px. */
   margin: number;
-  /** Half-verses hung: 1 on a phone, up to 4 on a wide screen (the song goes round). */
-  halves: number;
+  /** The song's lines hung: 1 on a phone, up to 8 on a wide screen. */
+  lines: number;
   /** The garland's length in bulbs. */
   length: number;
   /** The nails, in bulb pitches from the first. */
   nails: number[];
   /** The bulbs in order: where (pitches from the first nail to its left half-pitch), its note's pitch, and its
-   *  place in the verse. */
+   *  place in the song. */
   bulbs: { t: number; midi: number; note: number }[];
 };
 
-const VERSE_NOTES = VERSE[0].length + VERSE[1].length;
-
 /**
- * Hangs the song across a width: as many half-verses (fourteen notes each) as bring the bulbs' pitch closest
- * to `target` px, between nails at the gutters, a nail every four bulbs (as near as whole bulbs allow, so the
+ * Hangs the song across a width, from its start: as many of its lines (ten to fifteen notes each) as bring the
+ * bulbs' pitch closest to `target` px, between nails at the gutters, a nail every four bulbs (as near as whole bulbs allow, so the
  * swags come out even; a nail never stands where a bulb hangs).
  */
 export function layoutGarland(width: number, gutter: number, target: number): Layout {
   const span = Math.max(1, width - 2 * gutter);
-  let halves = 1;
+  let lines = 1;
   let best = Infinity;
-  for (let h = 1; h <= 4; h++) {
-    const d = Math.abs(span / (h * VERSE[0].length) - target);
+  for (let h = 1, len = 0; h <= LINES.length; h++) {
+    len += LINES[(h - 1) % LINES.length].length;
+    const d = Math.abs(span / len - target);
     if (d < best) {
       best = d;
-      halves = h;
+      lines = h;
     }
   }
   const bulbs: Layout["bulbs"] = [];
   let t = 0;
-  for (let h = 0; h < halves; h++) {
-    for (const n of VERSE[h % 2]) {
-      bulbs.push({ t, midi: n.midi, note: t % VERSE_NOTES });
+  for (let h = 0; h < lines; h++) {
+    for (const n of LINES[h % LINES.length]) {
+      bulbs.push({ t, midi: n.midi, note: t % NOTES.length });
       t++;
     }
   }
@@ -84,7 +83,7 @@ export function layoutGarland(width: number, gutter: number, target: number): La
   const pitch = span / length;
   const swags = Math.max(1, Math.round(length / 4));
   const nails = Array.from({ length: swags + 1 }, (_, k) => Math.round((k * length) / swags));
-  return { width, pitch, pxPerM: pitch / PITCH_M, margin: gutter, halves, length, nails, bulbs };
+  return { width, pitch, pxPerM: pitch / PITCH_M, margin: gutter, lines, length, nails, bulbs };
 }
 
 export type Sim = {

@@ -5,9 +5,10 @@ import { sound } from "@/lib/sound";
 import { t } from "@/i18n";
 
 /**
- * The bell in the header («С наступающим!», docs/CONVENTIONS.md): the season's sounds, off until it is pressed.
- * Pressed, the garland plays «В лесу родилась ёлочка» and the page answers the guest's hand in sound; pressed
- * again, all of it stops. Only in the season and with scripts (season.css).
+ * The bell in the header («С наступающим!», docs/CONVENTIONS.md): it shows what is heard, pressed while the
+ * season's music plays («Jingle Bells» on repeat, on by default from the guest's first click or tap). Pressed
+ * then, everything stops, and the next visit starts quiet; pressed while quiet, the music plays. Only in the
+ * season and with scripts (season.css).
  */
 export function SoundToggle() {
   const on = useSyncExternalStore(sound.subscribe, () => sound.on, () => false);

@@ -1,9 +1,9 @@
 // The garland on the page (src/lib/garland.ts has its layout and physics; docs/CONVENTIONS.md, «С наступающим!»).
 // Loaded with import() by Garland.tsx, only in the season. It draws the garland as SVG in its box at the top
 // of the page, under the header's line, and gives it the page's motion (a flung page presses it down, a hard
-// stop lets it jump), the guest's hand (a cursor brushes the bulbs, a press carries one and lets it swing, a
-// click or a tap knocks it) and, with the sound on, the song: each bulb rings its note, and turning the sound
-// on plays the verse along the garland, every note knocking its bulb. A frame loop runs only while something
+// stop lets it jump), the guest's hand (a cursor brushes the bulbs, silently; a press carries one and lets it
+// swing; a click or a tap knocks it and, with the sound on, rings its note) and the song: every note the music
+// plays (kd:note, src/lib/sound.ts) knocks its bulb, so the tune runs along the garland. A frame loop runs only while something
 // moves and never while the garland is off screen. The lights come on by CSS (season.css), held under the
 // loader like every animation. Reduced motion: it hangs still, lit; a click still rings a bulb.
 
@@ -299,8 +299,8 @@ export function mountGarland(root: HTMLElement, reduced: boolean): () => void {
       pointer.x0 = pointer.x;
       pointer.y0 = pointer.y;
     }
-    const rings = advance(sim, dt, { accel, hand, grab });
-    for (const r of rings) ring(r.bulb, r.force);
+    // A cursor brushing the bulbs swings them without a sound: only a click or a tap rings one.
+    advance(sim, dt, { accel, hand, grab });
     render();
     const idle = !grab && !hand && Math.abs(accel) < 0.05;
     if (idle && atRest(sim)) {
@@ -326,20 +326,12 @@ export function mountGarland(root: HTMLElement, reduced: boolean): () => void {
     if (Math.abs(accel) > 0.4) wake();
   };
 
-  // ── The song, when the sound comes on ──
-  const onSound = (e: Event) => {
-    if (!(e as CustomEvent<{ on: boolean }>).detail?.on) return;
-    sound.jingle();
-    const n = bulbs.length;
-    sound.melody({
-      verses: sim.layout.halves > 2 ? 2 : 1,
-      delay: 0.7,
-      onNote: (k) => {
-        if (!visible || reduced) return;
-        knock(sim, k % n, 0.42);
-        wake();
-      },
-    });
+  // ── The song: every note the music plays knocks its bulb ──
+  const onNote = (e: Event) => {
+    const note = (e as CustomEvent<{ note: number }>).detail?.note;
+    if (note == null || !visible || reduced) return;
+    knock(sim, note % bulbs.length, 0.42);
+    wake();
   };
 
   build();
@@ -395,7 +387,7 @@ export function mountGarland(root: HTMLElement, reduced: boolean): () => void {
   window.addEventListener("pointercancel", onCancel);
   root.addEventListener("pointerdown", onDown);
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("kd:sound", onSound);
+  window.addEventListener("kd:note", onNote);
 
   return () => {
     cancelAnimationFrame(raf);
@@ -406,7 +398,7 @@ export function mountGarland(root: HTMLElement, reduced: boolean): () => void {
     window.removeEventListener("pointercancel", onCancel);
     root.removeEventListener("pointerdown", onDown);
     window.removeEventListener("scroll", onScroll);
-    window.removeEventListener("kd:sound", onSound);
+    window.removeEventListener("kd:note", onNote);
     window.removeEventListener("kd:chimes", onChimes);
     window.removeEventListener("kd:loader-done", onLoaded);
     window.clearTimeout(lit);

@@ -50,8 +50,8 @@ export const blankCaption: Record<OperatorField, string> = {
 
 export const SITE = "www.kakdelacoffee.ru";
 /** The edition both documents carry; the note's mail quotes it as the consent's version. */
-export const EDITION = "2026-09-28";
-export const EDITION_LABEL = EN ? EDITION_LABEL_EN : "28 сентября 2026 года";
+export const EDITION = "2026-11-21";
+export const EDITION_LABEL = EN ? EDITION_LABEL_EN : "21 ноября 2026 года";
 
 /** A paragraph, a list under it, or a table. Paragraphs are numbered «3.2.»; lists and tables are not. */
 export type Block =
@@ -87,6 +87,7 @@ export const deviceStorage: { key: string; store: "localStorage" | "sessionStora
   { key: "kd-last", store: "localStorage", what: "Ответ, который вы оторвали на главной, и дата.", kept: "Пока вы не очистите данные сайта." },
   { key: "kd-puzzle", store: "localStorage", what: "Решение шахматной задачи недели.", kept: "Пока вы не очистите данные сайта; решение прошлой недели не показывается." },
   { key: "kd-runner", store: "localStorage", what: "Рекорд в игре со стаканчиком.", kept: "Пока вы не очистите данные сайта." },
+  { key: "kd-sound", store: "localStorage", what: "Что вы выключили музыку новогоднего оформления: в следующий раз она не заиграет сама.", kept: "Пока вы не очистите данные сайта или снова не включите музыку." },
   { key: "kd-intro", store: "sessionStorage", what: "Что приветственная анимация уже показана: дальше в этой вкладке она идёт короче.", kept: "Пока открыта вкладка." },
   { key: "kd-scroll", store: "sessionStorage", what: "Докуда прокручена страница, когда вы с неё уходите: если вы были не в самом верху, после обновления анимация не показывается.", kept: "Пока открыта вкладка." },
 ];
@@ -94,7 +95,7 @@ export const deviceStorage: { key: string; store: "localStorage" | "sessionStora
 /** «Коротко»: the policy in six plain lines, on a note above it. */
 export const brief: string[] = [
   "Счётчиков, рекламных пикселей и cookies на сайте нет.",
-  "Город, ответ на «Как дела?», рекорд в игре и решённая задача хранятся только в вашем браузере.",
+  "Город, ответ на «Как дела?», рекорд в игре, решённая задача и выключенная музыка хранятся только в вашем браузере.",
   "Где вы, браузер определяет, только когда вы нажмёте «Какая ближе ко мне?». Это остаётся на вашем устройстве.",
   "В записке обязателен только текст. Подпись и контакт нужны, если вы ждёте ответа, и никогда для рекламы.",
   "Записки хранятся в России не дольше года, не публикуются и не передаются за границу.",
